@@ -750,14 +750,14 @@ h1, h2, h3 { margin: 0; font-weight: 600; }
 .pocao-titulo { display: flex; align-items: center; gap: .9rem; }
 .pocao-frasco { width: 64px; height: 80px; flex: none; filter: drop-shadow(0 6px 10px rgba(0, 0, 0, .3)); }
 
-/* FASE 2: Cristais Brutos Hiper-Realistas 8K e Modal Centralizado Instantâneo */
-.gemas { display: grid; grid-template-columns: repeat(3, 1fr); gap: .7rem; margin-top: 1.2rem; }
+/* FASE 2: Cristais Brutos 3D Ultra-Realismo 8K e Modal Centralizado Instantâneo */
+.gemas { display: grid; grid-template-columns: repeat(3, 1fr); gap: .75rem; margin-top: 1.2rem; }
 @media (max-width: 380px) { .gemas { grid-template-columns: repeat(2, 1fr); } }
 .gema {
-  position: relative; min-height: 98px; padding: .65rem .35rem .55rem; border: 0; border-radius: 16px;
-  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .3rem;
-  background: radial-gradient(circle at 50% 35%, rgba(255, 255, 255, .82), rgba(242, 226, 192, .52));
-  box-shadow: 0 0 0 1px rgba(122, 62, 16, .24) inset, 0 6px 14px rgba(58, 37, 16, .12);
+  position: relative; min-height: 122px; padding: .55rem .4rem .55rem; border: 0; border-radius: 16px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .42rem;
+  background: radial-gradient(circle at 50% 35%, rgba(255, 255, 255, .88), rgba(242, 226, 192, .62));
+  box-shadow: 0 0 0 1px rgba(122, 62, 16, .28) inset, 0 6px 14px rgba(58, 37, 16, .14);
   font: 600 .8rem/1.2 var(--corpo); color: #4a2208;
   transition: transform .3s cubic-bezier(.2, .7, .2, 1), background .3s, box-shadow .3s;
   will-change: transform; overflow: hidden;
@@ -768,21 +768,36 @@ h1, h2, h3 { margin: 0; font-weight: 600; }
   transform: translateX(-120%) rotate(15deg); transition: transform .75s ease;
 }
 .gema:hover::after, .gema:focus-visible::after { transform: translateX(120%) rotate(15deg); }
-.gema svg {
-  display: block; width: 62px; height: 62px; margin: 0 auto; overflow: visible;
-  filter: drop-shadow(0 6px 10px rgba(0, 0, 0, .32));
-  transition: transform .35s cubic-bezier(.2, .7, .2, 1), filter .35s;
+.cristal-3d-wrap {
+  position: relative; display: block; width: 78px; height: 78px; margin: 0 auto;
+  border-radius: 14px; overflow: hidden; background: #070410;
+  box-shadow: 0 0 0 1.5px rgba(212, 175, 55, .62), 0 6px 14px rgba(24, 12, 4, .38), 0 0 14px var(--cristal-cor, rgba(242, 193, 78, .35));
+  transition: transform .35s cubic-bezier(.2, .7, .2, 1), box-shadow .35s;
+}
+.cristal-3d-img {
+  display: block; width: 100%; height: 100%; object-fit: cover;
+  filter: contrast(1.06) saturate(1.08);
+  transition: transform .4s cubic-bezier(.2, .7, .2, 1), filter .4s;
 }
 .gema:hover, .gema:focus-visible {
   transform: translateY(-4px) scale(1.03);
-  background: radial-gradient(circle at 50% 35%, #fffdf7, rgba(255, 238, 195, .85));
-  box-shadow: 0 0 0 1.5px #c88a22 inset, 0 10px 22px rgba(58, 37, 16, .22), 0 0 18px rgba(242, 193, 78, .45);
+  background: radial-gradient(circle at 50% 35%, #fffdf7, rgba(255, 238, 195, .92));
+  box-shadow: 0 0 0 1.5px #c88a22 inset, 0 10px 22px rgba(58, 37, 16, .24), 0 0 18px rgba(242, 193, 78, .5);
 }
-.gema:hover svg { transform: scale(1.1) rotate(-3deg); filter: drop-shadow(0 8px 14px rgba(0, 0, 0, .38)) drop-shadow(0 0 12px rgba(255, 230, 163, .65)); }
+.gema:hover .cristal-3d-wrap {
+  transform: scale(1.06) rotate(-2deg);
+  box-shadow: 0 0 0 2px #ffe6a3, 0 8px 18px rgba(0, 0, 0, .45), 0 0 20px var(--cristal-cor, rgba(255, 230, 163, .75));
+}
+.gema:hover .cristal-3d-img { transform: scale(1.12); filter: contrast(1.1) saturate(1.15) brightness(1.06); }
 .gema[aria-pressed="true"] {
   background: radial-gradient(circle at 50% 35%, #fffdf5, #ffeab3);
   box-shadow: 0 0 0 2px #b87914 inset, 0 0 22px rgba(242, 193, 78, .65);
   transform: translateY(-3px);
+}
+.cristal-prateleira { cursor: pointer; transform-box: fill-box; transform-origin: center bottom; transition: transform .3s ease, filter .3s ease; }
+.cristal-prateleira:hover, .cristal-prateleira:focus-visible {
+  transform: scale(1.18) translateY(-3px);
+  filter: drop-shadow(0 0 10px rgba(255, 230, 163, .9));
 }
 
 /* Modal / Overlay Centralizado de Explicação do Cristal (Sem precisar rolar) */
@@ -820,18 +835,27 @@ h1, h2, h3 { margin: 0; font-weight: 600; }
   box-shadow: 0 0 0 2px #fff6d2 inset, 0 0 26px rgba(242, 193, 78, .9);
 }
 .cristal-modal__arte {
-  position: relative; width: 138px; height: 138px; margin: .2rem auto 1rem;
+  position: relative; width: 224px; height: 224px; margin: .2rem auto 1.15rem;
   display: grid; place-items: center;
 }
 .cristal-modal__arte::before {
-  content: ""; position: absolute; inset: -12px; border-radius: 50%;
-  background: radial-gradient(circle, var(--cristal-brilho, rgba(255, 220, 140, .55)) 0%, transparent 70%);
-  filter: blur(10px); animation: pulsar 3.2s ease-in-out infinite;
+  content: ""; position: absolute; inset: -16px; border-radius: 50%;
+  background: radial-gradient(circle, var(--cristal-brilho, rgba(255, 220, 140, .62)) 0%, transparent 70%);
+  filter: blur(14px); animation: pulsar 3.2s ease-in-out infinite;
 }
-.cristal-modal__arte svg {
-  position: relative; width: 124px; height: 124px; overflow: visible;
-  filter: drop-shadow(0 14px 24px rgba(0, 0, 0, .65)) drop-shadow(0 0 22px var(--cristal-brilho, rgba(255, 230, 163, .6)));
+.cristal-modal__arte .cristal-3d-wrap {
+  position: relative; width: 212px; height: 212px; border-radius: 24px;
+  box-shadow: 0 0 0 2px rgba(242, 193, 78, .75), 0 18px 40px rgba(0, 0, 0, .82), 0 0 34px var(--cristal-cor, rgba(255, 230, 163, .65));
   animation: flutuar 5s ease-in-out infinite;
+}
+.cristal-modal__nome {
+  margin: .5rem 0 .45rem; font: 600 clamp(1.5rem, 4vw, 1.95rem)/1.15 var(--titulo);
+  background: var(--dourado); -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.cristal-modal__sub {
+  display: inline-block; padding: .32rem .92rem; border-radius: 999px;
+  font: 600 .76rem/1.2 var(--corpo); letter-spacing: .18em; text-transform: uppercase;
+  color: var(--ouro-claro); background: rgba(242, 193, 78, .15); box-shadow: 0 0 0 1px rgba(242, 193, 78, .45) inset;
 }
 .cristal-modal__tag {
   display: inline-block; padding: .35rem .95rem; border-radius: 999px;
@@ -3380,7 +3404,25 @@ function iniciar(C, fotosPrevia = {}) {
     // ---- cantos: ervas (mesa da esquerda), magias (grimório), cristais (prateleira), chás (bule) ----
     const ervas = `<g class="ponto" data-area="ervas" role="button" tabindex="0" aria-label="Ervas"><rect x="20" y="370" width="355" height="160" fill="transparent"/></g>`;
     const grimorio = `<g class="ponto" data-area="magias" role="button" tabindex="0" aria-label="Grimório de magias">${luz(1005, 640, 120)}${img("grimorio", 925, 560, 165, f1(165 * 368 / 360))}</g>`;
-    const cristais = `<g class="ponto" data-area="cristais" role="button" tabindex="0" aria-label="Cristais"><circle cx="1150" cy="248" r="90" fill="url(#i-cristal)" style="mix-blend-mode:screen" class="tremeluz"/>${img("cristais", 1095, 182, 112, f1(112 * 382 / 360))}</g>`;
+        const SLUGS_CRISTAIS = [
+      "quartzo-rosa", "ametista", "citrino", "cristal-de-quartzo",
+      "turmalina-negra", "pedra-da-lua", "olho-de-tigre", "selenita",
+      "aventurina", "lapis-lazuli", "cornalina", "obsidiana"
+    ];
+    const POS_CRISTAIS_PRATELEIRA = [
+      [910, 190, 62], [982, 186, 66], [1058, 186, 66], [1134, 184, 68], [1212, 188, 62],
+      [906, 316, 62], [980, 316, 62], [1056, 312, 66], [1132, 316, 62], [1208, 316, 62],
+      [968, 438, 62], [1048, 438, 62]
+    ];
+    const cristais = `<g id="prateleira-cristais-3d">` + POS_CRISTAIS_PRATELEIRA.map(([cx, cy, tam], idx) => {
+      const itemCr = CASA.cristais.itens[idx] || ["Cristal", "#c9a2ff"];
+      const slugCr = SLUGS_CRISTAIS[idx] || "ametista";
+      return `<g class="ponto cristal-prateleira" data-area="cristais" data-cristal-idx="${idx}" role="button" tabindex="0" aria-label="${itemCr[0]}: ver cristal 3D">
+        <title>${itemCr[0]} ✦ ${itemCr[2] || ""}</title>
+        <circle cx="${f1(cx + tam / 2)}" cy="${f1(cy + tam / 2)}" r="${f1(tam * 0.58)}" fill="${itemCr[1]}" opacity=".32" filter="url(#i-macio)" style="mix-blend-mode:screen" class="tremeluz"/>
+        ${img(`assets/cristais/${slugCr}-cutout.png`, cx, cy, tam, tam)}
+      </g>`;
+    }).join("") + `</g>`;
     const bule = `<g class="ponto" data-area="chas" role="button" tabindex="0" aria-label="Chás">${img("bule", 1160, 470, 150, f1(150 * 293 / 360))}
       ${[[1205, 470], [1222, 455], [1240, 465]].map(([x, y], i) => `<circle class="vapor" cx="${x}" cy="${y}" r="10" fill="rgba(255,255,255,.16)" style="animation-delay:-${i}s"/>`).join("")}</g>`;
 
@@ -3566,99 +3608,29 @@ function iniciar(C, fotosPrevia = {}) {
   function fecharPergaminho() { pergaminho.classList.remove("aberto"); }
   $("#fechar-pergaminho").addEventListener("click", fecharPergaminho);
 
-  /* Gerador SVG 8K hiper-realista de pedras brutas e drusas naturais (uma geometria mineral única por cristal) */
+  /* Imagens 3D Ultra-Realismo 8K de cada respectivo cristal da Casinha */
+  const ARQUIVOS_CRISTAIS_3D = [
+    "quartzo-rosa",
+    "ametista",
+    "citrino",
+    "cristal-de-quartzo",
+    "turmalina-negra",
+    "pedra-da-lua",
+    "olho-de-tigre",
+    "selenita",
+    "aventurina",
+    "lapis-lazuli",
+    "cornalina",
+    "obsidiana"
+  ];
   function cristalBrutoSVG(cor, i = 0, sfx = "g") {
-    const id = `${sfx}-${i}`;
-    const modelos = [
-      // 0: Quartzo Rosa (bloco bruto orgânico multifacetado com veios leitosos e refração rosada)
-      `<polygon points="22,12 58,8 88,24 94,60 74,90 34,94 10,70 8,34" fill="url(#cr-b-${id})" stroke="rgba(255,220,238,.65)" stroke-width="1"/>
-       <polygon points="22,12 58,8 64,42 36,48 8,34" fill="url(#cr-l-${id})" opacity=".85"/>
-       <polygon points="58,8 88,24 64,42" fill="#fff" opacity=".48"/>
-       <polygon points="64,42 88,24 94,60 74,90 48,66" fill="rgba(120,25,65,.32)"/>
-       <polygon points="36,48 64,42 48,66 34,94 10,70" fill="url(#cr-b-${id})" opacity=".75"/>
-       <path d="M26 28 L46 40 L40 68 M58 18 L62 42 L80 54 M20 56 L48 64" fill="none" stroke="rgba(255,255,255,.62)" stroke-width="1.3" stroke-linecap="round"/>`,
-      // 1: Ametista (drusa hexagonal de pontas cristalinas em violeta profundo)
-      `<polygon points="48,4 68,18 64,86 34,86 30,20" fill="url(#cr-b-${id})" stroke="rgba(235,205,255,.65)" stroke-width="1"/>
-       <polygon points="48,4 68,18 50,28 30,20" fill="#fff" opacity=".52"/>
-       <polygon points="30,20 50,28 46,86 34,86" fill="url(#cr-l-${id})" opacity=".78"/>
-       <polygon points="16,28 34,22 40,88 18,86 10,44" fill="url(#cr-b-${id})" stroke="rgba(225,190,255,.55)" stroke-width=".9"/>
-       <polygon points="16,28 34,22 26,38 10,44" fill="#fff" opacity=".45"/>
-       <polygon points="78,24 92,38 82,88 60,86 64,34" fill="url(#cr-b-${id})" stroke="rgba(225,190,255,.55)" stroke-width=".9"/>
-       <polygon points="78,24 92,38 74,44 64,34" fill="#fff" opacity=".42"/>
-       <ellipse cx="50" cy="86" rx="38" ry="8" fill="#230b3b" stroke="rgba(210,165,255,.45)"/>`,
-      // 2: Citrino (ponta solar dourada biterminada com cristal lateral)
-      `<polygon points="50,5 72,22 68,78 50,94 30,78 28,22" fill="url(#cr-b-${id})" stroke="rgba(255,242,190,.75)" stroke-width="1.1"/>
-       <polygon points="50,5 72,22 50,32 28,22" fill="#fff" opacity=".58"/>
-       <polygon points="28,22 50,32 50,94 30,78" fill="url(#cr-l-${id})" opacity=".82"/>
-       <polygon points="72,38 92,46 84,88 64,84" fill="url(#cr-b-${id})" stroke="rgba(255,235,175,.6)"/>
-       <path d="M36 36 L64 46 M34 56 L62 66" stroke="rgba(255,255,255,.55)" stroke-width="1.1"/>`,
-      // 3: Cristal de Quartzo Transparente (gerador mestre translúcido de alta refração)
-      `<polygon points="50,4 74,20 70,84 50,95 30,84 26,20" fill="url(#cr-b-${id})" stroke="rgba(255,255,255,.85)" stroke-width="1.2"/>
-       <polygon points="50,4 74,20 52,34 26,20" fill="#fff" opacity=".75"/>
-       <polygon points="26,20 52,34 50,95 30,84" fill="url(#cr-l-${id})" opacity=".88"/>
-       <polygon points="14,42 30,34 34,88 18,86 8,56" fill="url(#cr-b-${id})" opacity=".9" stroke="rgba(255,255,255,.7)"/>
-       <polygon points="84,36 94,50 84,88 68,86 70,44" fill="url(#cr-b-${id})" opacity=".9" stroke="rgba(255,255,255,.7)"/>
-       <path d="M32 38h36M31 52h38M32 68h35" stroke="rgba(255,255,255,.5)" stroke-width=".9"/>`,
-      // 4: Turmalina Negra (coluna estriada vertical de schorl bruto com reflexo mineral)
-      `<polygon points="26,10 44,6 62,10 76,16 74,90 54,95 28,92 20,84" fill="#181722" stroke="rgba(180,175,210,.55)" stroke-width="1"/>
-       <polygon points="26,10 44,6 62,10 76,16 56,22 34,20" fill="rgba(255,255,255,.32)"/>
-       <path d="M30 16v74M37 12v80M45 10v83M53 12v81M61 14v77M68 18v70" stroke="rgba(230,225,255,.34)" stroke-width="1.6"/>
-       <path d="M34 14v76M50 11v82M64 16v72" stroke="#07060c" stroke-width="2.2"/>`,
-      // 5: Pedra da Lua (pedra bruta leitosa com adularescência azul-prateada)
-      `<path d="M24,16 C52,4 84,18 90,48 C94,76 70,94 42,92 C16,90 6,66 10,40 C12,26 16,20 24,16 Z" fill="url(#cr-b-${id})" stroke="rgba(235,244,255,.75)" stroke-width="1.1"/>
-       <ellipse cx="46" cy="44" rx="28" ry="22" transform="rotate(-18 46 44)" fill="rgba(130,190,255,.48)"/>
-       <ellipse cx="40" cy="36" rx="18" ry="11" transform="rotate(-18 40 36)" fill="#fff" opacity=".62"/>
-       <path d="M22 52 Q48 38 76 56 M28 68 Q52 58 72 72" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="1.1"/>`,
-      // 6: Olho de Tigre (bloco lapidado/bruto com bandas de chatoyance dourado-âmbar)
-      `<polygon points="18,20 56,8 88,26 84,74 52,92 14,76 10,42" fill="#3d220a" stroke="rgba(255,210,125,.65)" stroke-width="1.1"/>
-       <polygon points="18,20 56,8 88,26 62,44 24,38" fill="url(#cr-b-${id})" opacity=".9"/>
-       <path d="M14 44 L84 28 M12 56 L86 40 M16 68 L82 52 M24 80 L78 66" stroke="#ffcf68" stroke-width="4.5" stroke-linecap="round" opacity=".75"/>
-       <path d="M16 40 L82 24 M14 62 L84 46" stroke="#fff3c4" stroke-width="1.6" opacity=".65"/>`,
-      // 7: Selenita (bastão acetinado translúcido de gipsita fibrosa luminosa)
-      `<polygon points="36,6 66,10 74,88 30,94 24,16" fill="url(#cr-b-${id})" stroke="rgba(255,255,255,.82)" stroke-width="1.1"/>
-       <polygon points="36,6 66,10 54,20 24,16" fill="#fff" opacity=".75"/>
-       <path d="M32 14 L36 92 M40 10 L44 92 M48 10 L52 91 M56 12 L60 90 M64 14 L68 88" stroke="rgba(255,255,255,.68)" stroke-width="1.4"/>`,
-      // 8: Aventurina (quartzo verde esmeralda bruto com pontos de mica cintilante)
-      `<polygon points="24,14 62,8 88,30 86,68 60,92 22,86 8,54" fill="url(#cr-b-${id})" stroke="rgba(185,255,210,.65)" stroke-width="1.1"/>
-       <polygon points="24,14 62,8 56,44 22,46 8,54" fill="url(#cr-l-${id})" opacity=".8"/>
-       <polygon points="62,8 88,30 56,44" fill="#fff" opacity=".42"/>
-       <circle cx="38" cy="34" r="1.8" fill="#fff"/><circle cx="62" cy="48" r="1.5" fill="#d8ffe6"/><circle cx="44" cy="66" r="2" fill="#fff"/><circle cx="68" cy="64" r="1.4" fill="#ffe999"/>`,
-      // 9: Lápis-Lazúli (rocha celeste azul-ultramar profundo com constelações de pirita dourada)
-      `<polygon points="20,16 58,8 88,24 90,64 66,92 26,88 10,56" fill="url(#cr-b-${id})" stroke="rgba(160,195,255,.65)" stroke-width="1.1"/>
-       <polygon points="20,16 58,8 60,44 24,48" fill="url(#cr-l-${id})" opacity=".72"/>
-       <path d="M18 58 Q48 44 84 54" fill="none" stroke="rgba(255,255,255,.45)" stroke-width="2"/>
-       <circle cx="34" cy="28" r="2" fill="#ffd86b"/><circle cx="52" cy="24" r="1.5" fill="#ffd86b"/><circle cx="70" cy="38" r="2.2" fill="#ffe89e"/><circle cx="40" cy="52" r="1.6" fill="#ffd86b"/><circle cx="64" cy="68" r="2.1" fill="#ffd86b"/><circle cx="32" cy="72" r="1.7" fill="#ffe89e"/>`,
-      // 10: Cornalina (calcedônia vulcânica laranja-fogo translúcida com zonamento)
-      `<path d="M28,10 L68,12 L90,38 L82,78 L50,94 L16,78 L10,38 Z" fill="url(#cr-b-${id})" stroke="rgba(255,210,175,.7)" stroke-width="1.1"/>
-       <polygon points="28,10 68,12 58,42 24,38 10,38" fill="url(#cr-l-${id})" opacity=".82"/>
-       <polygon points="68,12 90,38 58,42" fill="#fff" opacity=".46"/>
-       <path d="M22 48 Q50 32 78 52 M24 66 Q50 52 74 70" fill="none" stroke="rgba(255,235,190,.55)" stroke-width="1.6"/>`,
-      // 11: Obsidiana (lâmina de vidro vulcânico negro com fratura concoidal espelhada)
-      `<polygon points="48,6 78,22 88,58 68,92 28,90 12,56 22,20" fill="#120d1a" stroke="rgba(210,190,255,.55)" stroke-width="1.1"/>
-       <polygon points="48,6 78,22 52,46 22,20" fill="rgba(255,255,255,.32)"/>
-       <path d="M22,20 Q48,46 28,90 L12,56 Z" fill="rgba(165,130,235,.26)"/>
-       <path d="M48 8 L52 46 L68 90 M24 38 Q52 48 82 54" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="1.2"/>`
-    ];
-    return `<svg viewBox="0 0 100 100" aria-hidden="true">
-      <defs>
-        <radialGradient id="cr-b-${id}" cx="35%" cy="28%" r="72%">
-          <stop offset="0%" stop-color="#ffffff" stop-opacity=".92"/>
-          <stop offset="28%" stop-color="${cor}" stop-opacity=".96"/>
-          <stop offset="78%" stop-color="${cor}" stop-opacity=".88"/>
-          <stop offset="100%" stop-color="#0b0618" stop-opacity=".92"/>
-        </radialGradient>
-        <linearGradient id="cr-l-${id}" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stop-color="#ffffff" stop-opacity=".68"/>
-          <stop offset="50%" stop-color="${cor}" stop-opacity=".45"/>
-          <stop offset="100%" stop-color="#120824" stop-opacity=".5"/>
-        </linearGradient>
-      </defs>
-      <circle cx="50" cy="52" r="44" fill="${cor}" opacity=".22"/>
-      ${modelos[i % modelos.length]}
-      <circle cx="38" cy="26" r="3" fill="#fff" opacity=".85"/>
-    </svg>`;
+    const slug = ARQUIVOS_CRISTAIS_3D[i % ARQUIVOS_CRISTAIS_3D.length];
+    const item = (CASA.cristais && CASA.cristais.itens && CASA.cristais.itens[i]) || ["Cristal", cor];
+    const src = foto(`assets/cristais/${slug}.webp`);
+    return `<span class="cristal-3d-wrap" style="--cristal-cor:${cor}">
+      <img class="cristal-3d-img" src="${src}" alt="${item[0]}" loading="${sfx === "m" ? "eager" : "lazy"}" decoding="async"/>
+    </span>`;
   }
-
   function abrirModalCristal(idx) {
     const c = CASA.cristais;
     const item = c.itens[idx];
@@ -3715,6 +3687,13 @@ function iniciar(C, fotosPrevia = {}) {
   mundo.addEventListener("click", e => {
     // o toque que fez entrar não pode abrir uma placa: a pessoa precisa ver a casinha primeiro
     if (Date.now() - entrouEm < 1200) return;
+    const crEl = e.target.closest("[data-cristal-idx]");
+    if (crEl) {
+      const idxCr = +crEl.dataset.cristalIdx;
+      abrirArea("cristais");
+      abrirModalCristal(idxCr);
+      return;
+    }
     const p = e.target.closest(".ponto");
     if (p && !e.target.closest(".ingrediente")) abrirArea(p.dataset.area);
   });
