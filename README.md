@@ -1,4 +1,4 @@
-# Bem Dito Tarot (Tryv Tuath)
+# Tryv Tuath
 
 Site publicado em https://tryvtuath.github.io/tryvtuath/
 
