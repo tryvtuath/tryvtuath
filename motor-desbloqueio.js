@@ -736,8 +736,47 @@
   }
 
   /* =========================================================================
-     8. ASTROLOGIA VÉDICA (JYOTISH — LAHIRI AYANAMSA & 27 NAKSHATRAS)
+     8. ASTROLOGIA VÉDICA (JYOTISH — LAHIRI AYANAMSA, NAKSHATRAS & MOMENTO ATUAL)
      ========================================================================= */
+  const DIRECIONAMENTO_DASHA = {
+    "Ketu (Nodo Sul)": {
+      momento: "Ciclo de Desapego Espiritual, Corte de Ilusões e Sabedoria Intuitiva",
+      pratico: "O Universo pede que você pare de insistir em estruturas que já cumpriram seu papel. Seu caminho fica suave quando você confia no seu sexto sentido, simplifica a rotina e foca em especialização profunda em vez de volume disperso."
+    },
+    "Vênus (Shukra)": {
+      momento: "Ciclo de Magnetismo, Cura do Feminino, Valorização e Alianças",
+      pratico: "Momento ideal para elevar seu valor percebido, cuidar da estética/imagem, destravar o merecimento afetivo e permitir que a prosperidade venha através de charme, diplomacia e criação autoral."
+    },
+    "Sol (Surya)": {
+      momento: "Ciclo de Autoridade, Visibilidade, Autonomia e Posicionamento",
+      pratico: "É hora de sair dos bastidores. Assuma a liderança do seu próprio nome, corte relações de submissão e tome decisões baseadas na sua verdade central, sem esperar aprovação familiar."
+    },
+    "Lua (Chandra)": {
+      momento: "Ciclo de Nutrição da Alma, Cura Emocional, Fluxo e Conexão Pública",
+      pratico: "Respeite seus ritmos internos. Sua prosperidade e seus afetos fluem quando seu ambiente doméstico está em paz e quando você usa sua empatia para acolher sem absorver dores alheias."
+    },
+    "Marte (Mangala)": {
+      momento: "Ciclo de Coragem, Execução Prática, Corte de Inércia e Conquista",
+      pratico: "Pare de adiar decisões difíceis. Canalize sua energia vital em um projeto concreto de cada vez, estabeleça limites firmes com pessoas invasivas e aja com assertividade."
+    },
+    "Rahu (Nodo Norte)": {
+      momento: "Ciclo de Expansão Inédita, Quebra de Tabus e Salto de Destino",
+      pratico: "O que é tradicional parece pequeno demais para você agora. Abra-se para inovação, ambiente digital, novos públicos e caminhos que ninguém da sua família trilhou antes."
+    },
+    "Júpiter (Guru)": {
+      momento: "Ciclo de Sabedoria, Mentoria, Bênçãos Protetoras e Expansão Ética",
+      pratico: "Seu crescimento vem pelo ensino, pelo estudo elevado e pela visão de longo prazo. Posicione-se como mentora ou referência de confiança na sua área."
+    },
+    "Saturno (Shani)": {
+      momento: "Ciclo de Estruturação Sólida, Colheita Kármica, Maturidade e Legado",
+      pratico: "Nada de atalhos rasos: o momento pede constância, organização financeira, contratos claros e paciência estratégica. O que você estruturar agora terá raízes para décadas."
+    },
+    "Mercúrio (Budha)": {
+      momento: "Ciclo de Inteligência Comercial, Comunicação, Negócios e Versatilidade",
+      pratico: "Destrave sua fala, escrita e negociação. Excelente período para estruturar ofertas, cursos, consultorias, parcerias intelectuais e organizar o fluxo financeiro com método."
+    }
+  };
+
   function calcularAstrologiaVedica(astroOcidental, dados) {
     const [ano, mes, dia] = dados.dataNascimento.split("-").map(Number);
     // Ayanamsa de Lahiri (Chitrapaksha): 23.853° em 2000.0 + precessão de 50.29"/ano
@@ -755,6 +794,18 @@
     const pada = Math.floor(restoNak / (passoNak / 4)) + 1;
     const [nomeNak, regenteDasha, divindade, simbolo, interpretacao] = NAKSHATRAS[idxNak];
 
+    // Ciclo progressivo Vimshottari aproximado para a idade atual
+    const ordemSenhores = [
+      "Ketu (Nodo Sul)", "Vênus (Shukra)", "Sol (Surya)", "Lua (Chandra)",
+      "Marte (Mangala)", "Rahu (Nodo Norte)", "Júpiter (Guru)", "Saturno (Shani)", "Mercúrio (Budha)"
+    ];
+    const idade = Math.max(18, new Date().getFullYear() - ano);
+    const idxNatal = Math.max(0, ordemSenhores.indexOf(regenteDasha));
+    const idxCicloAtual = (idxNatal + Math.floor(idade / 13)) % ordemSenhores.length;
+    const regenteMomento = ordemSenhores[idxCicloAtual];
+    const guiaNatal = DIRECIONAMENTO_DASHA[regenteDasha] || DIRECIONAMENTO_DASHA["Lua (Chandra)"];
+    const guiaAtual = DIRECIONAMENTO_DASHA[regenteMomento] || guiaNatal;
+
     return {
       ayanamsa: ayanamsa.toFixed(2) + "°",
       suryaRashi: signoDe(lonSolV),
@@ -768,8 +819,232 @@
         regenteDasha,
         divindade,
         simbolo,
-        interpretacao
+        interpretacao,
+        regenteMomento,
+        momentoAtual: `${guiaAtual.momento} (sob a frequência de ${regenteMomento} cruzada à sua raiz em ${nomeNak})`,
+        direcionamentoPratico: `${guiaAtual.pratico} Além disso, sua Nakshatra natal (${nomeNak}, regida por ${regenteDasha}) lembra que o seu caminho mais suave exige honrar seu símbolo sagrado (${simbolo}) e evitar o desgaste de lutar contra sua natureza intuitiva.`
       }
+    };
+  }
+
+  /* =========================================================================
+     8B. HORÓSCOPO CHINÊS & ALQUIMIA DOS 5 ELEMENTOS ORIENTAIS
+     ========================================================================= */
+  const ANIMAIS_CHINESES = [
+    ["Rato", "子", "Inteligência estratégica, charme magnético, percepção rápida de oportunidades e capacidade de prosperar mesmo em cenários difíceis.", "Ansiedade mental por acumular preocupações em silêncio e medo de escassez futura."],
+    ["Boi", "丑", "Força tranquila, lealdade inabalável, determinação, paciência construtora e colheita sólida através da constância.", "Teimosia emocional, carregar fardos além do limite e dificuldade de demonstrar vulnerabilidade."],
+    ["Tigre", "寅", "Coragem magnética, liderança natural, paixão intensa, proteção feroz de quem ama e espírito desbravador.", "Impulsividade sob pressão, rebeldia contra controles injustos e oscilação entre tudo ou nada."],
+    ["Coelho", "卯", "Diplomacia refinada, intuição artística, sensibilidade estética, empatia curadora e habilidade de abrir portas com doçura.", "Evitar confrontos necessários para manter a paz aparente e retração quando o ambiente fica hostil."],
+    ["Dragão", "辰", "Presença imperial, visão grandiosa, magnetismo espiritual, vitalidade criativa e vocação para liderar grandes movimentos.", "Autocobrança gigantesca, orgulho que impede de mostrar fraqueza e frustração com a mediocridade alheia."],
+    ["Serpente", "巳", "Sabedoria profunda, intuição psíquica, elegância misteriosa, poder de transmutação e olhar clínico para a verdade.", "Desconfiança silenciosa, dificuldade de esquecer traições e tendência a guardar segredos e dores para si."],
+    ["Cavalo", "午", "Espírito livre, entusiasmo contagiante, independência, rapidez de raciocínio e carisma caloroso.", "Inquietação diante de rotinas aprisionadoras, impaciência e medo de perder a própria autonomia no amor."],
+    ["Cabra", "未", "Sensibilidade espiritual e artística, coração generoso, imaginação fértil e dom natural para terapias e harmonia.", "Insegurança emocional quando falta apoio afetivo, absorção do pessimismo alheio e adiamento de decisões duras."],
+    ["Macaco", "申", "Genialidade inventiva, versatilidade, humor inteligente, capacidade de resolver qualquer crise e mente brilhante.", "Dispersão em múltiplos interesses simultâneos e desconfiança de que os outros não acompanham seu ritmo."],
+    ["Galo", "酉", "Clareza, franqueza, senso de organização, brilho pessoal, coragem para defender a verdade e olhar detalhista.", "Perfeccionismo crítico consigo e com o parceiro, desgaste com a desordem alheia e orgulho ferido."],
+    ["Cão", "戌", "Integridade absoluta, proteção leal, senso profundo de justiça, empatia pelos mais frágeis e coração nobre.", "Preocupação excessiva com quem ama, indignação com injustiças e demora para voltar a confiar após decepções."],
+    ["Javali", "亥", "Nobreza de alma, generosidade, apreço pelo belo e pelo prazer sagrado, sinceridade e magnetismo de fartura.", "Ingênua confiança em pessoas interesseiras, dificuldade em dizer 'não' e engolir mágoas para não ferir o outro."]
+  ];
+
+  const ELEMENTOS_CHINESES = [
+    ["Madeira", "木", "Expansão criativa, crescimento contínuo, ética, visão de futuro e capacidade de florescer e abrir novos ramos.", "Excesso de sobrecarga ao tentar abraçar o mundo como uma árvore que abriga a todos."],
+    ["Fogo", "火", "Brilho solar, paixão, poder de decisão, carisma quente e capacidade de iluminar e entusiasmar multidões.", "Esgotamento nervoso (burnout) quando queima a própria energia sem pausas de regeneração."],
+    ["Terra", "土", "Estabilidade, aterramento, realização material, nutrição segura e capacidade de sustentar grandes estruturas.", "Preocupação excessiva, apego ao conhecido e lentidão para cortar laços que já venceram."],
+    ["Metal", "金", "Precisão, nobreza, foco, retidão, resiliência inquebrável e poder de cortar o que é supérfluo.", "Rigidez emocional, melancolia silenciosa e dificuldade em flexibilizar padrões."],
+    ["Água", "水", "Profundidade intuitiva, persuasão suave, adaptabilidade genial, sabedoria oculta e comunicação profunda.", "Medos inconscientes que paralisam ou tendência a contornar obstáculos sem impor a própria vontade."]
+  ];
+
+  function dataChinaUTC8(d) {
+    const t = new Date(Date.UTC(1999, 11, 31) + (d + 8 / 24) * 864e5);
+    return t.getUTCFullYear() * 1e4 + (t.getUTCMonth() + 1) * 100 + t.getUTCDate();
+  }
+  function luaNovaAposDia(d) {
+    const elong = x => norm(luaLon(x) - solLon(x).lon);
+    let ant = elong(d);
+    for (let k = 0; k < 140; k++) {
+      const d2 = d + 0.25, e2 = elong(d2);
+      if (e2 < ant) {
+        let a = d, b = d2;
+        for (let j = 0; j < 30; j++) { const m = (a + b) / 2; if (elong(m) > 180) a = m; else b = m; }
+        return b;
+      }
+      d = d2; ant = e2;
+    }
+    return d;
+  }
+  function anoNovoLunarChines(ano) {
+    let a = diaJ(ano - 1, 12, 15, 0), b = diaJ(ano - 1, 12, 28, 0);
+    for (let j = 0; j < 40; j++) { const m = (a + b) / 2; if (solLon(m).lon < 270) a = m; else b = m; }
+    const diaSolsticio = dataChinaUTC8(b);
+    let d = b - 2, achadas = 0;
+    for (let seg = 0; seg < 5; seg++) {
+      d = luaNovaAposDia(d) + 0.01;
+      if (dataChinaUTC8(d) > diaSolsticio && ++achadas === 2) {
+        const n = dataChinaUTC8(d);
+        return { ano, mes: Math.floor(n / 100) % 100, dia: n % 100 };
+      }
+    }
+    return { ano, mes: 2, dia: 4 };
+  }
+
+  function calcularHoroscopoChines(dados) {
+    const [ano, mes, dia] = dados.dataNascimento.split("-").map(Number);
+    const virada = anoNovoLunarChines(ano);
+    const nascUTC = Date.UTC(ano, mes - 1, dia);
+    const viradaUTC = Date.UTC(virada.ano, virada.mes - 1, virada.dia);
+    const anoChines = nascUTC < viradaUTC ? ano - 1 : ano;
+
+    const idxAnimal = ((anoChines - 4) % 12 + 12) % 12;
+    const tronco = ((anoChines - 4) % 10 + 10) % 10;
+    const idxElemento = Math.floor(tronco / 2);
+    const polaridade = tronco % 2 === 1 ? "Yin (Receptiva, Intuitiva e Profunda)" : "Yang (Ativa, Expansiva e Realizadora)";
+
+    const [nomeAnimal, ideogramaAnimal, domAnimal, sombraAnimal] = ANIMAIS_CHINESES[idxAnimal];
+    const [nomeElemento, ideogramaElem, domElem, sombraElem] = ELEMENTOS_CHINESES[idxElemento];
+    const assinatura = `${nomeAnimal} de ${nomeElemento}`;
+
+    return {
+      anoChines,
+      assinatura,
+      assinaturaCompleta: assinatura,
+      nomeChines: `${ideogramaElem}${ideogramaAnimal}`,
+      ideograma: `${ideogramaElem}${ideogramaAnimal}`,
+      estacao: `Ciclo Solar-Lunar de ${anoChines}`,
+      animal: { nome: nomeAnimal, ideograma: ideogramaAnimal, dom: domAnimal, sombra: sombraAnimal },
+      elemento: { nome: nomeElemento, ideograma: ideogramaElem, dom: domElem, sombra: sombraElem },
+      arquetipo: `A sabedoria ancestral do ${assinatura} combina ${polaridade.toLowerCase()}.`,
+      domInato: domAnimal,
+      sombraBloqueio: sombraAnimal,
+      essenciaElemento: `${domElem} (Atenção sob desequilíbrio: ${sombraElem})`,
+      polaridade,
+      sintese: `No Horóscopo Oriental, sua força vital é a de **${assinatura}** (${polaridade}). Isso confere a você um dom natural de *${domAnimal.toLowerCase()}* potencializado pelo elemento ${nomeElemento} (*${domElem.toLowerCase()}*). Seu ponto de atenção ocorre sob estresse: *${sombraAnimal.toLowerCase()}*`
+    };
+  }
+
+  /* =========================================================================
+     8C. ENEAGRAMA SAGRADO (OS 9 ARQUÉTIPOS DE MOTIVAÇÃO E DESBLOQUEIO)
+     ========================================================================= */
+  const ENEATIPOS = {
+    1: {
+      tipo: 1, nome: "Tipo 1 — A Perfeccionista / Reformadora Ética",
+      centro: "Centro Instintivo / Visceral",
+      feridaNuclear: "O Ressentimento Silencioso e o Juiz Interno Implacável: sentir que nada está suficientemente bom e que qualquer erro seu é imperdoável.",
+      virtudeCura: "A Serenidade e a Permissão: compreender que a perfeição divina inclui o processo humano e que você merece descanso antes mesmo de 'terminar tudo'.",
+      noAmor: "Tende a cobrar padrões altíssimos de si e do parceiro, engolindo frustrações até se tornar fria ou crítica.",
+      naCarreira: "Excelência impecável, mas trava lançamentos e precificação por achar que ainda falta polir mais um detalhe.",
+      caminhoIntegracao: "Integra para o Tipo 7 (Alegria, Espontaneidade e Leveza): permita-se prazer sem culpa."
+    },
+    2: {
+      tipo: 2, nome: "Tipo 2 — A Prestativa / Doadora Magnética",
+      centro: "Centro Emocional / Coração",
+      feridaNuclear: "O Orgulho de Não Precisar de Ninguém (enquanto salva a todos): doar-se até a exaustão esperando que o outro adivinhe suas necessidades.",
+      virtudeCura: "A Humildade Sagrada e o Autocuidado: reconhecer suas próprias necessidades abertamente e aprender a dizer 'não' sem culpa.",
+      noAmor: "Assume o papel de salvadora/indispensável, atraindo pessoas que sugam seu cuidado sem oferecer reciprocidade.",
+      naCarreira: "Cobra menos do que vale por empatia excessiva com a dor do cliente, misturando afeto com negócios.",
+      caminhoIntegracao: "Integra para o Tipo 4 (Autenticidade e Mergulho em Si Mesma): volte o olhar amoroso para o seu próprio coração."
+    },
+    3: {
+      tipo: 3, nome: "Tipo 3 — A Realizadora / Estrela de Alta Performance",
+      centro: "Centro Emocional / Coração",
+      feridaNuclear: "A Confusão entre 'Ser Amada' e 'Dar Resultado': medo profundo de que, se parar de produzir ou falhar, perderá o valor aos olhos do mundo.",
+      virtudeCura: "A Verdade e a Autenticidade: saber que seu valor existe pelo que você É na essência, não apenas pelos troféus que entrega.",
+      noAmor: "Coloca o trabalho como escudo ou mantém uma imagem de mulher inabalável, dificultando a intimidade vulnerável.",
+      naCarreira: "Altíssima capacidade de realização, mas risco de esgotamento (burnout) ou de construir sucesso em uma meta que não alimenta a alma.",
+      caminhoIntegracao: "Integra para o Tipo 6 (Lealdade à Própria Essência e Vínculos Reais): desacelere para sentir."
+    },
+    4: {
+      tipo: 4, nome: "Tipo 4 — A Individualista / Alquimista da Profundidade",
+      centro: "Centro Emocional / Coração",
+      feridaNuclear: "A Sensação de Falta e Melancolia Comparativa: sentir que falta uma peça em você que os outros parecem ter com facilidade.",
+      virtudeCura: "A Equanimidade Emocional: parar de esperar o estado emocional perfeito para agir e reconhecer a riqueza do que já está presente.",
+      noAmor: "Busca conexões profundas e poéticas; pode idealizar amores distantes ou testar a intensidade do parceiro.",
+      naCarreira: "Talento autoral único e insubstituível; trava quando depende apenas da inspiração emocional para manter a rotina.",
+      caminhoIntegracao: "Integra para o Tipo 1 (Estrutura Prática, Método e Constância Diária): transforme inspiração em rotina."
+    },
+    5: {
+      tipo: 5, nome: "Tipo 5 — A Investigadora / Sábia Observadora",
+      centro: "Centro Mental / Cabeça",
+      feridaNuclear: "A Avareza Energética e o Isolamento na Mente: medo de que o mundo e as relações esgotem suas reservas internas.",
+      virtudeCura: "O Desapego e a Presença no Corpo: sair da análise mental infinita e compartilhar sua sabedoria viva com o mundo.",
+      noAmor: "Precisa de espaço e privacidade; sob pressão, levanta muralhas de silêncio e racionaliza o que sente.",
+      naCarreira: "Acumula conhecimento profundo, mas adia a exposição pública por sentir que precisa estudar mais.",
+      caminhoIntegracao: "Integra para o Tipo 8 (Força Instintiva, Presença Corporal e Comando no Mundo)."
+    },
+    6: {
+      tipo: 6, nome: "Tipo 6 — A Leal / Guardiã da Segurança",
+      centro: "Centro Mental / Cabeça",
+      feridaNuclear: "A Ansiedade Antecipatória e a Dúvida: escanear o futuro em busca de riscos, traições ou imprevistos antes que aconteçam.",
+      virtudeCura: "A Coragem e a Fé na Própria Autoridade Interna: confiar no seu próprio taco sem precisar de garantias absolutas.",
+      noAmor: "Leal e comprometida, mas pode testar a segurança do parceiro por medo de ser abandonada ou traída.",
+      naCarreira: "Excelente estrategista e prevenidora de crises, mas o medo de arriscar pode mantê-la presa em zonas seguras abaixo do seu potencial.",
+      caminhoIntegracao: "Integra para o Tipo 9 (Paz Interior, Relaxamento Mental e Confiança no Fluxo da Vida)."
+    },
+    7: {
+      tipo: 7, nome: "Tipo 7 — A Entusiasta / Visionária Livre",
+      centro: "Centro Mental / Cabeça",
+      feridaNuclear: "A Fuga da Dor e do Aprisionamento: pular de ideia em ideia ou de estímulo em estímulo para não sentir vazio ou limitação.",
+      virtudeCura: "A Sobriedade Luminosa e o Foco: mergulhar fundo em uma escolha até colher o néctar completo da realização.",
+      noAmor: "Traz alegria e encantamento; trava quando sente que a relação virou rotina pesada ou cobrança.",
+      naCarreira: "Mente brilhante para iniciar projetos e enxergar futuros, precisando apenas de foco para finalizar o que começa.",
+      caminhoIntegracao: "Integra para o Tipo 5 (Profundidade, Silêncio Criativo e Maestria Especializada)."
+    },
+    8: {
+      tipo: 8, nome: "Tipo 8 — A Desafiadora / Soberana Protetora",
+      centro: "Centro Instintivo / Visceral",
+      feridaNuclear: "A Armadura da Invulnerabilidade: jurar nunca mais ser controlada ou ferida, assumindo o comando de tudo na força.",
+      virtudeCura: "A Inocência e a Ternura Confiante: descobrir que abrir a guarda para quem merece não diminui sua soberania.",
+      noAmor: "Intensa, leal e protetora; precisa cuidar para não intimidar o parceiro ou transformar a relação em cabo de guerra.",
+      naCarreira: "Nascida para grandes realizações e liderança; destrava ainda mais quando delega e governa com leveza.",
+      caminhoIntegracao: "Integra para o Tipo 2 (Coração Aberto, Compaixão e Permissão para Cuidar e Ser Cuidada)."
+    },
+    9: {
+      tipo: 9, nome: "Tipo 9 — A Pacificadora / Mediadora da Harmonia",
+      centro: "Centro Instintivo / Visceral",
+      feridaNuclear: "O Auto-Esquecimento (Anestesia da Própria Vontade): fundir-se com a agenda dos outros e adiar os próprios sonhos para evitar conflito.",
+      virtudeCura: "A Ação Certa e o Despertar de Si: declarar sua própria voz, seus desejos e sua prioridade sem medo de desagradar.",
+      noAmor: "Acolhedora e pacífica, mas pode anular os próprios gostos até acumular uma teimosia silenciosa.",
+      naCarreira: "Trava pela procrastinação nas prioridades próprias enquanto resolve demandas secundárias de todo mundo.",
+      caminhoIntegracao: "Integra para o Tipo 3 (Foco, Brilho Pessoal, Protagonismo e Realização Prática)."
+    }
+  };
+
+  function calcularEneagrama(dados, numerologia) {
+    const subEnea = dados.eneagrama || {};
+    let tipoEscolhido = Number(dados.eneagramaTipo || subEnea.tipoConhecido || 0);
+    if (!tipoEscolhido || tipoEscolhido < 1 || tipoEscolhido > 9) {
+      // Mapeia a partir da resposta modular de motivação inconsciente ou da vibração de Alma/Expressão
+      const mapaMotivacao = {
+        perfeicao: 1,
+        ajudar: 2,
+        sucesso: 3,
+        autenticidade: 4,
+        conhecimento: 5,
+        seguranca: 6,
+        liberdade: 7,
+        controle: 8,
+        paz: 9
+      };
+      const mot = dados.eneagramaMotivacao || subEnea.motivacaoInconsciente || "";
+      tipoEscolhido = mapaMotivacao[mot] || ((numerologia.alma.valor - 1) % 9) + 1;
+    }
+    const base = ENEATIPOS[tipoEscolhido] || ENEATIPOS[2];
+    const asaAnt = base.tipo === 1 ? 9 : base.tipo - 1;
+    const asaPos = base.tipo === 9 ? 1 : base.tipo + 1;
+    const PAIXOES_ENEA = {
+      1: "Autoexigência e Juízo Crítico",
+      2: "Necessidade de Ser Indispensável",
+      3: "Busca por Validação via Performance",
+      4: "Melancolia e Nostalgia do Ideal",
+      5: "Retração Protetora de Energia",
+      6: "Hipervigilância e Antecipação de Riscos",
+      7: "Inquietação e Fuga da Dor",
+      8: "Blindagem Contra a Vulnerabilidade",
+      9: "Auto-Esquecimento pela Paz Aparente"
+    };
+    return {
+      ...base,
+      triade: base.centro,
+      asas: `${base.tipo}w${asaAnt} / ${base.tipo}w${asaPos}`,
+      paixao: PAIXOES_ENEA[base.tipo] || base.feridaNuclear.split(":")[0]
     };
   }
 
@@ -855,6 +1130,28 @@
 
     const infoDe = n => SIGNIFICADOS_NUM[n] || SIGNIFICADOS_NUM[reduzirNumerologia(n, false).valor];
 
+    // Dons Natos (Dia Natal + Vibrações Dominantes do Nome + Caminho Mais Suave)
+    const diaNatalReduzido = reduzirNumerologia(dia, true);
+    const infoDiaNatal = infoDe(diaNatalReduzido.valor);
+    const vibracoesDominantes = Object.entries(contagemNumeros)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 2)
+      .map(([num, qtd]) => ({
+        numero: Number(num),
+        quantidade: qtd,
+        ...SIGNIFICADOS_NUM[Number(num)]
+      }));
+
+    const domPrincipal = vibracoesDominantes[0] || { numero: expressao.valor, ...infoDe(expressao.valor) };
+    const donsNatos = {
+      diaNatal: dia,
+      vibracaoDiaNatal: diaNatalReduzido.valor,
+      tituloDiaNatal: infoDiaNatal.titulo,
+      domDiaNatal: `Nascida no dia ${dia} (Vibração ${diaNatalReduzido.valor} — ${infoDiaNatal.titulo}), você trouxe de berço a faculdade natural de ${infoDiaNatal.expressao.replace(/^Dom natural de /i, "")}`,
+      domExpressao: `Sua Expressão ${expressao.valor} (${infoDe(expressao.valor).titulo}) somada à maior concentração de letras na vibração ${domPrincipal.numero} (${domPrincipal.titulo}) revela que seu talento inato opera sem esforço quando você atua com autonomia criativa, leitura intuitiva de pessoas e direção estratégica.`,
+      caminhoMaisSuave: `Para transitar pela vida por um caminho mais suave e próspero, pare de tentar vencer pelo desgaste bruto (forçando métodos rígidos que contrariam sua Alma ${alma.valor}). Seu fluxo de menor resistência acontece quando você usa o seu Dom do Dia ${dia} (${infoDiaNatal.titulo}) aliado à Maturidade ${maturidade.valor} (${infoDe(maturidade.valor).titulo}): posicione-se onde sua sensibilidade, voz e visão única sejam o centro do seu valor, permitindo que os resultados venham por magnetismo e alinhamento, e não por exaustão.`
+    };
+
     return {
       alma: { ...alma, info: infoDe(alma.valor) },
       impressao: { ...impressao, info: infoDe(impressao.valor) },
@@ -863,8 +1160,10 @@
       maturidade: { ...maturidade, info: infoDe(maturidade.valor) },
       anoPessoal: { ...anoPessoal, anoReferencia: anoAtual, info: infoDe(anoPessoal.valor) },
       contagemNumeros,
+      vibracoesDominantes,
       licoesCarmicas,
-      dividasCarmicas
+      dividasCarmicas,
+      donsNatos
     };
   }
 
@@ -980,7 +1279,7 @@
     }
   };
 
-  function gerarDiagnosticoCruzado(dados, astro, vedica, num, matriz) {
+  function gerarDiagnosticoCruzado(dados, astro, vedica, num, matriz, chines, eneagrama) {
     const sol = astro.porId.sol.signo;
     const lua = astro.porId.lua.signo;
     const venus = astro.porId.venus.signo;
@@ -990,23 +1289,23 @@
     const nodoN = astro.porId.nodoNorte.signo;
     const nodoS = astro.porId.nodoSul.signo;
 
-    // 1. Eixo Emocional (Quíron + Lua + Nakshatra + Motivação da Alma + Respostas Emocionais)
+    // 1. Eixo Emocional (Quíron + Lua + Nakshatra + Motivação da Alma + Eneagrama + Respostas Emocionais)
     const respEmo = dados.emocional || {};
     const diagnosticoEmocional = {
-      titulo: `A Raiz Emocional: Quíron em ${quiron.nome} + Lua em ${lua.nome} (Alma ${num.alma.valor})`,
+      titulo: `A Raiz Emocional: Quíron em ${quiron.nome} + Lua em ${lua.nome} (Alma ${num.alma.valor} · ${eneagrama.nome})`,
       sintomaDeclarado: respEmo.emocaoPrincipal || "Sobrecarga emocional e repetição de ciclos internos",
       reacaoCrise: respEmo.reacaoCrise || "Oscilação entre hipercontrole e exaustão",
       feridaRaiz: respEmo.feridaInfancia || "Ferida de validação e pertencimento",
       analiseProfunda: [
         `${dados.nomeBatismo.split(" ")[0]}, você relatou sentir **${(respEmo.emocaoPrincipal || "um desgaste interno silencioso").toLowerCase()}** e reagir às pressões através de **${(respEmo.reacaoCrise || "autodefesa emocional").toLowerCase()}**. O cruzamento do seu mapa revela que isso NÃO é fraqueza nem acaso: você nasceu com **Quíron em ${quiron.nome}** e a **Lua em ${lua.nome}** (Nakshatra Védica **${vedica.nakshatra.nome}**).`,
         `${quiron.quiron} Ao mesmo tempo, sua Lua em ${lua.nome} tem como mecanismo de defesa inconsciente: *${lua.sombra.toLowerCase()}*`,
-        `Na Numerologia do seu Nome de Batismo, sua **Motivação da Alma é ${num.alma.valor}** (${num.alma.info.titulo}): ${num.alma.info.alma} Porém, quando sua ferida de **${(respEmo.feridaInfancia || "cobrança interna").toLowerCase()}** é acionada, você entra no bloqueio do número ${num.alma.valor}: *${num.alma.info.bloqueio.toLowerCase()}*`,
+        `Na Numerologia do seu Nome de Batismo, sua **Motivação da Alma é ${num.alma.valor}** (${num.alma.info.titulo}): ${num.alma.info.alma} Porém, quando sua ferida de **${(respEmo.feridaInfancia || "cobrança interna").toLowerCase()}** é acionada, você entra no bloqueio do número ${num.alma.valor} e na paixão inconsciente do **${eneagrama.nome} (${eneagrama.paixao})**: *${eneagrama.feridaNuclear}*`,
         `Na Matriz do Destino, o seu **Centro de Força é o Arcano ${matriz.arcanos.centro.rom} (${matriz.arcanos.centro.nome})** e sua **Cauda Cármica é ${matriz.caudaCarmica.codigo}**. ${matriz.caudaCarmica.bloqueioAtual}`
       ],
-      chaveDesbloqueio: `Para destravar o seu emocional, você precisa parar de lutar contra a sensibilidade da sua Lua em ${lua.nome} e aplicar a chave da sua Cauda Cármica (${matriz.caudaCarmica.codigo}): ${matriz.caudaCarmica.chave}`
+      chaveDesbloqueio: `Para destravar o seu emocional, você precisa parar de lutar contra a sensibilidade da sua Lua em ${lua.nome}, ativar a virtude do seu Eneatipo (${eneagrama.virtudeCura}) e aplicar a chave da sua Cauda Cármica (${matriz.caudaCarmica.codigo}): ${matriz.caudaCarmica.chave}`
     };
 
-    // 2. Eixo de Relacionamentos (Vênus + Lilith + Canal do Amor na Matriz + Respostas Relacionais)
+    // 2. Eixo de Relacionamentos (Vênus + Lilith + Canal do Amor na Matriz + Eneagrama/Chinês + Respostas Relacionais)
     const respRel = dados.relacionamento || {};
     const diagnosticoRelacionamento = {
       titulo: `O Código Afetivo: Vênus em ${venus.nome} + Lilith em ${lilith.nome} (Canal do Amor ${matriz.nodos.K1}-${matriz.nodos.AmorCentro}-${matriz.nodos.C1})`,
@@ -1015,13 +1314,13 @@
       analiseProfunda: [
         `No campo afetivo, você identificou o padrão de **${(respRel.padraoRepetido || "atrair dinâmicas desgastantes").toLowerCase()}**. Olhando para a sua **Lilith (Lua Negra) em ${lilith.nome}** cruzada com **Vênus em ${venus.nome}**, a origem desse padrão fica cristalina: ${lilith.lilith}`,
         `Sua **Vênus em ${venus.nome}** mostra como seu coração realmente funciona: ${venus.venus} Contudo, a entrada do seu **Canal dos Relacionamentos na Matriz do Destino** é regida pelo **Arcano ${matriz.arcanos.amorEntrada.rom} (${matriz.arcanos.amorEntrada.nome})**, com centro no **Arcano ${matriz.arcanos.amorCentro.rom} (${matriz.arcanos.amorCentro.nome})**.`,
-        `Quando esse canal vibra no polo negativo, acontece exatamente o que você viveu: *${matriz.arcanos.amorEntrada.amor}* E no coração do vínculo (${matriz.arcanos.amorCentro.nome}): *${matriz.arcanos.amorCentro.sombra}*`,
+        `Quando esse canal vibra no polo negativo, acontece exatamente o que você viveu: *${matriz.arcanos.amorEntrada.amor}* Somado ao seu **${eneagrama.nome}** no amor (*${eneagrama.noAmor.toLowerCase()}*) e à sombra de **${chines.assinaturaCompleta}** na Alquimia Oriental (*${chines.sombraBloqueio.toLowerCase()}*), você acaba tolerando migalhas afetivas por tempo demais.`,
         `Para completar, seu **Número de Impressão ${num.impressao.valor}** projeta para os parceiros uma imagem externa de quem "dá conta de tudo", fazendo com que pessoas imaturas se apoiem na sua força em vez de cuidarem de você.`
       ],
-      chaveDesbloqueio: `O seu desbloqueio amoroso exige ativar o polo luminoso do **Arcano ${matriz.arcanos.amorCentro.rom} (${matriz.arcanos.amorCentro.nome})**: ${matriz.arcanos.amorCentro.amor} Pare imediatamente de assumir o papel de terapeuta ou mãe nas relações.`
+      chaveDesbloqueio: `O seu desbloqueio amoroso exige ativar o polo luminoso do **Arcano ${matriz.arcanos.amorCentro.rom} (${matriz.arcanos.amorCentro.nome})**: ${matriz.arcanos.amorCentro.amor} Pare imediatamente de assumir o papel de terapeuta ou salvadora nas relações.`
     };
 
-    // 3. Eixo Profissional & Financeiro (Saturno + Meio do Céu + Canal do Dinheiro + Destino/Expressão + Lições Cármicas)
+    // 3. Eixo Profissional & Financeiro (Saturno + Meio do Céu + Canal do Dinheiro + Destino/Expressão + Dons Natos)
     const respProf = dados.profissional || {};
     const diagnosticoProfissional = {
       titulo: `A Chave da Prosperidade: Saturno em ${saturno.nome} + Canal do Dinheiro (${matriz.nodos.C}-${matriz.nodos.DinheiroProfissao}-${matriz.nodos.C1})`,
@@ -1036,6 +1335,38 @@
       chaveDesbloqueio: `Para romper seu teto financeiro nos próximos 90 dias (rumo à sua meta: "${respProf.meta90Dias || "prosperidade e autonomia"}"), ative o **Arcano ${matriz.arcanos.dinheiroProfissao.rom} (${matriz.arcanos.dinheiroProfissao.nome})**: ${matriz.arcanos.dinheiroProfissao.dinheiro} Seu **Nodo Norte em ${nodoN.nome}** confirma que sua evolução está em abandonar a velha defesa de ${nodoS.nome} e assumir a coragem de ${nodoN.nome}.`
     };
 
+    // Soluções Práticas Imediatas (Foco em Emoções, Relações/Afetos e Alinhamento Prático — essencial para Standard e Profunda)
+    const solucoesPraticasStandard = [
+      {
+        pilar: "1. Detox Emocional & Quebra da Autossabotagem",
+        solucao: `Sempre que o gatilho de ${(respEmo.emocaoPrincipal || "ansiedade ou exaustão").toLowerCase()} surgir, reconheça que é a memória de Quíron em ${quiron.nome} e a paixão do ${eneagrama.nome} (${eneagrama.paixao}) tentando te proteger. Em vez de reagir com ${(respEmo.reacaoCrise || "hipercontrole").toLowerCase()}, pratique a pausa consciente de 90 segundos e aplique o caminho de integração: ${eneagrama.caminhoIntegracao}`
+      },
+      {
+        pilar: "2. Reposicionamento em Relações & Afetos",
+        solucao: `Para encerrar o ciclo de ${(respRel.padraoRepetido || "desequilíbrio afetivo").toLowerCase()}, alinhe sua Vênus em ${venus.nome} ao Arcano ${matriz.arcanos.amorCentro.rom} (${matriz.arcanos.amorCentro.nome}): estabeleça limites claros logo no início das interações, pare de justificar ausências alheias e permita ser cuidada sem precisar comprar amor através de excesso de prestatividade.`
+      },
+      {
+        pilar: "3. Ativação do Caminho Suave & Fluxo Material",
+        solucao: `NoAno Pessoal ${num.anoPessoal.valor} (${num.anoPessoal.info.titulo}), sua energia rende o triplo quando você honra seu dom de ${chines.assinaturaCompleta} (${chines.domInato.toLowerCase()}). Concentre 80% da sua rotina na sua zona de genialidade natural (Destino ${num.destino.valor}) e corte tarefas onde você age apenas por culpa.`
+      }
+    ];
+
+    // Seção Estratégica de Upsell Exclusivo para quem adquiriu a Versão Standard
+    const upsellStandard = {
+      titulo: "Acesso Reservado: Desbloqueie as Camadas Ocultas do Seu Dossiê Profundo",
+      subtitulo: "Você acabou de ver a ponta do iceberg do seu código astral e emocional. Mas a verdadeira raiz cármica e financeira ainda está selada.",
+      explicacao: `Na sua Análise Standard, revelamos sua Tríade Solar/Lunar, o padrão central das suas Relações/Afetos (Vênus em ${venus.nome} + Lilith em ${lilith.nome}) e sua síntese de Eneagrama (${eneagrama.nome}) com Horóscopo Chinês (${chines.assinaturaCompleta}). Porém, o seu mapa mostra que a trava mestra está gravada na sua **Cauda Cármica ${matriz.caudaCarmica.codigo}**, no seu **Período Planetário Védico Atual (Regente ${vedica.nakshatra.regenteMomento})** e nas suas **Dívidas e Lições Cármicas do Nome de Batismo**.`,
+      beneficiosExclusivos: [
+        `Mapa Védico Sideral Aprofundado (Jyotish): O que o seu momento atual (${vedica.nakshatra.nome} · Regente ${vedica.nakshatra.regenteMomento}) exige de você agora e seu Direcionamento Prático para os próximos meses.`,
+        `Numerologia Kármica Completa + Dons Natos: Descubra suas Lições e Dívidas Cármicas ocultas no nome e o Mapa dos seus Dons Natos (Dia Natal ${num.donsNatos.diaNatal} + Expressão ${num.expressao.valor}) para seguir por um caminho muito mais suave.`,
+        `Geometria Sagrada da Matriz do Destino (22 Arcanos): Desbloqueio completo da sua Cauda Cármica (${matriz.caudaCarmica.codigo}) e da tríade exata do seu Canal do Dinheiro (${matriz.nodos.C}-${matriz.nodos.DinheiroProfissao}-${matriz.nodos.C1}).`,
+        `Protocolo Prático de 21 Dias da Tryv: Banho energético específico para seu elemento (${lua.elemento}), Cristais de ancoragem, Mantra pessoal de quebra de contrato e plano passo a passo.`
+      ],
+      gatilhoDesconto: "CONDIÇÃO ESPECIAL DE UPGRADE PARA CLIENTES STANDARD: Como você já deu o primeiro passo adquirindo a versão Standard (R$ 37), você tem direito a um abatimento especial no seu upgrade para o Dossiê Completo de Análise Profunda.",
+      codigoCupom: "UPGRADE-PROFUNDA-VIP",
+      urlUpgrade: "https://loja.infinitepay.io/tryvtuath/kka1436-mapa-do-desbloqueio---analise-profunda"
+    };
+
     const ritual = BANHOS_E_RITUAIS[lua.elemento] || BANHOS_E_RITUAIS.Água;
 
     // Cálculo de Índices Visuais de Alinhamento vs. Bloqueio
@@ -1046,7 +1377,7 @@
 
     return {
       resumoExecutivo: {
-        arquetipoCentral: `${matriz.arcanos.centro.nome} (${matriz.arcanos.centro.rom}) com Sol em ${sol.nome} e Lua em ${lua.nome}`,
+        arquetipoCentral: `${matriz.arcanos.centro.nome} (${matriz.arcanos.centro.rom}) · Sol em ${sol.nome} · ${chines.assinaturaCompleta}`,
         bloqueioInvisivelMestre: `A colisão entre ${quiron.nome} (Quíron), a Cauda Cármica ${matriz.caudaCarmica.codigo} e Saturno em ${saturno.nome}`,
         indices: {
           emocional: nivelBloqueioEmo,
@@ -1057,6 +1388,8 @@
       emocional: diagnosticoEmocional,
       relacionamento: diagnosticoRelacionamento,
       profissional: diagnosticoProfissional,
+      solucoesPraticasStandard,
+      upsellStandard,
       protocoloTryv: {
         ...ritual,
         mantra: `“Eu, ${dados.nomeBatismo}, libero com amor toda lealdade invisível à dor e ao limite. Eu assumo a luz do meu Arcano ${matriz.arcanos.centro.nome} (${matriz.arcanos.centro.rom}), honro minha sensibilidade e abro meus caminhos para o amor recíproco e a abundância soberana. Assim é.”`,
@@ -1086,7 +1419,9 @@
     const vedica = calcularAstrologiaVedica(astro, dadosCliente);
     const numerologia = calcularNumerologia(dadosCliente);
     const matriz = calcularMatrizDestino(dadosCliente);
-    const diagnostico = gerarDiagnosticoCruzado(dadosCliente, astro, vedica, numerologia, matriz);
+    const chines = calcularHoroscopoChines(dadosCliente);
+    const eneagrama = calcularEneagrama(dadosCliente, numerologia);
+    const diagnostico = gerarDiagnosticoCruzado(dadosCliente, astro, vedica, numerologia, matriz, chines, eneagrama);
 
     return {
       geradoEm: new Date().toLocaleDateString("pt-BR"),
@@ -1096,6 +1431,8 @@
       vedica,
       numerologia,
       matriz,
+      chines,
+      eneagrama,
       diagnostico
     };
   }
@@ -1177,9 +1514,12 @@
   async function gerarPDFPersonalizado(resultado, opcoes = {}) {
     const jsPDF = await carregarJsPDF();
     const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4", compress: true });
-    const W = 210, H = 297, M = 16, LARG = W - M * 2;
+    const W = 210, H = 297, M = 14, LARG = W - M * 2;
+    const LIMITE_INFERIOR = H - 14;
     const isProfunda = resultado.plano === "profunda";
     const { cliente, astro, vedica, numerologia: num, matriz, diagnostico: diag } = resultado;
+    const chines = resultado.chines || calcularHoroscopoChines(cliente);
+    const eneagrama = resultado.eneagrama || calcularEneagrama(cliente, num);
     const primeiroNome = (cliente.nomeBatismo || "Cliente").trim().split(/\s+/)[0];
 
     let paginaAtual = 1;
@@ -1195,37 +1535,37 @@
         doc.setLineWidth(0.2);
         doc.rect(11, 11, W - 22, H - 22);
       } else {
-        // Pergaminho Creme Real com cabeçalho e moldura dourada
+        // Pergaminho Creme Real com cabeçalho e moldura dourada calibrada
         doc.setFillColor(252, 249, 242);
         doc.rect(0, 0, W, H, "F");
-        // Faixa superior mística
+        // Faixa superior mística enxuta
         doc.setFillColor(24, 18, 58);
-        doc.rect(0, 0, W, 18, "F");
+        doc.rect(0, 0, W, 15, "F");
         doc.setTextColor(242, 193, 78);
         doc.setFont("times", "bold");
-        doc.setFontSize(9.5);
-        doc.text("TRYV TUATH® · DOSSIÊ ORACULAR DO DESBLOQUEIO INVISÍVEL", M, 11.5);
+        doc.setFontSize(9);
+        doc.text("TRYV TUATH® · DOSSIÊ ORACULAR DO DESBLOQUEIO INVISÍVEL", M, 9.8);
         doc.setFont("helvetica", "normal");
-        doc.setFontSize(8.5);
+        doc.setFontSize(8);
         doc.setTextColor(215, 205, 240);
         doc.text(
           `${isProfunda ? "ANÁLISE PROFUNDA COMPLETA" : "ANÁLISE STANDARD"} · ${primeiroNome.toUpperCase()}`,
           W - M,
-          11.5,
+          9.8,
           { align: "right" }
         );
-        // Moldura dupla
+        // Moldura dupla perfeitamente alinhada às margens
         doc.setDrawColor(196, 150, 52);
-        doc.setLineWidth(0.45);
-        doc.rect(9, 22, W - 18, H - 32);
+        doc.setLineWidth(0.4);
+        doc.rect(8.5, 18, W - 17, H - 27);
         doc.setLineWidth(0.15);
-        doc.rect(10.5, 23.5, W - 21, H - 35);
+        doc.rect(10, 19.5, W - 20, H - 30);
         // Rodapé
         doc.setFont("times", "italic");
-        doc.setFontSize(8.5);
+        doc.setFontSize(8);
         doc.setTextColor(110, 95, 130);
-        doc.text("tryvtuath.com.br · Você é o oráculo · Documento confidencial e intransferível", M, H - 5);
-        doc.text(`Pág. ${paginaAtual}`, W - M, H - 5, { align: "right" });
+        doc.text("tryvtuath.com.br · Você é o oráculo · Documento confidencial e intransferível", M, H - 4.2);
+        doc.text(`Pág. ${paginaAtual}`, W - M, H - 4.2, { align: "right" });
       }
     }
 
@@ -1233,36 +1573,39 @@
       doc.addPage();
       paginaAtual++;
       desenharMolduraPagina(false);
-      y = 31;
+      y = 25;
     }
 
     function garantirEspaco(alturaNecessaria) {
-      if (y + alturaNecessaria > H - 16) {
+      if (y + alturaNecessaria > LIMITE_INFERIOR) {
         novaPagina();
       }
     }
 
     function tituloSecao(sub, titulo) {
-      garantirEspaco(22);
+      // Garante espaço para o cabeçalho da seção + pelo menos o início do próximo bloco (evita títulos órfãos no fim da página)
+      garantirEspaco(34);
+      if (y > 26) y += 1.5;
       doc.setFillColor(27, 21, 70);
-      doc.roundedRect(M, y, LARG, 14, 2, 2, "F");
+      doc.roundedRect(M, y, LARG, 12.5, 2, 2, "F");
       doc.setDrawColor(242, 193, 78);
       doc.setLineWidth(0.35);
-      doc.roundedRect(M, y, LARG, 14, 2, 2, "S");
+      doc.roundedRect(M, y, LARG, 12.5, 2, 2, "S");
       doc.setFont("helvetica", "bold");
-      doc.setFontSize(7.5);
+      doc.setFontSize(7);
       doc.setTextColor(255, 140, 192);
-      doc.text(sub.toUpperCase(), M + 4, y + 4.8);
+      doc.text(sub.toUpperCase(), M + 4, y + 4.4);
       doc.setFont("times", "bold");
-      doc.setFontSize(12);
+      doc.setFontSize(11);
       doc.setTextColor(255, 230, 163);
-      doc.text(titulo, M + 4, y + 11.2);
-      y += 19;
+      const titCurto = doc.splitTextToSize(limparMarkdown(titulo), LARG - 8)[0];
+      doc.text(titCurto, M + 4, y + 10.1);
+      y += 16;
     }
 
     function paragrafo(texto, op = {}) {
       const limpo = limparMarkdown(texto);
-      const tam = op.tamanho || 10.2;
+      const tam = op.tamanho || 9.8;
       const estilo = op.estilo || "normal";
       const cor = op.cor || [38, 28, 60];
       const recuo = op.recuo || 0;
@@ -1270,36 +1613,38 @@
       doc.setFontSize(tam);
       doc.setTextColor(...cor);
       const linhas = doc.splitTextToSize(limpo, LARG - recuo * 2);
-      const altLinha = tam * 0.46;
-      garantirEspaco(linhas.length * altLinha + 4);
+      const altLinha = tam * 0.43;
+      garantirEspaco(linhas.length * altLinha + 3);
       doc.text(linhas, M + recuo, y);
-      y += linhas.length * altLinha + (op.espacoDepois ?? 3.5);
+      y += linhas.length * altLinha + (op.espacoDepois ?? 2.8);
     }
 
     function caixaDestaque(rotulo, tituloCaixa, textoCaixa, corBorda = [210, 155, 45], corFundo = [247, 241, 226]) {
       const limpo = limparMarkdown(textoCaixa);
       doc.setFont("helvetica", "normal");
-      doc.setFontSize(9.8);
-      const linhas = doc.splitTextToSize(limpo, LARG - 10);
-      const alt = 14 + linhas.length * 4.5 + 4;
-      garantirEspaco(alt + 4);
+      doc.setFontSize(9.3);
+      const linhas = doc.splitTextToSize(limpo, LARG - 9);
+      const alt = 12.5 + linhas.length * 4.1 + 3;
+      garantirEspaco(alt + 2.5);
       doc.setFillColor(...corFundo);
       doc.setDrawColor(...corBorda);
-      doc.setLineWidth(0.4);
+      doc.setLineWidth(0.38);
       doc.roundedRect(M, y, LARG, alt, 2, 2, "FD");
       doc.setFont("helvetica", "bold");
-      doc.setFontSize(7.5);
+      doc.setFontSize(7.2);
       doc.setTextColor(175, 45, 105);
-      doc.text(String(rotulo).toUpperCase(), M + 5, y + 5.2);
+      const rotCurto = doc.splitTextToSize(String(rotulo).toUpperCase(), LARG - 9)[0];
+      doc.text(rotCurto, M + 4.5, y + 4.6);
       doc.setFont("times", "bold");
-      doc.setFontSize(11);
+      doc.setFontSize(10.4);
       doc.setTextColor(27, 21, 70);
-      doc.text(limparMarkdown(tituloCaixa), M + 5, y + 10.8);
+      const titCurto = doc.splitTextToSize(limparMarkdown(tituloCaixa), LARG - 9)[0];
+      doc.text(titCurto, M + 4.5, y + 9.6);
       doc.setFont("helvetica", "normal");
-      doc.setFontSize(9.6);
+      doc.setFontSize(9.3);
       doc.setTextColor(45, 35, 68);
-      doc.text(linhas, M + 5, y + 16.2);
-      y += alt + 4.5;
+      doc.text(linhas, M + 4.5, y + 14.3);
+      y += alt + 3.2;
     }
 
     // ==================== PÁGINA 1: CAPA DE LUXO NOITE ENCANTADA ====================
@@ -1326,12 +1671,12 @@
     doc.text("O DESBLOQUEIO INVISÍVEL", W / 2, 88, { align: "center" });
 
     doc.setFont("times", "italic");
-    doc.setFontSize(13.5);
+    doc.setFontSize(13);
     doc.setTextColor(201, 191, 230);
     doc.text(
       isProfunda
-        ? "Dossiê Completo: Astrologia, Jyotish Védica, Numerologia & Matriz do Destino"
-        : "Diagnóstico Essencial: Raiz do Bloqueio, Numerologia & Arcano Regente",
+        ? "Dossiê Completo: Astrologia, Jyotish Védica, Numerologia Kármica, Matriz & Arquétipos"
+        : "Diagnóstico Essencial: Raiz do Bloqueio, Relações/Afetos, Arquétipos & Soluções Práticas",
       W / 2,
       97,
       { align: "center" }
@@ -1365,23 +1710,23 @@
     doc.setTextColor(255, 140, 192);
     doc.setFont("helvetica", "bold");
     doc.text(
-      `Modalidade: ${isProfunda ? "ANÁLISE PROFUNDA (4 PILARES + PROTOCOLO DE 21 DIAS)" : "ANÁLISE STANDARD (DIAGNÓSTICO ESSENCIAL)"}`,
+      `Modalidade: ${isProfunda ? "ANÁLISE PROFUNDA COMPLETA (6 SABERES + PROTOCOLO 21 DIAS)" : "ANÁLISE STANDARD (DIAGNÓSTICO ESSENCIAL & AFETOS)"}`,
       W / 2,
       163,
       { align: "center" }
     );
 
-    // Síntese dos Códigos Sagrados na Capa
+    // Síntese dos Códigos Sagrados na Capa (Incluindo Eneagrama & Horóscopo Chinês)
     const cardsCapa = [
       ["SOL TROPICAL", `${astro.porId.sol.signo.nome} (${astro.porId.sol.grau})`],
       ["LUA & EMOÇÕES", `${astro.porId.lua.signo.nome} (${astro.porId.lua.grau})`],
-      ["ASCENDENTE", astro.asc ? `${astro.asc.signo.nome} (${astro.asc.grau})` : "Solar"],
+      ["ASCENDENTE", astro.asc ? `${astro.asc.signo.nome} (${astro.asc.grau})` : "Mapa Solar"],
       ["QUÍRON (FERIDA)", `Em ${astro.porId.quiron.signo.nome}`],
       ["NAKSHATRA VÉDICA", `${vedica.nakshatra.nome} (Pada ${vedica.nakshatra.pada})`],
-      ["MOTIVAÇÃO / ALMA", `Vibração ${num.alma.valor}`],
-      ["DESTINO DE VIDA", `Caminho ${num.destino.valor}`],
+      ["ALMA & DESTINO", `Alma ${num.alma.valor} · Destino ${num.destino.valor}`],
       ["CENTRO DA MATRIZ", `Arcano ${matriz.arcanos.centro.rom} · ${matriz.arcanos.centro.nome}`],
-      ["CAUDA CÁRMICA", `Código ${matriz.caudaCarmica.codigo}`]
+      ["ENEAGRAMA", `${eneagrama.nome} (Asas ${eneagrama.asas})`],
+      ["ALQUIMIA ORIENTAL", chines.assinaturaCompleta]
     ];
 
     let cx = 24, cy = 184;
@@ -1418,12 +1763,12 @@
     doc.setTextColor(180, 170, 210);
     doc.text(`Emitido em ${resultado.geradoEm} · tryvtuath.com.br`, W / 2, 281, { align: "center" });
 
-    // ==================== PÁGINA 2: SÍNTESE DO BLOQUEIO & NUMEROLOGIA ====================
+    // ==================== FLUXO CONTÍNUO DE PÁGINAS (ZERO ESPAÇOS VAZIOS) ====================
     novaPagina();
 
     tituloSecao("Parte I · Visão Geral do Diagnóstico", "O Seu Código Central e Índices de Bloqueio");
     paragrafo(
-      `Bem-vinda ao seu Dossiê do Desbloqueio Invisível, ${primeiroNome}. Este documento foi gerado pelo cruzamento exato entre os seus dados sagrados de nascimento (${dataFormatada}) e as respostas sinceras que você entregou no diagnóstico sobre seus momentos emocional, afetivo e profissional.`
+      `Bem-vinda ao seu Dossiê do Desbloqueio Invisível, ${primeiroNome}. Este documento foi gerado pelo cruzamento entre os seus dados sagrados de nascimento (${dataFormatada}) e as respostas que você entregou sobre seus padrões emocionais, afetivos e profissionais.`
     );
 
     caixaDestaque(
@@ -1433,27 +1778,28 @@
     );
 
     // Barras de Índice de Bloqueio
-    garantirEspaco(34);
+    garantirEspaco(28);
     const barras = [
       ["Eixo 1 · Tensão & Desgaste Emocional", diag.resumoExecutivo.indices.emocional, [185, 65, 130]],
-      ["Eixo 2 · Repetição nos Relacionamentos", diag.resumoExecutivo.indices.relacionamento, [215, 75, 115]],
+      ["Eixo 2 · Repetição em Relações & Afetos", diag.resumoExecutivo.indices.relacionamento, [215, 75, 115]],
       ["Eixo 3 · Trava de Prosperidade & Vocação", diag.resumoExecutivo.indices.profissional, [196, 138, 35]]
     ];
     barras.forEach(([rot, pct, cor]) => {
       doc.setFont("helvetica", "bold");
-      doc.setFontSize(8.8);
+      doc.setFontSize(8.5);
       doc.setTextColor(38, 28, 60);
       doc.text(`${rot}: ${pct}% de energia represada`, M, y);
-      y += 2.2;
+      y += 2;
       doc.setFillColor(230, 224, 212);
-      doc.roundedRect(M, y, LARG, 4.5, 1.5, 1.5, "F");
+      doc.roundedRect(M, y, LARG, 4, 1.5, 1.5, "F");
       doc.setFillColor(...cor);
-      doc.roundedRect(M, y, (LARG * pct) / 100, 4.5, 1.5, 1.5, "F");
-      y += 8.5;
+      doc.roundedRect(M, y, (LARG * pct) / 100, 4, 1.5, 1.5, "F");
+      y += 7.5;
     });
-    y += 2;
+    y += 1.5;
 
-    tituloSecao("Parte II · Numerologia do Nome de Batismo", `A Gematria de "${cliente.nomeBatismo}"`);
+    // ==================== PARTE II: NUMEROLOGIA KÁRMICA & DONS NATOS ====================
+    tituloSecao("Parte II · Numerologia do Nome de Batismo", `A Gematria Sagrada de "${cliente.nomeBatismo}"`);
     caixaDestaque(
       `Motivação da Alma: Número ${num.alma.valor} (Soma das Vogais: ${num.alma.somaBruta})`,
       num.alma.info.titulo,
@@ -1471,7 +1817,21 @@
     );
 
     if (isProfunda) {
-      // Lições Cármicas e Dívidas Cármicas (Exclusivo Profunda)
+      // Dons Natos e Caminho Mais Suave (Exclusivo Profunda)
+      tituloSecao("Parte II-B · Dons Natos & Numerologia Kármica Completa", "Seus Talentos de Berço e o Caminho Mais Suave");
+      caixaDestaque(
+        `Dom de Nascimento (Dia Natal ${num.donsNatos.diaNatal} · Vibração ${num.donsNatos.vibracaoDiaNatal})`,
+        num.donsNatos.tituloDiaNatal,
+        `${num.donsNatos.domDiaNatal}\n\n${num.donsNatos.domExpressao}`
+      );
+      caixaDestaque(
+        "O Seu Caminho Mais Suave (Fluxo de Menor Resistência)",
+        `Alinhamento entre Alma ${num.alma.valor}, Expressão ${num.expressao.valor} e Maturidade ${num.maturidade.valor}`,
+        num.donsNatos.caminhoMaisSuave,
+        [175, 45, 105],
+        [252, 240, 246]
+      );
+
       if (num.licoesCarmicas.length) {
         caixaDestaque(
           `Lições Cármicas Ausentes no Nome (${num.licoesCarmicas.map(l => l.numero).join(", ")})`,
@@ -1480,7 +1840,14 @@
           [175, 45, 105],
           [252, 240, 246]
         );
+      } else {
+        caixaDestaque(
+          "Plenitude Vibracional no Nome de Batismo",
+          "Ausência de Lições Cármicas Pendentes (1 a 9 Presentes)",
+          "Todas as 9 frequências numéricas estão presentes nas letras do seu nome de batismo. Isso indica uma alma experiente que já trouxe todas as ferramentas vibracionais e precisa apenas direcionar o foco sem dispersão."
+        );
       }
+
       if (num.dividasCarmicas.length) {
         num.dividasCarmicas.forEach(div => {
           caixaDestaque(
@@ -1491,16 +1858,39 @@
             [252, 240, 246]
           );
         });
+      } else {
+        caixaDestaque(
+          "Análise de Dívidas Cármicas Transgeracionais (13, 14, 16, 19)",
+          "Caminho Livre de Penalidades Numéricas Antigas",
+          "Suas trilhas principais (Alma, Expressão, Destino e Dia Natal) não carregam as travas clássicas 13, 14, 16 ou 19. Seus bloqueios atuais não são punições do passado, mas sim desalinhamento entre seu Dom Nato e o ambiente ao qual você vem tentando se adaptar."
+        );
       }
     }
 
-    // ==================== PÁGINA 3: DIAGNÓSTICO EMOCIONAL & MATRIZ DO DESTINO ====================
-    novaPagina();
-    tituloSecao("Parte III · Diagnóstico do Eixo Emocional", diag.emocional.titulo);
+    // ==================== PARTE III: ENEAGRAMA & HORÓSCOPO CHINÊS ====================
+    tituloSecao(
+      "Parte III · Arquétipos de Personalidade & Alquimia Oriental",
+      `${eneagrama.nome} + Horóscopo Chinês (${chines.assinaturaCompleta})`
+    );
+    caixaDestaque(
+      `Psicodinâmica do Eneagrama · ${eneagrama.triade} · Asas ${eneagrama.asas}`,
+      `${eneagrama.nome} — Paixão Emocional: ${eneagrama.paixao}`,
+      `Raiz Inconsciente: ${eneagrama.feridaNuclear}\nNo Amor e Afetos: ${eneagrama.noAmor}\nNa Carreira: ${eneagrama.naCarreira}\nCaminho de Cura e Integração: ${eneagrama.caminhoIntegracao}`
+    );
+    caixaDestaque(
+      `Horóscopo Chinês & Alquimia dos 5 Elementos · Polaridade ${chines.polaridade}`,
+      `${chines.assinaturaCompleta} (${chines.nomeChines} · Estação: ${chines.estacao})`,
+      `Essência e Dom Nato Oriental: ${chines.arquetipo} ${chines.domInato}\nInfluência do Elemento ${chines.elemento.nome || chines.elemento}: ${chines.essenciaElemento}\nSombra a Vigiar: ${chines.sombraBloqueio}`,
+      [175, 45, 105],
+      [252, 240, 246]
+    );
+
+    // ==================== PARTE IV: DIAGNÓSTICO EMOCIONAL & MATRIZ DO DESTINO ====================
+    tituloSecao("Parte IV · Diagnóstico do Eixo Emocional", diag.emocional.titulo);
     diag.emocional.analiseProfunda.forEach(p => paragrafo(p));
     caixaDestaque("Chave de Desbloqueio Emocional", "Como virar a chave interna", diag.emocional.chaveDesbloqueio);
 
-    tituloSecao("Parte IV · Matriz do Destino (22 Arcanos)", `Centro ${matriz.arcanos.centro.rom} (${matriz.arcanos.centro.nome}) & Cauda Cármica ${matriz.caudaCarmica.codigo}`);
+    tituloSecao("Parte V · Matriz do Destino (22 Arcanos)", `Centro ${matriz.arcanos.centro.rom} (${matriz.arcanos.centro.nome}) & Cauda Cármica ${matriz.caudaCarmica.codigo}`);
     caixaDestaque(
       `Arcano Regente Central (${matriz.arcanos.centro.rom}) & Retrato (${matriz.arcanos.retrato.rom})`,
       `${matriz.arcanos.centro.nome} — ${matriz.arcanos.centro.titulo}`,
@@ -1516,9 +1906,8 @@
         [252, 240, 246]
       );
 
-      // ==================== PÁGINA 4: ASTROLOGIA OCIDENTAL, QUÍRON, LILITH & VÉDICA ====================
-      novaPagina();
-      tituloSecao("Parte V · Astrologia Kármica & Sombra", "Quíron, Lilith, Saturno e Nodos Lunares");
+      // ==================== PARTE VI: ASTROLOGIA OCIDENTAL, QUÍRON, LILITH & VÉDICA APROFUNDADA ====================
+      tituloSecao("Parte VI · Astrologia Kármica & Sombra", "Quíron, Lilith, Saturno e Nodos Lunares");
 
       const linhasAstros = astro.astros.slice(0, 12).map(a =>
         `${a.nome}: ${a.signo.nome} (${a.grau})${a.casa ? ` · Casa ${a.casa}` : ""}${a.retro ? " [Retrógrado]" : ""}`
@@ -1540,16 +1929,27 @@
         astro.porId.lilith.signo.lilith
       );
 
-      tituloSecao("Parte VI · Astrologia Védica Sideral (Jyotish)", `Nakshatra ${vedica.nakshatra.nome} (Pada ${vedica.nakshatra.pada}) · Ayanamsa ${vedica.ayanamsa}`);
+      tituloSecao("Parte VII · Mapa Védico Sideral Aprofundado (Jyotish)", `Nakshatra ${vedica.nakshatra.nome} (Pada ${vedica.nakshatra.pada}) · Momento Atual & Direcionamento`);
       caixaDestaque(
         `Lua Sideral (Chandra Rashi): ${vedica.chandraRashi.nome} (${vedica.chandraRashi.sânscrito}) · Sol Sideral: ${vedica.suryaRashi.nome}`,
-        `Mansão Lunar: ${vedica.nakshatra.numero}. ${vedica.nakshatra.nome} — Regente Dasha: ${vedica.nakshatra.regenteDasha}`,
-        `Divindade Védica: ${vedica.nakshatra.divindade} · Símbolo Sagrado: ${vedica.nakshatra.simbolo}\nDiagnóstico Jyotish: ${vedica.nakshatra.interpretacao}`
+        `Mansão Lunar: ${vedica.nakshatra.numero}. ${vedica.nakshatra.nome} — Regente Natal: ${vedica.nakshatra.regenteDasha}`,
+        `Divindade Védica: ${vedica.nakshatra.divindade} · Símbolo Sagrado: ${vedica.nakshatra.simbolo}\nDiagnóstico Raiz Jyotish: ${vedica.nakshatra.interpretacao}`
+      );
+      caixaDestaque(
+        `O Seu Momento Atual no Mapa Védico (Regência Ativa: ${vedica.nakshatra.regenteMomento})`,
+        "O Que a Astrologia Indiana Revela Sobre a Fase Que Você Está Atravessando",
+        vedica.nakshatra.momentoAtual,
+        [175, 45, 105],
+        [252, 240, 246]
+      );
+      caixaDestaque(
+        "Direcionamento Prático Védico (Ação Recomendada)",
+        `Como Alinhar Suas Decisões com o Ciclo de ${vedica.nakshatra.regenteMomento}`,
+        vedica.nakshatra.direcionamentoPratico
       );
 
-      // ==================== PÁGINA 5: RELACIONAMENTOS E PROSPERIDADE ====================
-      novaPagina();
-      tituloSecao("Parte VII · Diagnóstico de Relacionamentos", diag.relacionamento.titulo);
+      // ==================== PARTE VIII: RELAÇÕES/AFETOS E PROSPERIDADE ====================
+      tituloSecao("Parte VIII · Diagnóstico de Relações & Afetos", diag.relacionamento.titulo);
       diag.relacionamento.analiseProfunda.forEach(p => paragrafo(p));
       caixaDestaque(
         "Chave de Desbloqueio Afetivo",
@@ -1559,7 +1959,7 @@
         [252, 240, 246]
       );
 
-      tituloSecao("Parte VIII · Diagnóstico Profissional & Financeiro", diag.profissional.titulo);
+      tituloSecao("Parte IX · Diagnóstico Profissional & Financeiro", diag.profissional.titulo);
       diag.profissional.analiseProfunda.forEach(p => paragrafo(p));
       caixaDestaque(
         "Chave de Desbloqueio da Prosperidade",
@@ -1567,9 +1967,8 @@
         diag.profissional.chaveDesbloqueio
       );
 
-      // ==================== PÁGINA 6: PROTOCOLO PRÁTICO E RITUAIS TRYV TUATH ====================
-      novaPagina();
-      tituloSecao("Parte IX · Protocolo Alquímico Tryv Tuath®", "Banho de Ervas, Cristal, Decreto e Plano de 21 Dias");
+      // ==================== PARTE X: PROTOCOLO PRÁTICO E RITUAIS TRYV TUATH ====================
+      tituloSecao("Parte X · Protocolo Alquímico Tryv Tuath®", "Banho de Ervas, Cristal, Decreto e Plano de 21 Dias");
       caixaDestaque(
         `Ritual de Limpeza e Abertura (${diag.protocoloTryv.horario})`,
         diag.protocoloTryv.banho,
@@ -1587,19 +1986,42 @@
         caixaDestaque("Plano Prático de Ação", etapa.semana, etapa.acao);
       });
     } else {
-      // Versão Standard: Resumo dos eixos Afetivo e Profissional + convite para aprofundamento
-      tituloSecao("Parte V · Síntese Afetiva e Profissional (Standard)", "Visão Geral dos Padrões Relacionais e Materiais");
-      paragrafo(diag.relacionamento.analiseProfunda[0]);
+      // ==================== VERSÃO STANDARD: ANÁLISE DE RELAÇÕES/AFETOS, SOLUÇÕES PRÁTICAS & UPSELL ====================
+      tituloSecao("Parte VI · Análise de Relações, Afetos & Vínculos", diag.relacionamento.titulo);
+      diag.relacionamento.analiseProfunda.forEach(p => paragrafo(p));
+      caixaDestaque(
+        "Chave de Desbloqueio Afetivo & Relacional",
+        `Como curar o padrão no Canal do Amor (${matriz.nodos.K1}-${matriz.nodos.AmorCentro}-${matriz.nodos.C1})`,
+        diag.relacionamento.chaveDesbloqueio,
+        [175, 45, 105],
+        [252, 240, 246]
+      );
+
+      tituloSecao("Parte VII · Soluções Práticas & Direcionamento Imediato", "3 Ações Concretas Para Destravar Sua Energia Hoje");
       paragrafo(diag.profissional.analiseProfunda[0]);
+      diag.solucoesPraticasStandard.forEach(item => {
+        caixaDestaque("Solução Prática Recomendada", item.pilar, item.solucao);
+      });
       caixaDestaque(
         "Decreto de Alinhamento Tryv Tuath®",
-        `Ativação do Arcano ${matriz.arcanos.centro.rom} (${matriz.arcanos.centro.nome})`,
+        `Ativação Vibracional do Arcano ${matriz.arcanos.centro.rom} (${matriz.arcanos.centro.nome})`,
         diag.protocoloTryv.mantra
       );
+
+      // Seção Estratégica de Upsell Exclusivo para Clientes Standard
+      tituloSecao("Parte VIII · Acesso Reservado: Dossiê de Análise Profunda", "O Que Ficou Oculto nas Camadas Mais Profundas do Seu Mapa");
+      paragrafo(diag.upsellStandard.explicacao);
       caixaDestaque(
-        "Deseja o Dossiê Completo dos 4 Saberes + Rituais de 21 Dias?",
-        "Upgrade para a Análise Profunda ou Consulta Individual com a Tryv",
-        "Na Análise Profunda (ou em consulta individual com a Tryv Tuath pelo WhatsApp), desbloqueamos sua Nakshatra Védica, Quíron, Lilith, Dívidas Cármicas, Linha do Amor, Linha do Dinheiro e o Protocolo Alquímico de 21 Dias."
+        "O Que Você Desbloqueia Ao Fazer o Upgrade Para a Análise Profunda",
+        diag.upsellStandard.titulo,
+        diag.upsellStandard.beneficiosExclusivos.map(b => `• ${b}`).join("\n"),
+        [175, 45, 105],
+        [252, 240, 246]
+      );
+      caixaDestaque(
+        `Gatilho Especial de Desconto · Código VIP: ${diag.upsellStandard.codigoCupom}`,
+        "Condição Exclusiva para Quem Já Adquiriu a Versão Standard",
+        `${diag.upsellStandard.gatilhoDesconto}\n\nApresente o código [${diag.upsellStandard.codigoCupom}] no WhatsApp da Tryv Tuath (11 99546-3522) para receber seu link com desconto especial de abatimento, ou acesse diretamente em:\n${diag.upsellStandard.urlUpgrade}`
       );
     }
 
@@ -1608,7 +2030,7 @@
       .replace(/[\u0300-\u036f]/g, "")
       .replace(/[^a-zA-Z0-9]/g, "-")
       .toLowerCase();
-    const nomeArquivo = `Desbloqueio-Invisivel-${ isProfunda ? "Profunda" : "Standard" }-${slugNome || "TryvTuath"}.pdf`;
+    const nomeArquivo = `Desbloqueio-Invisivel-${isProfunda ? "Profunda" : "Standard"}-${slugNome || "TryvTuath"}.pdf`;
 
     if (opcoes.salvar !== false) {
       doc.save(nomeArquivo);
@@ -1621,6 +2043,8 @@
     SIGNOS,
     NAKSHATRAS,
     ARCANOS_MATRIZ,
+    ANIMAIS_CHINESES,
+    ENEATIPOS,
     processarAnaliseCompleta,
     svgMatrizDestino,
     gerarPDFPersonalizado

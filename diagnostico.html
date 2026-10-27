@@ -297,17 +297,27 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
 }
 .tabela-astros-diag th { color: var(--ouro-claro); font-family: var(--titulo); font-size: .82rem; text-transform: uppercase; }
 
-/* Impressão A4 limpa caso a cliente use Imprimir -> Salvar como PDF */
+/* Impressão A4 limpa e sem espaços vazios excessivos caso a cliente use Imprimir -> Salvar como PDF */
+@page { size: A4 portrait; margin: 12mm; }
 @media print {
-  body { background: #fff !important; color: #1a1230 !important; }
+  html, body { background: #fff !important; color: #1a1230 !important; margin: 0 !important; padding: 0 !important; }
   .topo, .abertura-diag, .dossie-barra-acoes, #ceu, .ceu-fundo, .nao-imprimir { display: none !important; }
+  .envelope { max-width: 100% !important; width: 100% !important; padding: 0 !important; margin: 0 !important; }
+  .dossie-container { margin: 0 !important; }
   .dossie-folha {
     background: #fff !important; color: #1a1230 !important;
-    border: 1.5px solid #b27a1e !important; box-shadow: none !important;
-    page-break-inside: avoid; margin-bottom: 1.2rem !important;
+    border: 1px solid #b27a1e !important; box-shadow: none !important;
+    border-radius: 14px !important; padding: 1.1rem 1.3rem !important;
+    page-break-inside: auto !important; break-inside: auto !important;
+    margin-bottom: .85rem !important;
   }
-  .dossie-folha h2, .codigo-box strong, .caixa-chave strong { color: #2b1a5e !important; }
-  .codigo-box, .caixa-chave { background: #faf6ed !important; border-color: #d39a2c !important; }
+  .dossie-folha__cabeca, h2, h3 { page-break-after: avoid !important; break-after: avoid !important; }
+  .codigo-box, .caixa-chave, tr {
+    page-break-inside: avoid !important; break-inside: avoid !important;
+    background: #faf6ed !important; border-color: #d39a2c !important;
+  }
+  .dossie-folha h2, .dossie-folha h3, .codigo-box strong, .caixa-chave strong { color: #2b1a5e !important; }
+  .codigo-box span, .dossie-folha p { color: #2b2240 !important; }
 }
 </style>
 </head>
@@ -504,11 +514,11 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
         </div>
       </div>
 
-      <!-- ==================== ETAPA 4: QUESTIONÁRIO PROFISSIONAL & GERAÇÃO ==================== -->
+      <!-- ==================== ETAPA 4: QUESTIONÁRIO PROFISSIONAL, ARQUÉTIPOS & GERAÇÃO ==================== -->
       <div class="passo-secao" data-passo="4" hidden>
         <div class="passo-cabeca">
-          <span>Etapa 4 de 4 · Eixo III: Saturno, Meio do Céu & Canal do Dinheiro</span>
-          <h2>Diagnóstico Profissional, Vocacional & Financeiro</h2>
+          <span>Etapa 4 de 4 · Eixo III & Arquétipos: Prosperidade, Eneagrama & Alquimia Oriental</span>
+          <h2>Diagnóstico Vocacional, Eneagrama & Horóscopo Chinês</h2>
           <p>Última etapa antes de gerarmos o seu Dossiê Completo do Desbloqueio Invisível:</p>
         </div>
 
@@ -534,6 +544,63 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
         <div class="campo-bloco">
           <label for="prof_meta">3. Qual é a sua Meta Nº 1 de Desbloqueio para os próximos 90 dias? *</label>
           <input type="text" id="prof_meta" required placeholder="Ex.: Destravar minha vida financeira, lançar meu projeto e viver um relacionamento recíproco" value="Romper meu teto financeiro, recuperar minha paz emocional e destravar meus caminhos">
+        </div>
+
+        <!-- MÓDULO INTEGRADO: ENEAGRAMA & HORÓSCOPO CHINÊS -->
+        <div style="margin-top:1.8rem;padding:1.35rem 1.4rem;border-radius:18px;background:rgba(242,193,78,.06);border:1px solid rgba(242,193,78,.32)">
+          <div style="margin-bottom:1rem">
+            <span style="font-size:.76rem;font-weight:700;text-transform:uppercase;letter-spacing:.15em;color:var(--rosa-claro)">✦ Módulo de Arquétipos Integrados</span>
+            <h3 style="font-family:var(--titulo);color:var(--ouro-claro);font-size:1.22rem;margin:.2rem 0 .3rem">Eneagrama Sagrado & Alquimia Oriental (Horóscopo Chinês)</h3>
+            <p style="margin:0;color:var(--texto-2);font-size:.9rem">Estes dados opcionais permitem cruzar seu tipo de personalidade e sua assinatura elemental chinesa no seu relatório e PDF:</p>
+          </div>
+
+          <div class="grade-campos">
+            <div class="campo-bloco" style="margin-bottom:.6rem">
+              <label for="f-eneagrama-tipo">4. Você já conhece o seu Tipo no Eneagrama?</label>
+              <small>Se não souber, deixe na 1ª opção que calcularemos automaticamente pela sua resposta ao lado e pela sua Alma.</small>
+              <select id="f-eneagrama-tipo">
+                <option value="0">✦ Não sei meu Tipo — calcular automaticamente para mim</option>
+                <option value="1">Tipo 1 — A Perfeccionista / Reformadora Ética</option>
+                <option value="2">Tipo 2 — A Prestativa / Doadora Magnética</option>
+                <option value="3">Tipo 3 — A Realizadora / Alta Performance</option>
+                <option value="4">Tipo 4 — A Individualista / Alquimista da Profundidade</option>
+                <option value="5">Tipo 5 — A Investigadora / Sábia Analítica</option>
+                <option value="6">Tipo 6 — A Leal / Estrategista Precavida</option>
+                <option value="7">Tipo 7 — A Entusiasta / Visionária Livre</option>
+                <option value="8">Tipo 8 — A Desafiadora / Soberana Protetora</option>
+                <option value="9">Tipo 9 — A Pacificadora / Mediadora Harmônica</option>
+              </select>
+            </div>
+
+            <div class="campo-bloco" style="margin-bottom:.6rem">
+              <label for="f-eneagrama-motivacao">5. Qual impulso inconsciente mais governa você?</label>
+              <small>Ajuda a calibrar a raiz do seu Eneatipo e a sua virtude de cura no diagnóstico.</small>
+              <select id="f-eneagrama-motivacao">
+                <option value="ajudar">Cuidar de todos e ser indispensável para quem amo (Coração)</option>
+                <option value="perfeicao">Fazer tudo com perfeição impecável e não cometer erros (Ordem)</option>
+                <option value="sucesso">Realizar metas, ser eficiente e reconhecida pelo meu valor (Brilho)</option>
+                <option value="autenticidade">Ser autêntica, profunda e viver conexões com alma (Essência)</option>
+                <option value="conhecimento">Compreender tudo a fundo e preservar minha energia e espaço (Mente)</option>
+                <option value="seguranca">Ter segurança, prever riscos e proteger quem caminha comigo (Lealdade)</option>
+                <option value="liberdade">Sentir liberdade, entusiasmo e abrir novos horizontes (Expansão)</option>
+                <option value="controle">Manter minha força, autonomia e nunca ficar vulnerável (Soberania)</option>
+                <option value="paz">Manter a paz, evitar conflitos desgastantes e preservar a harmonia (União)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="campo-bloco" style="margin-bottom:0;margin-top:.6rem">
+            <label for="f-chines-elemento">6. Alquimia Oriental (Horóscopo Chinês & 5 Elementos)</label>
+            <small id="previa-chines-auto" style="color:var(--ouro-claro);font-weight:600">✦ Seu animal e elemento natal serão calculados com precisão astronômica pelo calendário lunar chinês da sua data de nascimento.</small>
+            <select id="f-chines-elemento" style="margin-top:.35rem">
+              <option value="auto">Equilibrar minha energia pelo meu Elemento Natal de Nascimento (Recomendado)</option>
+              <option value="Madeira">Sinto falta do Elemento Madeira (expansão criativa, novos começos e destravar projetos)</option>
+              <option value="Fogo">Sinto falta do Elemento Fogo (entusiasmo, magnetismo, carisma e alegria vital)</option>
+              <option value="Terra">Sinto falta do Elemento Terra (aterramento, segurança material e constância)</option>
+              <option value="Metal">Sinto falta do Elemento Metal (foco, corte de laços tóxicos e organização)</option>
+              <option value="Água">Sinto falta do Elemento Água (intuição profunda, fluidez emocional e descanso)</option>
+            </select>
+          </div>
         </div>
 
         <div class="wizard-acoes">
@@ -695,6 +762,10 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
       if (c) cidadeInfo = { nome: `${c[0]} - ${c[1]}`, lat: c[2], lon: c[3], fuso: c[4] };
     }
 
+    const tipoEnea = Number(($("#f-eneagrama-tipo") || {}).value || 0);
+    const motEnea = ($("#f-eneagrama-motivacao") || {}).value || "ajudar";
+    const elemChinesAfim = ($("#f-chines-elemento") || {}).value || "auto";
+
     const dadosCliente = {
       plano: planoAtivo,
       nomeBatismo: $("#f-nome").value.trim(),
@@ -707,6 +778,13 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
       lat: cidadeInfo.lat,
       lon: cidadeInfo.lon,
       fuso: cidadeInfo.fuso,
+      eneagramaTipo: tipoEnea,
+      eneagramaMotivacao: motEnea,
+      eneagrama: {
+        tipoConhecido: tipoEnea,
+        motivacaoInconsciente: motEnea
+      },
+      chinesElementoAfim: elemChinesAfim,
       emocional: {
         emocaoPrincipal: ($('input[name="emo_principal"]:checked') || {}).value || "",
         reacaoCrise: ($('input[name="emo_crise"]:checked') || {}).value || "",
@@ -731,11 +809,11 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
     secLoad.hidden = false;
 
     const etapasMsg = [
-      [22, "Calculando Efemérides Astronômicas (Sol, Lua, Quíron, Lilith e Saturno)…"],
-      [48, "Convertendo para o Zodíaco Sideral Védico (Lahiri & 27 Nakshatras)…"],
-      [72, "Decodificando a Gematria do Nome de Batismo e Lições Cármicas…"],
-      [90, "Traçando o Octagrama da Matriz do Destino e Cauda Cármica…"],
-      [100, "Cruzando com seu Diagnóstico dos 3 Eixos e Montando seu PDF…"]
+      [20, "Calculando Efemérides Astronômicas & Sombra Astral…"],
+      [42, "Consultando o Mapa Védico Sideral, Momento Atual & Direcionamento…"],
+      [64, "Decodificando Numerologia Kármica, Nome de Batismo & Dons Natos…"],
+      [84, "Cruzando Matriz do Destino, Eneagrama & Alquimia Oriental…"],
+      [100, "Diagramando seu Dossiê Personalizado em PDF…"]
     ];
 
     for (const [pct, msg] of etapasMsg) {
@@ -766,6 +844,24 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
     }, 600);
   });
 
+  // Atualiza prévia do Horóscopo Chinês quando a cliente preenche a data de nascimento
+  $("#f-data").addEventListener("change", () => {
+    const val = $("#f-data").value;
+    const elPrevia = $("#previa-chines-auto");
+    if (!val || !elPrevia) return;
+    try {
+      const p = window.MotorDesbloqueio.processarAnaliseCompleta({
+        nomeBatismo: $("#f-nome").value.trim() || "Consulente",
+        dataNascimento: val,
+        semHora: true,
+        plano: planoAtivo
+      });
+      if (p && p.chines) {
+        elPrevia.textContent = `✦ Signo Oriental detectado pelo Calendário Lunar: ${p.chines.assinaturaCompleta} (${p.chines.ideograma}) · Polaridade ${p.chines.polaridade}`;
+      }
+    } catch {}
+  });
+
   $("#btn-baixar-pdf").addEventListener("click", async () => {
     if (!ultimoResultado) return;
     const btn = $("#btn-baixar-pdf");
@@ -787,7 +883,7 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
   }
 
   function renderizarDossieNaTela(R) {
-    const { cliente, astro, vedica, numerologia: num, matriz, diagnostico: diag } = R;
+    const { cliente, astro, vedica, numerologia: num, matriz, chines, eneagrama, diagnostico: diag } = R;
     const isProf = R.plano === "profunda";
     const [anoN, mesN, diaN] = cliente.dataNascimento.split("-");
     const dataBR = `${diaN}/${mesN}/${anoN}`;
@@ -796,11 +892,15 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
     const msgZap = `Olá, Tryv! Acabei de gerar meu Dossiê do Desbloqueio Invisível (${isProf ? "Análise Profunda" : "Análise Standard"}).\n`
       + `• Nome: ${cliente.nomeBatismo} (${dataBR})\n`
       + `• Sol em ${astro.porId.sol.signo.nome} | Lua em ${astro.porId.lua.signo.nome} | Quíron em ${astro.porId.quiron.signo.nome}\n`
-      + `• Nakshatra Védica: ${vedica.nakshatra.nome}\n`
+      + `• Nakshatra Védica: ${vedica.nakshatra.nome} (Ciclo: ${vedica.nakshatra.regenteMomento})\n`
       + `• Matriz do Destino: Centro ${matriz.arcanos.centro.rom} (${matriz.arcanos.centro.nome}) | Cauda Cármica ${matriz.caudaCarmica.codigo}\n`
-      + `• Numerologia: Alma ${num.alma.valor} | Destino ${num.destino.valor}\n`
+      + `• Numerologia: Alma ${num.alma.valor} | Destino ${num.destino.valor} | Dom Dia ${num.donsNatos.diaNatal}\n`
+      + `• Arquétipos: ${eneagrama.nome} | ${chines.assinaturaCompleta}\n`
       + `Quero compartilhar minha experiência / aprofundar com você ✨`;
     $("#btn-whats-tryv").href = `https://wa.me/${configSite.whatsapp}?text=${encodeURIComponent(msgZap)}`;
+
+    const msgUpgradeZap = `Olá, Tryv! Adquiri a Análise Standard do Desbloqueio Invisível (${cliente.nomeBatismo}) e quero usar meu código VIP [${diag.upsellStandard.codigoCupom}] para fazer o upgrade com desconto especial para a Análise Profunda Completa! ✨`;
+    const linkUpgradeZap = `https://wa.me/${configSite.whatsapp}?text=${encodeURIComponent(msgUpgradeZap)}`;
 
     $("#dossie-conteudo").innerHTML = `
       <!-- FOLHA 1: IDENTIDADE SAGRADA E CÓDIGOS MESTRES -->
@@ -837,12 +937,12 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
           <div class="codigo-box">
             <small>Mansão Lunar Védica</small>
             <strong>${vedica.nakshatra.nome} (Pada ${vedica.nakshatra.pada})</strong>
-            <span>Regente: ${vedica.nakshatra.regenteDasha}</span>
+            <span>Momento Atual: ${vedica.nakshatra.regenteMomento}</span>
           </div>
           <div class="codigo-box">
-            <small>Numerologia de Batismo</small>
+            <small>Numerologia & Dons Natos</small>
             <strong>Alma ${num.alma.valor} · Destino ${num.destino.valor}</strong>
-            <span>Expressão ${num.expressao.valor} · Ano Pessoal ${num.anoPessoal.valor}</span>
+            <span>Dom Dia ${num.donsNatos.diaNatal} · Ano Pessoal ${num.anoPessoal.valor}</span>
           </div>
           <div class="codigo-box">
             <small>Centro da Matriz do Destino</small>
@@ -854,40 +954,97 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
             <strong>Código ${matriz.caudaCarmica.codigo}</strong>
             <span>${matriz.caudaCarmica.nome}</span>
           </div>
+          <div class="codigo-box">
+            <small>Eneagrama Sagrado</small>
+            <strong>${eneagrama.nome.split("—")[0].trim()}</strong>
+            <span>${eneagrama.nome.split("—")[1] || eneagrama.triade} · Asas ${eneagrama.asas}</span>
+          </div>
+          <div class="codigo-box">
+            <small>Horóscopo Chinês & Elemento</small>
+            <strong>${chines.ideograma} ${chines.assinaturaCompleta}</strong>
+            <span>${chines.polaridade}</span>
+          </div>
         </div>
 
         <div class="caixa-chave">
           <strong>Síntese do Seu Bloqueio Invisível Mestre</strong>
-          <p style="margin:0">${fmtMd(diag.resumoExecutivo.bloqueioInvisivelMestre)}. Quando você opera no piloto automático, essa combinação drena sua energia nos 3 eixos (Emocional: <b>${diag.resumoExecutivo.indices.emocional}%</b> · Relacionamentos: <b>${diag.resumoExecutivo.indices.relacionamento}%</b> · Prosperidade: <b>${diag.resumoExecutivo.indices.profissional}%</b>).</p>
+          <p style="margin:0">${fmtMd(diag.resumoExecutivo.bloqueioInvisivelMestre)}. Quando você opera no piloto automático, essa combinação drena sua energia nos 3 eixos (Emocional: <b>${diag.resumoExecutivo.indices.emocional}%</b> · Relações & Afetos: <b>${diag.resumoExecutivo.indices.relacionamento}%</b> · Prosperidade: <b>${diag.resumoExecutivo.indices.profissional}%</b>).</p>
         </div>
       </article>
 
-      <!-- FOLHA 2: NUMEROLOGIA DO NOME DE BATISMO -->
+      <!-- FOLHA 2: NUMEROLOGIA DO NOME DE BATISMO, KÁRMICA & DONS NATOS -->
       <article class="dossie-folha">
         <div class="dossie-folha__cabeca">
-          <small>Pilar I · Gematria do Nome de Certidão</small>
-          <h2>Numerologia Profunda de “${cliente.nomeBatismo}”</h2>
+          <small>Dimensão I · Gematria do Nome de Certidão & Dons de Berço</small>
+          <h2>Numerologia Kármica & Dons Natos de “${cliente.nomeBatismo}”</h2>
         </div>
         <p><strong>Motivação da Alma (${num.alma.valor} — ${num.alma.info.titulo}):</strong> ${num.alma.info.alma} <br><em>Onde mora o bloqueio:</em> ${num.alma.info.bloqueio}</p>
-        <p><strong>Expressão & Missão (${num.expressao.valor} — ${num.expressao.info.titulo}):</strong> ${num.expressao.info.expressao}</p>
+        <p><strong>Expressão & Talento (${num.expressao.valor} — ${num.expressao.info.titulo}):</strong> ${num.expressao.info.expressao}</p>
         <p><strong>Destino / Caminho de Vida (${num.destino.valor} — ${num.destino.info.titulo}):</strong> ${num.destino.info.destino}</p>
-        <p><strong>Ano Pessoal ${num.anoPessoal.anoReferencia}: Vibração ${num.anoPessoal.valor}</strong> — ${num.anoPessoal.info.destino}</p>
-        ${isProf && num.licoesCarmicas.length ? `
-          <div class="caixa-chave">
-            <strong>Lições Cármicas Detectadas no Nome (Números Ausentes: ${num.licoesCarmicas.map(l => l.numero).join(", ")})</strong>
-            <p style="margin:0">${num.licoesCarmicas.map(l => l.licao).join("<br>")}</p>
-          </div>` : ""}
-        ${isProf && num.dividasCarmicas.length ? num.dividasCarmicas.map(d => `
+        <p><strong>Ano Pessoal ${num.anoPessoal.anoReferencia}: Vibração ${num.anoPessoal.valor} (${num.anoPessoal.info.titulo})</strong> — ${num.anoPessoal.info.destino}</p>
+
+        ${isProf ? `
+          <div class="caixa-chave" style="margin-top:1.3rem">
+            <strong>✦ Mapa dos Seus Dons Natos (Dia Natal ${num.donsNatos.diaNatal} · Vibração ${num.donsNatos.vibracaoDiaNatal} — ${num.donsNatos.tituloDiaNatal})</strong>
+            <p style="margin:0 0 .55rem">${num.donsNatos.domDiaNatal}</p>
+            <p style="margin:0">${num.donsNatos.domExpressao}</p>
+          </div>
           <div class="caixa-chave" style="border-left-color:var(--rosa)">
-            <strong>⚠ ${d.numero} Detectada no Seu Mapa</strong>
-            <p style="margin:0"><b>Origem:</b> ${d.origem}<br><b>Impacto:</b> ${d.impacto}<br><b>Cura:</b> ${d.cura}</p>
-          </div>`).join("") : ""}
+            <strong>🌿 Guia Para um Caminho Mais Suave (Fluxo de Menor Resistência)</strong>
+            <p style="margin:0">${num.donsNatos.caminhoMaisSuave}</p>
+          </div>
+          ${num.licoesCarmicas.length ? `
+            <div class="caixa-chave">
+              <strong>Lições Cármicas Detectadas no Nome (Números Ausentes: ${num.licoesCarmicas.map(l => l.numero).join(", ")})</strong>
+              <p style="margin:0">${num.licoesCarmicas.map(l => `• ${l.licao}`).join("<br>")}</p>
+            </div>` : `
+            <div class="caixa-chave">
+              <strong>Plenitude Vibracional no Nome de Batismo (1 a 9 Presentes)</strong>
+              <p style="margin:0">Todas as 9 vibrações numéricas estão presentes nas letras do seu nome de batismo — você já trouxe todas as ferramentas internas e precisa apenas direcionar o foco sem dispersão.</p>
+            </div>`}
+          ${num.dividasCarmicas.length ? num.dividasCarmicas.map(d => `
+            <div class="caixa-chave" style="border-left-color:var(--rosa)">
+              <strong>⚠ ${d.numero} Detectada no Seu Mapa Kármico</strong>
+              <p style="margin:0"><b>Origem:</b> ${d.origem}<br><b>Impacto:</b> ${d.impacto}<br><b>Cura:</b> ${d.cura}</p>
+            </div>`).join("") : `
+            <div class="caixa-chave">
+              <strong>Ausência de Dívidas Cármicas Transgeracionais Penalizadoras</strong>
+              <p style="margin:0">Suas trilhas principais (Alma, Expressão, Destino e Dia Natal) estão livres de penalidades numéricas rígidas do passado. Suas travas atuais vêm da sobrecarga de tentar se adaptar a expectativas menores que a sua alma.</p>
+            </div>`}
+        ` : ""}
       </article>
 
-      <!-- FOLHA 3: MATRIZ DO DESTINO E CAUDA CÁRMICA -->
+      <!-- FOLHA 3: CRUZAMENTO DE ARQUÉTIPOS (ENEAGRAMA & HORÓSCOPO CHINÊS) -->
       <article class="dossie-folha">
         <div class="dossie-folha__cabeca">
-          <small>Pilar II · Os 22 Arcanos Maiores</small>
+          <small>Dimensão II · Psicodinâmica & Alquimia Oriental</small>
+          <h2>Cruzamento de Arquétipos: ${eneagrama.nome} + ${chines.assinaturaCompleta} (${chines.ideograma})</h2>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.3rem">
+          <div class="codigo-box" style="padding:1.25rem">
+            <small>Eneagrama · ${eneagrama.triade} · Asas ${eneagrama.asas}</small>
+            <strong style="font-size:1.18rem;margin:.3rem 0 .6rem">${eneagrama.nome}</strong>
+            <p style="font-size:.93rem;margin:0 0 .55rem"><b>Raiz Inconsciente:</b> ${eneagrama.feridaNuclear}</p>
+            <p style="font-size:.93rem;margin:0 0 .55rem"><b>Virtude de Cura:</b> ${eneagrama.virtudeCura}</p>
+            <p style="font-size:.93rem;margin:0 0 .55rem"><b>Nas Relações e Afetos:</b> ${eneagrama.noAmor}</p>
+            <p style="font-size:.93rem;margin:0 0 .55rem"><b>Na Vocação e Dinheiro:</b> ${eneagrama.naCarreira}</p>
+            <p style="font-size:.93rem;margin:0;color:var(--ouro-claro)"><b>Caminho de Integração:</b> ${eneagrama.caminhoIntegracao}</p>
+          </div>
+          <div class="codigo-box" style="padding:1.25rem">
+            <small>Horóscopo Chinês & 5 Elementos · ${chines.polaridade}</small>
+            <strong style="font-size:1.18rem;margin:.3rem 0 .6rem">${chines.ideograma} ${chines.assinaturaCompleta} (Ano Lunar ${chines.anoChines})</strong>
+            <p style="font-size:.93rem;margin:0 0 .55rem"><b>Dom Nato do Animal (${chines.animal.nome}):</b> ${chines.domInato}</p>
+            <p style="font-size:.93rem;margin:0 0 .55rem"><b>Força do Elemento ${chines.elemento.nome}:</b> ${chines.elemento.dom}</p>
+            <p style="font-size:.93rem;margin:0 0 .55rem"><b>Sombra Sob Estresse:</b> ${chines.sombraBloqueio}</p>
+            <p style="font-size:.93rem;margin:0;color:var(--ouro-claro)"><b>Chave de Equilíbrio Elemental:</b> ${chines.elemento.sombra}</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- FOLHA 4: MATRIZ DO DESTINO E CAUDA CÁRMICA -->
+      <article class="dossie-folha">
+        <div class="dossie-folha__cabeca">
+          <small>Dimensão III · Os 22 Arcanos Maiores</small>
           <h2>Sua Matriz do Destino & Cauda Cármica (${matriz.caudaCarmica.codigo})</h2>
         </div>
         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.8rem;align-items:center">
@@ -904,19 +1061,18 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
               </div>
             ` : `
               <div class="caixa-chave">
-                <strong>🔒 Cauda Cármica ${matriz.caudaCarmica.codigo}, Canal do Amor e Canal do Dinheiro</strong>
-                <p style="margin:0 0 .75rem">Na <b>Análise Profunda Completa (R$ 97)</b> você destrava a interpretação completa da sua Cauda Cármica, Linha do Amor, Linha do Dinheiro, Nakshatra Védica, Quíron, Lilith e o Protocolo de 21 Dias.</p>
-                <a class="botao botao--ouro" href="https://loja.infinitepay.io/tryvtuath/kka1436-mapa-do-desbloqueio---analise-profunda" target="_blank" rel="noopener" style="padding:.55rem 1.2rem;font-size:.86rem">✦ Adquirir Análise Profunda na InfinitePay</a>
+                <strong>🔒 Cauda Cármica ${matriz.caudaCarmica.codigo}, Mapa Védico do Momento Atual & Dons Natos</strong>
+                <p style="margin:0 0 .5rem">Sua Cauda Cármica de Vidas Passadas é <b>${matriz.caudaCarmica.codigo}</b> e seu Regente Védico atual é <b>${vedica.nakshatra.regenteMomento}</b>. Veja ao final deste relatório sua condição VIP com desconto especial para desbloquear todas as camadas da Análise Profunda.</p>
               </div>
             `}
           </div>
         </div>
       </article>
 
-      <!-- FOLHA 4: DIAGNÓSTICO CRUZADO EMOCIONAL -->
+      <!-- FOLHA 5: DIAGNÓSTICO CRUZADO EMOCIONAL -->
       <article class="dossie-folha">
         <div class="dossie-folha__cabeca">
-          <small>Diagnóstico Cruzado · Eixo I</small>
+          <small>Diagnóstico Cruzado · Eixo I (Emoções & Inconsciente)</small>
           <h2>${diag.emocional.titulo}</h2>
         </div>
         ${diag.emocional.analiseProfunda.map(p => `<p>${fmtMd(p)}</p>`).join("")}
@@ -927,21 +1083,29 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
       </article>
 
       ${isProf ? `
-        <!-- FOLHA 5: ASTROLOGIA OCIDENTAL E JYOTISH VÉDICA -->
+        <!-- FOLHA 6: MAPA VÉDICO APROFUNDADO (MOMENTO ATUAL & DIRECIONAMENTO) + ASTROLOGIA KÁRMICA -->
         <article class="dossie-folha">
           <div class="dossie-folha__cabeca">
-            <small>Pilares III & IV · Efemérides & Jyotish Sideral</small>
-            <h2>Mapa Kármico Ocidental & Nakshatra Védica (${vedica.nakshatra.nome})</h2>
+            <small>Dimensões IV & V · Jyotish Sideral Aprofundado & Astrologia da Sombra</small>
+            <h2>Mapa Védico (Momento Atual & Direção) + Mapa Kármico (${vedica.nakshatra.nome})</h2>
           </div>
           <div class="caixa-chave">
-            <strong>Astrologia Védica (Ayanamsa Lahiri ${vedica.ayanamsa}) · Mansão Lunar ${vedica.nakshatra.numero}: ${vedica.nakshatra.nome} (Pada ${vedica.nakshatra.pada})</strong>
+            <strong>Mansão Lunar Védica ${vedica.nakshatra.numero}: ${vedica.nakshatra.nome} (Pada ${vedica.nakshatra.pada}) · Lua Sideral em ${vedica.chandraRashi.nome} (${vedica.chandraRashi.sânscrito})</strong>
             <p style="margin:0">
-              <b>Lua Sideral (Chandra Rashi):</b> ${vedica.chandraRashi.nome} (${vedica.chandraRashi.sânscrito}) · <b>Sol Sideral:</b> ${vedica.suryaRashi.nome}<br>
-              <b>Regente de Dasha:</b> ${vedica.nakshatra.regenteDasha} · <b>Divindade:</b> ${vedica.nakshatra.divindade} · <b>Símbolo:</b> ${vedica.nakshatra.simbolo}<br>
-              <b>Diagnóstico Sideral:</b> ${vedica.nakshatra.interpretacao}
+              <b>Sol Sideral:</b> ${vedica.suryaRashi.nome} · <b>Regente Natal:</b> ${vedica.nakshatra.regenteDasha} · <b>Divindade:</b> ${vedica.nakshatra.divindade} · <b>Símbolo Sagrado:</b> ${vedica.nakshatra.simbolo}<br>
+              <b>Diagnóstico Raiz da Alma:</b> ${vedica.nakshatra.interpretacao}
             </p>
           </div>
-          <table class="tabela-astros-diag">
+          <div class="caixa-chave" style="border-left-color:var(--rosa)">
+            <strong>⏳ O Seu Momento Atual no Mapa Védico (Ciclo Regido por ${vedica.nakshatra.regenteMomento})</strong>
+            <p style="margin:0">${vedica.nakshatra.momentoAtual}</p>
+          </div>
+          <div class="caixa-chave">
+            <strong>🧭 Direcionamento Prático Védico (O Que Fazer Agora)</strong>
+            <p style="margin:0">${vedica.nakshatra.direcionamentoPratico}</p>
+          </div>
+
+          <table class="tabela-astros-diag" style="margin-top:1.4rem">
             <thead>
               <tr><th>Astro / Ponto</th><th>Signo Tropical</th><th>Grau</th><th>Casa</th><th>Papel no Desbloqueio</th></tr>
             </thead>
@@ -958,16 +1122,16 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
           </table>
         </article>
 
-        <!-- FOLHA 6: DIAGNÓSTICO DE RELACIONAMENTOS E PROSPERIDADE -->
+        <!-- FOLHA 7: DIAGNÓSTICO DE RELACIONAMENTOS E PROSPERIDADE -->
         <article class="dossie-folha">
           <div class="dossie-folha__cabeca">
             <small>Diagnóstico Cruzado · Eixos II & III</small>
-            <h2>Relacionamentos (${matriz.nodos.K1}-${matriz.nodos.AmorCentro}-${matriz.nodos.C1}) & Prosperidade (${matriz.nodos.C}-${matriz.nodos.DinheiroProfissao}-${matriz.nodos.C1})</h2>
+            <h2>Relações & Afetos (${matriz.nodos.K1}-${matriz.nodos.AmorCentro}-${matriz.nodos.C1}) + Prosperidade (${matriz.nodos.C}-${matriz.nodos.DinheiroProfissao}-${matriz.nodos.C1})</h2>
           </div>
           <h3 style="font-family:var(--titulo);color:var(--rosa-claro);margin-bottom:.6rem">${diag.relacionamento.titulo}</h3>
           ${diag.relacionamento.analiseProfunda.map(p => `<p>${fmtMd(p)}</p>`).join("")}
           <div class="caixa-chave" style="border-left-color:var(--rosa);margin-bottom:2rem">
-            <strong>Chave de Desbloqueio no Amor</strong>
+            <strong>Chave de Desbloqueio no Amor e Afetos</strong>
             <p style="margin:0">${fmtMd(diag.relacionamento.chaveDesbloqueio)}</p>
           </div>
 
@@ -979,7 +1143,7 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
           </div>
         </article>
 
-        <!-- FOLHA 7: PROTOCOLO PRÁTICO DE 21 DIAS TRYV TUATH -->
+        <!-- FOLHA 8: PROTOCOLO PRÁTICO DE 21 DIAS TRYV TUATH -->
         <article class="dossie-folha">
           <div class="dossie-folha__cabeca">
             <small>Prescrição Alquímica & Psicomágica</small>
@@ -1003,7 +1167,72 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
             `).join("")}
           </div>
         </article>
-      ` : ""}
+      ` : `
+        <!-- ==================== EXCLUSIVO VERSÃO STANDARD: RELAÇÕES/AFETOS, SOLUÇÕES PRÁTICAS & UPSELL VIP ==================== -->
+        <article class="dossie-folha">
+          <div class="dossie-folha__cabeca">
+            <small>Diagnóstico Cruzado · Eixo II (Relações, Afetos & Vínculos)</small>
+            <h2>${diag.relacionamento.titulo}</h2>
+          </div>
+          ${diag.relacionamento.analiseProfunda.map(p => `<p>${fmtMd(p)}</p>`).join("")}
+          <div class="caixa-chave" style="border-left-color:var(--rosa)">
+            <strong>Chave de Desbloqueio em Relações & Afetos</strong>
+            <p style="margin:0">${fmtMd(diag.relacionamento.chaveDesbloqueio)}</p>
+          </div>
+        </article>
+
+        <article class="dossie-folha">
+          <div class="dossie-folha__cabeca">
+            <small>Direcionamento Aplicado · Soluções Práticas</small>
+            <h2>Soluções Práticas Imediatas Para o Seu Desbloqueio</h2>
+          </div>
+          <p>${fmtMd(diag.profissional.analiseProfunda[0])}</p>
+          <div style="display:grid;gap:1rem;margin-top:1rem">
+            ${diag.solucoesPraticasStandard.map(item => `
+              <div class="codigo-box" style="padding:1.15rem 1.3rem">
+                <strong style="font-size:1.05rem">${item.pilar}</strong>
+                <p style="margin:.35rem 0 0;color:var(--texto-2);font-size:.95rem">${item.solucao}</p>
+              </div>
+            `).join("")}
+          </div>
+          <div class="caixa-chave" style="border-left-color:var(--rosa);margin-top:1.3rem">
+            <strong>✨ Seu Decreto de Alinhamento Vibracional Tryv Tuath®</strong>
+            <p style="margin:0;font-family:var(--livro);font-style:italic;font-size:1.18rem;color:var(--ouro-claro)">${diag.protocoloTryv.mantra}</p>
+          </div>
+        </article>
+
+        <!-- SEÇÃO ESTRATÉGICA DE UPSELL EXCLUSIVO PARA QUEM ADQUIRIU A VERSÃO STANDARD -->
+        <article class="dossie-folha nao-imprimir" style="border:2px solid var(--ouro);background:linear-gradient(175deg,rgba(46,24,88,.96),rgba(19,12,46,.99))">
+          <div class="dossie-folha__cabeca">
+            <small style="color:var(--ouro)">✦ Oportunidade Exclusiva de Upgrade · Clientes Standard</small>
+            <h2>${diag.upsellStandard.titulo}</h2>
+            <p style="margin:.35rem 0 0;color:var(--texto-2)">${diag.upsellStandard.subtitulo}</p>
+          </div>
+          <p>${fmtMd(diag.upsellStandard.explicacao)}</p>
+          <div style="display:grid;gap:.75rem;margin:1.25rem 0">
+            ${diag.upsellStandard.beneficiosExclusivos.map(b => `
+              <div style="display:flex;gap:.7rem;align-items:flex-start;background:rgba(255,255,255,.04);padding:.8rem 1rem;border-radius:12px;border:1px solid rgba(242,193,78,.22)">
+                <span style="color:var(--ouro);font-weight:700">✦</span>
+                <span style="font-size:.94rem">${b}</span>
+              </div>
+            `).join("")}
+          </div>
+          <div class="caixa-chave" style="border-left-color:var(--rosa);background:rgba(255,95,162,.11)">
+            <strong>🎁 ${diag.upsellStandard.gatilhoDesconto}</strong>
+            <p style="margin:.35rem 0 0;font-size:.95rem">
+              Seu Código de Abatimento VIP: <code style="background:rgba(0,0,0,.45);padding:.2rem .55rem;border-radius:6px;color:var(--ouro-claro);font-weight:700">${diag.upsellStandard.codigoCupom}</code>
+            </p>
+          </div>
+          <div style="display:flex;gap:.9rem;flex-wrap:wrap;margin-top:1.4rem">
+            <a class="botao botao--ouro" href="${diag.upsellStandard.urlUpgrade}" target="_blank" rel="noopener">
+              ✦ Desbloquear Análise Profunda Agora
+            </a>
+            <a class="botao botao--rosa" href="${linkUpgradeZap}" target="_blank" rel="noopener">
+              💬 Resgatar Desconto de Upgrade no WhatsApp (${diag.upsellStandard.codigoCupom})
+            </a>
+          </div>
+        </article>
+      `}
     `;
   }
 
