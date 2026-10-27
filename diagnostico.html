@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="pt-BR" translate="no">
+<head>
+<meta charset="utf-8">
+<meta name="google" content="notranslate">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Diagnóstico & Geração do PDF — Desbloqueio Invisível | Tryv Tuath®</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#120e2e">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&family=Jost:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --noite: #120e2e;
+  --noite-2: #1b1546;
+  --veludo: #2b1a5e;
+  --ouro: #f2c14e;
+  --ouro-escuro: #b27a1e;
+  --ouro-claro: #ffe6a3;
+  --rosa: #ff2d87;
+  --rosa-claro: #ff8cc0;
+  --lilas: #b9a3ff;
+  --texto: #f6f0ff;
+  --texto-2: #c9bfe6;
+  --linha: rgba(242, 193, 78, .28);
+  --raio: 22px;
+  --titulo: "Cinzel", "Trajan Pro", Georgia, serif;
+  --livro: "Cormorant Garamond", Garamond, Georgia, serif;
+  --corpo: "Jost", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --largura: 980px;
+  --dourado: linear-gradient(180deg, #fff6d2 0%, #f6cd62 42%, #d39a2c 70%, #fbe39a 100%);
+}
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; background: var(--noite); }
+body {
+  margin: 0; color: var(--texto); background: transparent;
+  font: 400 1.04rem/1.66 var(--corpo); overflow-x: hidden;
+}
+a { color: inherit; text-decoration: none; }
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+h1, h2, h3, h4 { margin: 0; font-weight: 600; }
+.envelope { width: min(100% - 2.2rem, var(--largura)); margin-inline: auto; }
+
+.ceu-fundo {
+  position: fixed; inset: 0; z-index: -2; pointer-events: none;
+  background:
+    radial-gradient(1000px 580px at 50% -5%, rgba(114, 58, 178, .48), transparent 65%),
+    radial-gradient(800px 500px at 90% 25%, rgba(255, 45, 135, .15), transparent 60%),
+    linear-gradient(180deg, #0d0924 0%, #151039 50%, #1c1348 100%);
+}
+#ceu { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: -1; }
+
+/* Cabeçalho */
+.topo {
+  position: sticky; top: 0; z-index: 40;
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  background: rgba(15, 11, 40, .86);
+  border-bottom: 1px solid rgba(242, 193, 78, .22);
+}
+.topo__linha {
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+  min-height: 4.2rem; flex-wrap: wrap;
+}
+.marca {
+  display: inline-flex; align-items: center; gap: .65rem;
+  font-family: var(--titulo); font-weight: 600; font-size: 1rem; color: var(--ouro-claro);
+}
+.marca img { width: 32px; height: auto; }
+.badge-plano {
+  display: inline-flex; align-items: center; gap: .45rem;
+  padding: .35rem .95rem; border-radius: 999px;
+  font-size: .8rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+  background: rgba(242, 193, 78, .15); border: 1px solid rgba(242, 193, 78, .5);
+  color: var(--ouro-claro);
+}
+
+/* Botões */
+.botao {
+  display: inline-flex; align-items: center; justify-content: center; gap: .55rem;
+  padding: .88rem 1.65rem; border-radius: 999px; border: 0;
+  font-weight: 600; font-size: .98rem; letter-spacing: .03em;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.botao:hover { transform: translateY(-2px); }
+.botao--ouro {
+  background: var(--dourado); color: #1b0f02;
+  box-shadow: 0 10px 28px -6px rgba(242, 193, 78, .55), 0 0 0 1px rgba(255, 255, 255, .45) inset;
+}
+.botao--rosa {
+  background: linear-gradient(135deg, #ff4d9e 0%, #ff2d87 55%, #b81466 100%);
+  color: #fff;
+  box-shadow: 0 10px 28px -6px rgba(255, 45, 135, .58);
+}
+.botao--vidro {
+  background: rgba(255, 255, 255, .07); color: var(--ouro-claro);
+  box-shadow: 0 0 0 1px rgba(242, 193, 78, .38) inset;
+}
+
+/* Cabeçalho do Diagnóstico */
+.abertura-diag {
+  text-align: center; padding: 2.5rem 0 1.5rem;
+}
+.abertura-diag h1 {
+  font-family: var(--titulo); font-size: clamp(1.65rem, 3.6vw, 2.5rem);
+  color: var(--ouro-claro); margin-bottom: .55rem;
+}
+.abertura-diag p {
+  color: var(--texto-2); max-width: 62ch; margin: 0 auto;
+}
+
+/* Seletor de Modo (Permite alternar Standard / Profunda) */
+.alternador-plano {
+  display: inline-flex; gap: .4rem; padding: .35rem;
+  background: rgba(12, 8, 32, .75); border: 1px solid rgba(242, 193, 78, .3);
+  border-radius: 999px; margin-top: 1.1rem;
+}
+.alternador-plano button {
+  border: 0; background: transparent; color: var(--texto-2);
+  padding: .45rem 1.05rem; border-radius: 999px; font-size: .85rem; font-weight: 600;
+}
+.alternador-plano button[aria-pressed="true"] {
+  background: var(--dourado); color: #1b0f02;
+}
+
+/* Barra de Etapas do Wizard */
+.etapas-barra {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: .6rem;
+  margin: 1.6rem 0 2rem;
+}
+@media (max-width: 640px) { .etapas-barra { grid-template-columns: repeat(2, 1fr); } }
+.etapa-item {
+  background: rgba(255, 255, 255, .04); border: 1px solid rgba(242, 193, 78, .22);
+  border-radius: 14px; padding: .75rem .9rem;
+  display: flex; align-items: center; gap: .65rem;
+  font-size: .86rem; color: var(--texto-2); transition: all .25s;
+}
+.etapa-item.ativa {
+  background: rgba(242, 193, 78, .14); border-color: var(--ouro); color: var(--ouro-claro);
+  box-shadow: 0 0 20px rgba(242, 193, 78, .18);
+}
+.etapa-item.concluida {
+  border-color: rgba(185, 163, 255, .55); color: var(--texto);
+}
+.etapa-item__num {
+  width: 26px; height: 26px; border-radius: 50%; flex-shrink: 0;
+  display: grid; place-items: center; font-family: var(--titulo); font-weight: 700; font-size: .8rem;
+  background: rgba(255, 255, 255, .08); color: var(--ouro-claro);
+}
+.etapa-item.ativa .etapa-item__num { background: var(--dourado); color: #1b0f02; }
+
+/* Card do Formulário */
+.wizard-card {
+  background: linear-gradient(175deg, rgba(34, 22, 76, .92) 0%, rgba(17, 12, 44, .96) 100%);
+  border: 1.5px solid rgba(242, 193, 78, .42);
+  border-radius: 26px; padding: clamp(1.5rem, 3.8vw, 2.6rem);
+  box-shadow: 0 24px 60px -15px rgba(0, 0, 0, .65);
+  margin-bottom: 3.5rem;
+}
+.passo-secao[hidden] { display: none !important; }
+.passo-cabeca {
+  border-bottom: 1px solid rgba(242, 193, 78, .22);
+  padding-bottom: 1.1rem; margin-bottom: 1.6rem;
+}
+.passo-cabeca span {
+  font-size: .78rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .15em; color: var(--rosa-claro);
+}
+.passo-cabeca h2 {
+  font-family: var(--titulo); font-size: clamp(1.3rem, 2.5vw, 1.75rem);
+  color: var(--ouro-claro); margin: .25rem 0 .35rem;
+}
+.passo-cabeca p { margin: 0; color: var(--texto-2); font-size: .95rem; }
+
+.grade-campos {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.15rem;
+}
+.campo-bloco { display: flex; flex-direction: column; gap: .42rem; margin-bottom: 1.2rem; }
+.campo-bloco label, .rotulo-pergunta {
+  font-weight: 600; font-size: .95rem; color: var(--ouro-claro);
+}
+.campo-bloco small { color: var(--texto-2); font-size: .82rem; margin-top: -.2rem; }
+.campo-bloco input[type="text"],
+.campo-bloco input[type="email"],
+.campo-bloco input[type="tel"],
+.campo-bloco input[type="date"],
+.campo-bloco input[type="time"],
+.campo-bloco input[type="number"],
+.campo-bloco select,
+.campo-bloco textarea {
+  width: 100%; padding: .82rem 1rem; border-radius: 12px;
+  border: 1px solid rgba(242, 193, 78, .35);
+  background: rgba(11, 8, 30, .88); color: var(--texto);
+}
+.campo-bloco textarea { resize: vertical; min-height: 88px; }
+.campo-bloco input:focus, .campo-bloco select:focus, .campo-bloco textarea:focus {
+  outline: 2px solid var(--ouro); border-color: transparent;
+}
+
+/* Opções Radio Customizadas para o Questionário */
+.opcoes-grade { display: grid; gap: .65rem; margin-top: .35rem; }
+.opcao-card {
+  display: flex; align-items: flex-start; gap: .75rem;
+  padding: .85rem 1.05rem; border-radius: 14px;
+  background: rgba(255, 255, 255, .04);
+  border: 1px solid rgba(242, 193, 78, .22);
+  cursor: pointer; transition: background .2s, border-color .2s;
+}
+.opcao-card:hover { background: rgba(242, 193, 78, .08); border-color: rgba(242, 193, 78, .5); }
+.opcao-card input[type="radio"] {
+  accent-color: var(--ouro); margin-top: .25rem; transform: scale(1.15); flex-shrink: 0;
+}
+.opcao-card span { font-size: .95rem; color: var(--texto); }
+
+.wizard-acoes {
+  display: flex; justify-content: space-between; align-items: center; gap: 1rem;
+  margin-top: 1.8rem; padding-top: 1.4rem;
+  border-top: 1px solid rgba(242, 193, 78, .22); flex-wrap: wrap;
+}
+
+/* Tela de Processamento Oracular */
+.ritual-loading {
+  text-align: center; padding: 3.5rem 1.5rem;
+}
+.orbe-girando {
+  width: 96px; height: 96px; margin: 0 auto 1.6rem;
+  border-radius: 50%;
+  border: 2px solid rgba(242, 193, 78, .25);
+  border-top-color: var(--ouro); border-right-color: var(--rosa);
+  animation: girar 1.4s linear infinite;
+  display: grid; place-items: center;
+  box-shadow: 0 0 38px rgba(242, 193, 78, .35);
+}
+@keyframes girar { to { transform: rotate(360deg); } }
+.progresso-ritual {
+  max-width: 460px; height: 8px; background: rgba(255, 255, 255, .08);
+  border-radius: 999px; margin: 1.2rem auto; overflow: hidden;
+}
+.progresso-ritual__barra {
+  height: 100%; width: 0%; background: var(--dourado);
+  transition: width .4s ease;
+}
+
+/* Resultado / Dossiê na Tela */
+.dossie-container { margin-bottom: 4rem; }
+.dossie-barra-acoes {
+  position: sticky; top: 4.5rem; z-index: 30;
+  background: rgba(18, 13, 46, .94); backdrop-filter: blur(14px);
+  border: 1.5px solid var(--ouro); border-radius: 18px;
+  padding: 1rem 1.35rem; margin-bottom: 2rem;
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, .65);
+}
+.dossie-folha {
+  background: linear-gradient(180deg, rgba(31, 21, 72, .94), rgba(16, 11, 40, .98));
+  border: 1.5px solid rgba(242, 193, 78, .48);
+  border-radius: 26px; padding: clamp(1.6rem, 4vw, 2.8rem);
+  margin-bottom: 1.8rem;
+  box-shadow: 0 22px 55px -15px rgba(0, 0, 0, .7);
+}
+.dossie-folha__cabeca {
+  border-bottom: 1px solid rgba(242, 193, 78, .28);
+  padding-bottom: 1rem; margin-bottom: 1.4rem;
+}
+.dossie-folha__cabeca small {
+  color: var(--rosa-claro); text-transform: uppercase; letter-spacing: .16em; font-weight: 700; font-size: .78rem;
+}
+.dossie-folha__cabeca h2 {
+  font-family: var(--titulo); color: var(--ouro-claro); font-size: clamp(1.35rem, 2.6vw, 1.85rem); margin-top: .25rem;
+}
+.grade-codigos {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(195px, 1fr)); gap: 1rem; margin: 1.4rem 0;
+}
+.codigo-box {
+  background: rgba(255, 255, 255, .045); border: 1px solid rgba(242, 193, 78, .3);
+  border-radius: 16px; padding: 1rem 1.15rem;
+}
+.codigo-box small { color: var(--rosa-claro); font-size: .74rem; text-transform: uppercase; letter-spacing: .1em; font-weight: 600; }
+.codigo-box strong { display: block; font-family: var(--titulo); font-size: 1.12rem; color: var(--ouro-claro); margin: .2rem 0; }
+.codigo-box span { font-size: .86rem; color: var(--texto-2); }
+
+.caixa-chave {
+  background: rgba(242, 193, 78, .1); border-left: 4px solid var(--ouro);
+  border-radius: 12px; padding: 1.15rem 1.35rem; margin-top: 1.2rem;
+}
+.caixa-chave strong { color: var(--ouro-claro); display: block; font-family: var(--titulo); margin-bottom: .3rem; }
+
+.svg-matriz { width: 100%; max-width: 390px; margin: 0 auto; display: block; }
+
+.tabela-astros-diag {
+  width: 100%; border-collapse: collapse; font-size: .92rem; margin-top: 1rem;
+}
+.tabela-astros-diag th, .tabela-astros-diag td {
+  padding: .65rem .8rem; border-bottom: 1px solid rgba(242, 193, 78, .18); text-align: left;
+}
+.tabela-astros-diag th { color: var(--ouro-claro); font-family: var(--titulo); font-size: .82rem; text-transform: uppercase; }
+
+/* Impressão A4 limpa caso a cliente use Imprimir -> Salvar como PDF */
+@media print {
+  body { background: #fff !important; color: #1a1230 !important; }
+  .topo, .abertura-diag, .dossie-barra-acoes, #ceu, .ceu-fundo, .nao-imprimir { display: none !important; }
+  .dossie-folha {
+    background: #fff !important; color: #1a1230 !important;
+    border: 1.5px solid #b27a1e !important; box-shadow: none !important;
+    page-break-inside: avoid; margin-bottom: 1.2rem !important;
+  }
+  .dossie-folha h2, .codigo-box strong, .caixa-chave strong { color: #2b1a5e !important; }
+  .codigo-box, .caixa-chave { background: #faf6ed !important; border-color: #d39a2c !important; }
+}
+</style>
+</head>
+<body>
+<div class="ceu-fundo" aria-hidden="true"></div>
+<canvas id="ceu" aria-hidden="true"></canvas>
+
+<header class="topo">
+  <div class="envelope topo__linha">
+    <a class="marca" href="desbloqueio.html">
+      <img src="assets/logo-tryv-icone.webp" alt="" width="32" height="42">
+      <span>Tryv Tuath® · Portal de Diagnóstico</span>
+    </a>
+    <div style="display:flex;align-items:center;gap:.75rem;flex-wrap:wrap">
+      <span class="badge-plano" id="badge-plano-topo">✦ Análise Profunda Ativa</span>
+      <a class="botao botao--vidro" href="desbloqueio.html" style="padding:.45rem 1rem;font-size:.85rem">← Página do Desbloqueio</a>
+    </div>
+  </div>
+</header>
+
+<main class="envelope">
+  <!-- CABEÇALHO DO PORTAL -->
+  <section class="abertura-diag" id="sec-cabecalho">
+    <h1>Portal de Coleta & Diagnóstico Sagrado</h1>
+    <p>Preencha com calma e sinceridade. O sistema cruzará seus dados de nascimento e seu Nome de Batismo com suas respostas para gerar o seu <strong>PDF Personalizado do Desbloqueio Invisível</strong>.</p>
+    <div class="alternador-plano" role="group" aria-label="Modalidade da Análise">
+      <button type="button" id="btn-modo-standard" aria-pressed="false">Análise Standard (R$ 37)</button>
+      <button type="button" id="btn-modo-profunda" aria-pressed="true">✦ Análise Profunda Completa (R$ 97)</button>
+    </div>
+  </section>
+
+  <!-- WIZARD FORMULÁRIO DE COLETA -->
+  <section id="sec-formulario">
+    <div class="etapas-barra" aria-label="Progresso do preenchimento">
+      <div class="etapa-item ativa" data-indicador="1">
+        <span class="etapa-item__num">1</span>
+        <span>Dados de Nascimento</span>
+      </div>
+      <div class="etapa-item" data-indicador="2">
+        <span class="etapa-item__num">2</span>
+        <span>Padrões Emocionais</span>
+      </div>
+      <div class="etapa-item" data-indicador="3">
+        <span class="etapa-item__num">3</span>
+        <span>Relacionamentos</span>
+      </div>
+      <div class="etapa-item" data-indicador="4">
+        <span class="etapa-item__num">4</span>
+        <span>Profissional & PDF</span>
+      </div>
+    </div>
+
+    <form class="wizard-card" id="form-diagnostico" novalidate>
+      <!-- ==================== ETAPA 1: DADOS DE BATISMO E NASCIMENTO ==================== -->
+      <div class="passo-secao" data-passo="1">
+        <div class="passo-cabeca">
+          <span>Etapa 1 de 4 · Código de Encarnação</span>
+          <h2>Seus Dados Sagrados de Batismo e Nascimento</h2>
+          <p>Estes dados alimentam o cálculo astronômico ocidental, o zodíaco sideral védico (Lahiri), a gematria numerológica e a sua Matriz do Destino.</p>
+        </div>
+
+        <div class="campo-bloco">
+          <label for="f-nome">Nome Completo de Batismo (como consta na Certidão de Nascimento) *</label>
+          <small>Importante: use o nome de solteira/certidão de nascimento, sem abreviações, para o cálculo exato das vogais, consoantes e Lições Cármicas.</small>
+          <input type="text" id="f-nome" required placeholder="Ex.: Ana Beatriz de Oliveira Santos" autocomplete="name">
+        </div>
+
+        <div class="grade-campos">
+          <div class="campo-bloco">
+            <label for="f-email">Seu Melhor E-mail *</label>
+            <input type="email" id="f-email" required placeholder="seuemail@exemplo.com" autocomplete="email">
+          </div>
+          <div class="campo-bloco">
+            <label for="f-whats">Seu WhatsApp com DDD *</label>
+            <input type="tel" id="f-whats" required placeholder="(11) 99999-9999" autocomplete="tel">
+          </div>
+        </div>
+
+        <div class="grade-campos">
+          <div class="campo-bloco">
+            <label for="f-data">Data de Nascimento *</label>
+            <input type="date" id="f-data" required min="1920-01-01">
+          </div>
+          <div class="campo-bloco">
+            <label for="f-hora">Hora de Nascimento</label>
+            <input type="time" id="f-hora" value="12:00">
+            <label style="display:inline-flex;align-items:center;gap:.5rem;margin-top:.4rem;font-weight:400;font-size:.88rem;color:var(--texto-2);cursor:pointer">
+              <input type="checkbox" id="f-sem-hora" style="accent-color:var(--ouro)">
+              Não sei a hora exata (usar Mapa Solar do meio-dia)
+            </label>
+          </div>
+        </div>
+
+        <div class="grade-campos">
+          <div class="campo-bloco">
+            <label for="f-cidade-select">Cidade de Nascimento *</label>
+            <select id="f-cidade-select"></select>
+          </div>
+          <div class="campo-bloco" id="bloco-cidade-custom" hidden>
+            <label for="f-cidade-busca">Digite a Cidade / Estado / País</label>
+            <div style="display:flex;gap:.5rem">
+              <input type="text" id="f-cidade-busca" placeholder="Ex.: Uberaba, MG, Brasil">
+              <button type="button" class="botao botao--vidro" id="btn-buscar-coords" style="padding:.5rem 1rem;white-space:nowrap">Buscar</button>
+            </div>
+            <small id="status-coords"></small>
+          </div>
+        </div>
+
+        <div class="wizard-acoes">
+          <span style="font-size:.86rem;color:var(--texto-2)">🔒 Seus dados são processados com sigilo absoluto.</span>
+          <button type="button" class="botao botao--ouro" data-avancar="2">Avançar para Padrões Emocionais →</button>
+        </div>
+      </div>
+
+      <!-- ==================== ETAPA 2: QUESTIONÁRIO EMOCIONAL ==================== -->
+      <div class="passo-secao" data-passo="2" hidden>
+        <div class="passo-cabeca">
+          <span>Etapa 2 de 4 · Eixo I: Inconsciente, Lua & Quíron</span>
+          <h2>Diagnóstico de Padrões Emocionais</h2>
+          <p>Marque a alternativa que mais ressoa com o que você vem sentindo nos últimos meses:</p>
+        </div>
+
+        <div class="campo-bloco">
+          <span class="rotulo-pergunta">1. Qual emoção ou sensação recorrente mais drena a sua energia vital hoje? *</span>
+          <div class="opcoes-grade">
+            <label class="opcao-card"><input type="radio" name="emo_principal" value="Exaustão profunda por carregar responsabilidades e dores de todo mundo nas costas" checked><span><strong>Exaustão da Forte:</strong> Sensação de precisar dar conta de tudo sozinha e não ter colo quando cansa.</span></label>
+            <label class="opcao-card"><input type="radio" name="emo_principal" value="Ansiedade mental, excesso de cenários futuros e medo de perder o controle"><span><strong>Ansiedade e Controle:</strong> Mente que não desliga, antecipando problemas e tentando controlar cada detalhe.</span></label>
+            <label class="opcao-card"><input type="radio" name="emo_principal" value="Culpa silenciosa, autossabotagem e medo de ser julgada ao se priorizar"><span><strong>Culpa e Autossabotagem:</strong> Sempre que começo a me escolher ou brilhar, uma culpa interna me puxa de volta.</span></label>
+            <label class="opcao-card"><input type="radio" name="emo_principal" value="Sensação de solidão, não pertencimento e de nunca ser verdadeiramente compreendida"><span><strong>Desconexão e Exílio:</strong> Sentir-se uma estranha no ninho, mesmo rodeada de pessoas ou da própria família.</span></label>
+          </div>
+        </div>
+
+        <div class="campo-bloco">
+          <span class="rotulo-pergunta">2. Como você costuma reagir quando entra em crise ou pressão emocional? *</span>
+          <div class="opcoes-grade">
+            <label class="opcao-card"><input type="radio" name="emo_crise" value="Isolamento na caverna: fecho o coração, engulo o choro e resolvo em silêncio" checked><span><strong>Isolamento na Caverna:</strong> Eu me fecho, não peço ajuda a ninguém e engulo o que estou sentindo.</span></label>
+            <label class="opcao-card"><input type="radio" name="emo_crise" value="Paralisia e procrastinação por sobrecarga emocional"><span><strong>Paralisia por Sobrecarga:</strong> Sinto um peso no peito e travo nas tarefas que sei que precisava fazer.</span></label>
+            <label class="opcao-card"><input type="radio" name="emo_crise" value="Hiperatividade: mergulho no trabalho ou em cuidar dos outros para não olhar para a dor"><span><strong>Fuga pela Hiperatividade:</strong> Ocupo 100% do meu tempo resolvendo a vida alheia ou trabalhando até esgotar.</span></label>
+          </div>
+        </div>
+
+        <div class="campo-bloco">
+          <span class="rotulo-pergunta">3. Qual ferida emocional parece ter raiz mais antiga na sua história? *</span>
+          <div class="opcoes-grade">
+            <label class="opcao-card"><input type="radio" name="emo_ferida" value="Injustiça e Autocobrança Extrema (precisar ser perfeita e útil para merecer amor)" checked><span><strong>Injustiça e Perfeccionismo:</strong> Sentir que só sou valorizada quando sou útil, forte e não dou trabalho.</span></label>
+            <label class="opcao-card"><input type="radio" name="emo_ferida" value="Abandono e Falta de Amparo Emocional"><span><strong>Abandono e Desamparo:</strong> Medo profundo de depender de alguém e ser deixada na mão.</span></label>
+            <label class="opcao-card"><input type="radio" name="emo_ferida" value="Rejeição e Medo de Mostrar Quem Realmente É"><span><strong>Rejeição:</strong> Medo de dizer 'não' ou mostrar minha verdade e ser excluída.</span></label>
+            <label class="opcao-card"><input type="radio" name="emo_ferida" value="Traição e Quebra de Confiança"><span><strong>Traição e Desconfiança:</strong> Estado constante de alerta para não ser enganada novamente.</span></label>
+          </div>
+        </div>
+
+        <div class="campo-bloco">
+          <label for="emo_livre">4. (Opcional) Quer desabafar em uma frase o que mais pesa no seu coração hoje?</label>
+          <textarea id="emo_livre" placeholder="Escreva livremente se desejar…"></textarea>
+        </div>
+
+        <div class="wizard-acoes">
+          <button type="button" class="botao botao--vidro" data-voltar="1">← Voltar</button>
+          <button type="button" class="botao botao--ouro" data-avancar="3">Avançar para Relacionamentos →</button>
+        </div>
+      </div>
+
+      <!-- ==================== ETAPA 3: QUESTIONÁRIO DE RELACIONAMENTOS ==================== -->
+      <div class="passo-secao" data-passo="3" hidden>
+        <div class="passo-cabeca">
+          <span>Etapa 3 de 4 · Eixo II: Vênus, Lilith & Linha do Amor</span>
+          <h2>Diagnóstico de Padrões de Relacionamento</h2>
+          <p>Vamos identificar onde sua energia feminina e seu Canal do Amor na Matriz do Destino estão sendo bloqueados:</p>
+        </div>
+
+        <div class="campo-bloco">
+          <span class="rotulo-pergunta">1. Qual opção melhor descreve seu momento afetivo atual? *</span>
+          <div class="opcoes-grade">
+            <label class="opcao-card"><input type="radio" name="rel_momento" value="Solteira, sentindo que atraio apenas conexões rasas ou pessoas indisponíveis" checked><span><strong>Solteira seletiva ou cansada:</strong> Quero um amor real, mas parece que só aparecem pessoas confusas ou indisponíveis.</span></label>
+            <label class="opcao-card"><input type="radio" name="rel_momento" value="Em um relacionamento, mas vivendo ciclos repetitivos de desgaste e sobrecarga"><span><strong>Em relacionamento com desgaste:</strong> Amo ou tenho vínculo, mas sinto que carrego a relação ou não sou compreendida.</span></label>
+            <label class="opcao-card"><input type="radio" name="rel_momento" value="Solteira, mas ainda presa energeticamente a uma história mal resolvida do passado"><span><strong>Laço com o passado:</strong> Ainda sinto um cordão energético ou mágoa com alguém que já passou pela minha vida.</span></label>
+            <label class="opcao-card"><input type="radio" name="rel_momento" value="Fechada na armadura: foquei no trabalho e tranquei o coração por medo de sofrer"><span><strong>Coração blindado:</strong> Coloquei uma armadura de independência para ninguém mais me machucar.</span></label>
+          </div>
+        </div>
+
+        <div class="campo-bloco">
+          <span class="rotulo-pergunta">2. Qual padrão mais se repetiu na sua história amorosa? *</span>
+          <div class="opcoes-grade">
+            <label class="opcao-card"><input type="radio" name="rel_padrao" value="Papel de salvadora/mãe: entrego demais, curo e ajudo o parceiro, mas recebo pouco cuidado" checked><span><strong>Complexo de Salvadora:</strong> Ajudo o outro a crescer, sustento emocionalmente, mas recebo migalhas de volta.</span></label>
+            <label class="opcao-card"><input type="radio" name="rel_padrao" value="Atração por parceiros indisponíveis, instáveis ou que fogem de compromisso real"><span><strong>Ímã de Indisponíveis:</strong> Começa intenso como um filme, mas logo a pessoa esfria, some ou evita compromisso.</span></label>
+            <label class="opcao-card"><input type="radio" name="rel_padrao" value="Disputa de força ou intimidação: parceiros que se sentem diminuídos pela minha força"><span><strong>Choque de Força:</strong> Homens/parceiros que parecem competir comigo ou se acomodam na minha força.</span></label>
+            <label class="opcao-card"><input type="radio" name="rel_padrao" value="Medo de perder a liberdade ou autossabotagem quando a relação fica séria"><span><strong>Autossabotagem da Entrega:</strong> Quando alguém bom se aproxima de verdade, eu mesma encontro defeitos ou me afasto.</span></label>
+          </div>
+        </div>
+
+        <div class="wizard-acoes">
+          <button type="button" class="botao botao--vidro" data-voltar="2">← Voltar</button>
+          <button type="button" class="botao botao--ouro" data-avancar="4">Avançar para Profissional & Financeiro →</button>
+        </div>
+      </div>
+
+      <!-- ==================== ETAPA 4: QUESTIONÁRIO PROFISSIONAL & GERAÇÃO ==================== -->
+      <div class="passo-secao" data-passo="4" hidden>
+        <div class="passo-cabeca">
+          <span>Etapa 4 de 4 · Eixo III: Saturno, Meio do Céu & Canal do Dinheiro</span>
+          <h2>Diagnóstico Profissional, Vocacional & Financeiro</h2>
+          <p>Última etapa antes de gerarmos o seu Dossiê Completo do Desbloqueio Invisível:</p>
+        </div>
+
+        <div class="campo-bloco">
+          <span class="rotulo-pergunta">1. Qual frase define com mais precisão a sua trava profissional e financeira hoje? *</span>
+          <div class="opcoes-grade">
+            <label class="opcao-card"><input type="radio" name="prof_momento" value="Teto invisível: eu trabalho muito, o dinheiro entra, mas escorre pelas mãos com imprevistos" checked><span><strong>Teto Invisível e Vazamento:</strong> Eu ganho, mas parece que nunca sobra na proporção do meu esforço.</span></label>
+            <label class="opcao-card"><input type="radio" name="prof_momento" value="Tenho talento e conhecimento, mas travo na hora de aparecer, vender ou cobrar o que valho"><span><strong>Trava de Visibilidade e Preço:</strong> Sei que sou boa no que faço, mas tenho dificuldade de me expor e cobrar caro.</span></label>
+            <label class="opcao-card"><input type="radio" name="prof_momento" value="Desalinhamento de propósito: sinto que meu trabalho atual drena minha alma e quero transição"><span><strong>Chamado de Transição:</strong> Sinto que nasci para algo maior, mas tenho medo de arriscar e perder a segurança.</span></label>
+            <label class="opcao-card"><input type="radio" name="prof_momento" value="Oscilação em montanha-russa: fases de ganho seguidas por fases de estagnação e cansaço"><span><strong>Montanha-Russa Financeira:</strong> Momentos de pico seguidos por quedas de energia e estagnação.</span></label>
+          </div>
+        </div>
+
+        <div class="campo-bloco">
+          <span class="rotulo-pergunta">2. Qual crença ou comportamento mais sabota a sua prosperidade? *</span>
+          <div class="opcoes-grade">
+            <label class="opcao-card"><input type="radio" name="prof_crenca" value="Achar que dinheiro só vem com sacrifício extremo e que eu preciso fazer tudo sozinha" checked><span><strong>Crença do Esforço Penoso:</strong> Sentir que só mereço ganhar se for suado, difícil e carregado nas minhas costas.</span></label>
+            <label class="opcao-card"><input type="radio" name="prof_crenca" value="Síndrome da impostora: achar que sempre preciso de mais um curso antes de estar pronta"><span><strong>Síndrome da Eterna Aluna:</strong> Acumular conhecimento e adiar o lançamento ou a cobrança justa.</span></label>
+            <label class="opcao-card"><input type="radio" name="prof_crenca" value="Lealdade invisível ao clã: culpa inconsciente de prosperar mais do que minha família"><span><strong>Lealdade Familiar:</strong> Medo inconsciente de crescer ou acabar tendo que sustentar problemas alheios.</span></label>
+          </div>
+        </div>
+
+        <div class="campo-bloco">
+          <label for="prof_meta">3. Qual é a sua Meta Nº 1 de Desbloqueio para os próximos 90 dias? *</label>
+          <input type="text" id="prof_meta" required placeholder="Ex.: Destravar minha vida financeira, lançar meu projeto e viver um relacionamento recíproco" value="Romper meu teto financeiro, recuperar minha paz emocional e destravar meus caminhos">
+        </div>
+
+        <div class="wizard-acoes">
+          <button type="button" class="botao botao--vidro" data-voltar="3">← Voltar</button>
+          <button type="submit" class="botao botao--ouro" style="font-size:1.05rem;padding:1rem 2rem">
+            ✦ Processar Meu Mapa & Gerar Meu PDF Agora
+          </button>
+        </div>
+      </div>
+    </form>
+  </section>
+
+  <!-- TELA DE PROCESSAMENTO ALQUÍMICO -->
+  <section class="wizard-card ritual-loading" id="sec-loading" hidden aria-live="polite">
+    <div class="orbe-girando"><span style="font-size:2rem">✦</span></div>
+    <h2 style="font-family:var(--titulo);color:var(--ouro-claro);margin-bottom:.5rem" id="loading-titulo">Consagrando e Calculando Seu Mapa…</h2>
+    <p style="color:var(--texto-2);max-width:48ch;margin:0 auto" id="loading-sub">Calculando Efemérides Astronômicas (Sol, Lua, Quíron, Lilith e Saturno)…</p>
+    <div class="progresso-ritual"><div class="progresso-ritual__barra" id="loading-barra"></div></div>
+  </section>
+
+  <!-- DOSSIÊ COMPLETO GERADO + DOWNLOAD DO PDF -->
+  <section class="dossie-container" id="sec-resultado" hidden aria-live="polite">
+    <div class="dossie-barra-acoes">
+      <div>
+        <strong style="font-family:var(--titulo);color:var(--ouro-claro);display:block;font-size:1.05rem">✦ Seu Dossiê do Desbloqueio Invisível Está Pronto!</strong>
+        <span style="font-size:.86rem;color:var(--texto-2)" id="resumo-sub-barra">Clique no botão dourado ao lado para baixar seu arquivo PDF personalizado.</span>
+      </div>
+      <div style="display:flex;gap:.65rem;flex-wrap:wrap">
+        <button type="button" class="botao botao--ouro" id="btn-baixar-pdf">⬇ Baixar Meu PDF Personalizado</button>
+        <button type="button" class="botao botao--vidro" id="btn-imprimir-pdf">🖨 Imprimir / Salvar A4</button>
+        <a class="botao botao--rosa" id="btn-whats-tryv" href="#" target="_blank" rel="noopener">💬 Enviar Código para a Tryv</a>
+      </div>
+    </div>
+
+    <div id="dossie-conteudo"></div>
+  </section>
+</main>
+
+<script src="motor-desbloqueio.js"></script>
+<script>
+(function() {
+  "use strict";
+  const $ = (s, el = document) => el.querySelector(s);
+  const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+
+  // 1. Detectar Plano (URL ?plano=profunda ou ?plano=standard ou localStorage)
+  const params = new URLSearchParams(location.search);
+  let planoAtivo = params.get("plano") || localStorage.getItem("tryv_plano_desbloqueio") || "profunda";
+  if (planoAtivo !== "standard" && planoAtivo !== "profunda") planoAtivo = "profunda";
+
+  let configSite = { whatsapp: "5516991420112", webhookUrl: "" };
+  fetch("conteudo.json", { cache: "no-cache" })
+    .then(r => r.ok ? r.json() : null)
+    .then(C => {
+      if (!C) return;
+      if (C.contato && C.contato.whatsapp) configSite.whatsapp = String(C.contato.whatsapp).replace(/\D/g, "");
+      if (C.desbloqueio && C.desbloqueio.webhookUrl) configSite.webhookUrl = C.desbloqueio.webhookUrl;
+    })
+    .catch(() => {});
+
+  function atualizarUIPlano() {
+    const isProf = planoAtivo === "profunda";
+    $("#btn-modo-profunda").setAttribute("aria-pressed", String(isProf));
+    $("#btn-modo-standard").setAttribute("aria-pressed", String(!isProf));
+    $("#badge-plano-topo").textContent = isProf ? "✦ Análise Profunda Ativa (R$ 97)" : "✦ Análise Standard Ativa (R$ 37)";
+    try { localStorage.setItem("tryv_plano_desbloqueio", planoAtivo); } catch {}
+  }
+  $("#btn-modo-standard").addEventListener("click", () => { planoAtivo = "standard"; atualizarUIPlano(); });
+  $("#btn-modo-profunda").addEventListener("click", () => { planoAtivo = "profunda"; atualizarUIPlano(); });
+  atualizarUIPlano();
+
+  // 2. Preencher Cidades no Select
+  const selCidade = $("#f-cidade-select");
+  const CIDADES = window.MotorDesbloqueio.CIDADES_BASE;
+  selCidade.innerHTML = CIDADES.map((c, i) => `<option value="${i}">${c[0]} (${c[1]})</option>`).join("")
+    + `<option value="custom">Outra cidade (digitar)…</option>`;
+
+  let coordsCustom = null;
+  selCidade.addEventListener("change", () => {
+    const isCustom = selCidade.value === "custom";
+    $("#bloco-cidade-custom").hidden = !isCustom;
+  });
+
+  $("#btn-buscar-coords").addEventListener("click", async () => {
+    const q = $("#f-cidade-busca").value.trim();
+    const status = $("#status-coords");
+    if (!q) return;
+    status.textContent = "Buscando coordenadas astronômicas…";
+    try {
+      const r = await fetch(`https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(q)}`);
+      const j = await r.json();
+      if (j && j[0]) {
+        coordsCustom = {
+          nome: j[0].display_name.split(",").slice(0, 2).join(","),
+          lat: parseFloat(j[0].lat),
+          lon: parseFloat(j[0].lon),
+          fuso: Math.round(parseFloat(j[0].lon) / 15)
+        };
+        status.textContent = `✓ Localizado: ${coordsCustom.nome} (Lat ${coordsCustom.lat.toFixed(2)}°, Lon ${coordsCustom.lon.toFixed(2)}°)`;
+      } else {
+        status.textContent = "Usando fuso padrão Brasília (-3 UTC) para " + q;
+        coordsCustom = { nome: q, lat: -23.55, lon: -46.63, fuso: -3 };
+      }
+    } catch {
+      status.textContent = "Cidade registrada: " + q;
+      coordsCustom = { nome: q, lat: -23.55, lon: -46.63, fuso: -3 };
+    }
+  });
+
+  // Checkbox sem hora
+  const chkSemHora = $("#f-sem-hora"), inpHora = $("#f-hora");
+  chkSemHora.addEventListener("change", () => {
+    inpHora.disabled = chkSemHora.checked;
+    if (chkSemHora.checked) inpHora.style.opacity = "0.45";
+    else inpHora.style.opacity = "1";
+  });
+
+  // Pré-preencher se veio do simulador da página de vendas
+  try {
+    const previa = JSON.parse(localStorage.getItem("tryv_lead_previa") || "null");
+    if (previa) {
+      if (previa.nome && !$("#f-nome").value) $("#f-nome").value = previa.nome;
+      if (previa.data && !$("#f-data").value) $("#f-data").value = previa.data;
+    }
+  } catch {}
+
+  // 3. Navegação entre as 4 Etapas do Wizard
+  let passoAtual = 1;
+  function irParaPasso(n) {
+    if (n > 1 && passoAtual === 1) {
+      const nome = $("#f-nome").value.trim();
+      const data = $("#f-data").value;
+      if (nome.length < 3) { $("#f-nome").focus(); alert("Por favor, informe seu Nome Completo de Batismo."); return; }
+      if (!data) { $("#f-data").focus(); alert("Por favor, informe sua Data de Nascimento."); return; }
+    }
+    passoAtual = n;
+    $$(".passo-secao").forEach(sec => { sec.hidden = Number(sec.dataset.passo) !== n; });
+    $$(".etapa-item").forEach(ind => {
+      const k = Number(ind.dataset.indicador);
+      ind.classList.toggle("ativa", k === n);
+      ind.classList.toggle("concluida", k < n);
+    });
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  $$("[data-avancar]").forEach(b => b.addEventListener("click", () => irParaPasso(Number(b.dataset.avancar))));
+  $$("[data-voltar]").forEach(b => b.addEventListener("click", () => irParaPasso(Number(b.dataset.voltar))));
+
+  // 4. Submissão, Processamento Oracular e Renderização do Dossiê + PDF
+  let ultimoResultado = null;
+
+  $("#form-diagnostico").addEventListener("submit", async e => {
+    e.preventDefault();
+    let cidadeInfo = { nome: "São Paulo, SP", lat: -23.55, lon: -46.63, fuso: -3 };
+    if (selCidade.value === "custom") {
+      cidadeInfo = coordsCustom || { nome: $("#f-cidade-busca").value.trim() || "Brasil", lat: -23.55, lon: -46.63, fuso: -3 };
+    } else {
+      const c = CIDADES[Number(selCidade.value) || 0];
+      if (c) cidadeInfo = { nome: `${c[0]} - ${c[1]}`, lat: c[2], lon: c[3], fuso: c[4] };
+    }
+
+    const dadosCliente = {
+      plano: planoAtivo,
+      nomeBatismo: $("#f-nome").value.trim(),
+      email: $("#f-email").value.trim(),
+      whatsapp: $("#f-whats").value.trim(),
+      dataNascimento: $("#f-data").value,
+      horaNascimento: $("#f-hora").value || "12:00",
+      semHora: chkSemHora.checked,
+      cidadeNome: cidadeInfo.nome,
+      lat: cidadeInfo.lat,
+      lon: cidadeInfo.lon,
+      fuso: cidadeInfo.fuso,
+      emocional: {
+        emocaoPrincipal: ($('input[name="emo_principal"]:checked') || {}).value || "",
+        reacaoCrise: ($('input[name="emo_crise"]:checked') || {}).value || "",
+        feridaInfancia: ($('input[name="emo_ferida"]:checked') || {}).value || "",
+        relatoLivre: $("#emo_livre").value.trim()
+      },
+      relacionamento: {
+        momentoAfetivo: ($('input[name="rel_momento"]:checked') || {}).value || "",
+        padraoRepetido: ($('input[name="rel_padrao"]:checked') || {}).value || ""
+      },
+      profissional: {
+        momentoProfissional: ($('input[name="prof_momento"]:checked') || {}).value || "",
+        crencaFinanceira: ($('input[name="prof_crenca"]:checked') || {}).value || "",
+        meta90Dias: $("#prof_meta").value.trim()
+      }
+    };
+
+    // Mostrar Ritual de Processamento
+    $("#sec-formulario").hidden = true;
+    $("#sec-cabecalho").hidden = true;
+    const secLoad = $("#sec-loading");
+    secLoad.hidden = false;
+
+    const etapasMsg = [
+      [22, "Calculando Efemérides Astronômicas (Sol, Lua, Quíron, Lilith e Saturno)…"],
+      [48, "Convertendo para o Zodíaco Sideral Védico (Lahiri & 27 Nakshatras)…"],
+      [72, "Decodificando a Gematria do Nome de Batismo e Lições Cármicas…"],
+      [90, "Traçando o Octagrama da Matriz do Destino e Cauda Cármica…"],
+      [100, "Cruzando com seu Diagnóstico dos 3 Eixos e Montando seu PDF…"]
+    ];
+
+    for (const [pct, msg] of etapasMsg) {
+      $("#loading-barra").style.width = pct + "%";
+      $("#loading-sub").textContent = msg;
+      await new Promise(r => setTimeout(r, 420));
+    }
+
+    ultimoResultado = window.MotorDesbloqueio.processarAnaliseCompleta(dadosCliente);
+
+    // Envia para Webhook opcional (Make/Zapier/n8n/Formspree) se configurado no conteudo.json
+    if (configSite.webhookUrl) {
+      fetch(configSite.webhookUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(ultimoResultado)
+      }).catch(() => {});
+    }
+
+    secLoad.hidden = true;
+    renderizarDossieNaTela(ultimoResultado);
+    $("#sec-resultado").hidden = false;
+    window.scrollTo({ top: 0, behavior: "smooth" });
+
+    // Dispara automaticamente o download do PDF após 600ms
+    setTimeout(() => {
+      window.MotorDesbloqueio.gerarPDFPersonalizado(ultimoResultado).catch(() => {});
+    }, 600);
+  });
+
+  $("#btn-baixar-pdf").addEventListener("click", async () => {
+    if (!ultimoResultado) return;
+    const btn = $("#btn-baixar-pdf");
+    const txtOrig = btn.textContent;
+    btn.textContent = "⏳ Gerando PDF…";
+    try {
+      await window.MotorDesbloqueio.gerarPDFPersonalizado(ultimoResultado);
+    } finally {
+      btn.textContent = txtOrig;
+    }
+  });
+
+  $("#btn-imprimir-pdf").addEventListener("click", () => window.print());
+
+  function fmtMd(s) {
+    return String(s || "")
+      .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+      .replace(/\*(.+?)\*/g, "<em>$1</em>");
+  }
+
+  function renderizarDossieNaTela(R) {
+    const { cliente, astro, vedica, numerologia: num, matriz, diagnostico: diag } = R;
+    const isProf = R.plano === "profunda";
+    const [anoN, mesN, diaN] = cliente.dataNascimento.split("-");
+    const dataBR = `${diaN}/${mesN}/${anoN}`;
+
+    // Link do WhatsApp da Tryv com o resumo do código da cliente
+    const msgZap = `Olá, Tryv! Acabei de gerar meu Dossiê do Desbloqueio Invisível (${isProf ? "Análise Profunda" : "Análise Standard"}).\n`
+      + `• Nome: ${cliente.nomeBatismo} (${dataBR})\n`
+      + `• Sol em ${astro.porId.sol.signo.nome} | Lua em ${astro.porId.lua.signo.nome} | Quíron em ${astro.porId.quiron.signo.nome}\n`
+      + `• Nakshatra Védica: ${vedica.nakshatra.nome}\n`
+      + `• Matriz do Destino: Centro ${matriz.arcanos.centro.rom} (${matriz.arcanos.centro.nome}) | Cauda Cármica ${matriz.caudaCarmica.codigo}\n`
+      + `• Numerologia: Alma ${num.alma.valor} | Destino ${num.destino.valor}\n`
+      + `Quero compartilhar minha experiência / aprofundar com você ✨`;
+    $("#btn-whats-tryv").href = `https://wa.me/${configSite.whatsapp}?text=${encodeURIComponent(msgZap)}`;
+
+    $("#dossie-conteudo").innerHTML = `
+      <!-- FOLHA 1: IDENTIDADE SAGRADA E CÓDIGOS MESTRES -->
+      <article class="dossie-folha">
+        <div class="dossie-folha__cabeca">
+          <small>Dossiê Oracular Personalizado · ${isProf ? "Análise Profunda Completa" : "Análise Standard"}</small>
+          <h2>Mapa do Desbloqueio Invisível — ${cliente.nomeBatismo}</h2>
+          <p style="margin:.3rem 0 0;color:var(--texto-2);font-size:.92rem">
+            Nascida em ${dataBR} ${cliente.semHora ? "(Mapa Solar)" : `às ${cliente.horaNascimento}`} · ${cliente.cidadeNome}
+          </p>
+        </div>
+
+        <div class="grade-codigos">
+          <div class="codigo-box">
+            <small>Sol & Essência</small>
+            <strong>${astro.porId.sol.glifo} ${astro.porId.sol.signo.nome}</strong>
+            <span>${astro.porId.sol.grau} · Elemento ${astro.porId.sol.signo.elemento}</span>
+          </div>
+          <div class="codigo-box">
+            <small>Lua & Inconsciente</small>
+            <strong>${astro.porId.lua.glifo} ${astro.porId.lua.signo.nome}</strong>
+            <span>${astro.porId.lua.grau} · Raiz Emocional</span>
+          </div>
+          <div class="codigo-box">
+            <small>Ascendente & Persona</small>
+            <strong>${astro.asc ? astro.asc.signo.nome : "Mapa Solar"}</strong>
+            <span>${astro.asc ? `Grau ${astro.asc.grau} · MC em ${astro.mc.signo.nome}` : "Hora não informada"}</span>
+          </div>
+          <div class="codigo-box">
+            <small>Ferida Primordial (Quíron)</small>
+            <strong>⚷ Quíron em ${astro.porId.quiron.signo.nome}</strong>
+            <span>Ponto de cura emocional</span>
+          </div>
+          <div class="codigo-box">
+            <small>Mansão Lunar Védica</small>
+            <strong>${vedica.nakshatra.nome} (Pada ${vedica.nakshatra.pada})</strong>
+            <span>Regente: ${vedica.nakshatra.regenteDasha}</span>
+          </div>
+          <div class="codigo-box">
+            <small>Numerologia de Batismo</small>
+            <strong>Alma ${num.alma.valor} · Destino ${num.destino.valor}</strong>
+            <span>Expressão ${num.expressao.valor} · Ano Pessoal ${num.anoPessoal.valor}</span>
+          </div>
+          <div class="codigo-box">
+            <small>Centro da Matriz do Destino</small>
+            <strong>Arcano ${matriz.arcanos.centro.rom} · ${matriz.arcanos.centro.nome}</strong>
+            <span>${matriz.arcanos.centro.titulo}</span>
+          </div>
+          <div class="codigo-box">
+            <small>Cauda Cármica (Vidas Passadas)</small>
+            <strong>Código ${matriz.caudaCarmica.codigo}</strong>
+            <span>${matriz.caudaCarmica.nome}</span>
+          </div>
+        </div>
+
+        <div class="caixa-chave">
+          <strong>Síntese do Seu Bloqueio Invisível Mestre</strong>
+          <p style="margin:0">${fmtMd(diag.resumoExecutivo.bloqueioInvisivelMestre)}. Quando você opera no piloto automático, essa combinação drena sua energia nos 3 eixos (Emocional: <b>${diag.resumoExecutivo.indices.emocional}%</b> · Relacionamentos: <b>${diag.resumoExecutivo.indices.relacionamento}%</b> · Prosperidade: <b>${diag.resumoExecutivo.indices.profissional}%</b>).</p>
+        </div>
+      </article>
+
+      <!-- FOLHA 2: NUMEROLOGIA DO NOME DE BATISMO -->
+      <article class="dossie-folha">
+        <div class="dossie-folha__cabeca">
+          <small>Pilar I · Gematria do Nome de Certidão</small>
+          <h2>Numerologia Profunda de “${cliente.nomeBatismo}”</h2>
+        </div>
+        <p><strong>Motivação da Alma (${num.alma.valor} — ${num.alma.info.titulo}):</strong> ${num.alma.info.alma} <br><em>Onde mora o bloqueio:</em> ${num.alma.info.bloqueio}</p>
+        <p><strong>Expressão & Missão (${num.expressao.valor} — ${num.expressao.info.titulo}):</strong> ${num.expressao.info.expressao}</p>
+        <p><strong>Destino / Caminho de Vida (${num.destino.valor} — ${num.destino.info.titulo}):</strong> ${num.destino.info.destino}</p>
+        <p><strong>Ano Pessoal ${num.anoPessoal.anoReferencia}: Vibração ${num.anoPessoal.valor}</strong> — ${num.anoPessoal.info.destino}</p>
+        ${isProf && num.licoesCarmicas.length ? `
+          <div class="caixa-chave">
+            <strong>Lições Cármicas Detectadas no Nome (Números Ausentes: ${num.licoesCarmicas.map(l => l.numero).join(", ")})</strong>
+            <p style="margin:0">${num.licoesCarmicas.map(l => l.licao).join("<br>")}</p>
+          </div>` : ""}
+        ${isProf && num.dividasCarmicas.length ? num.dividasCarmicas.map(d => `
+          <div class="caixa-chave" style="border-left-color:var(--rosa)">
+            <strong>⚠ ${d.numero} Detectada no Seu Mapa</strong>
+            <p style="margin:0"><b>Origem:</b> ${d.origem}<br><b>Impacto:</b> ${d.impacto}<br><b>Cura:</b> ${d.cura}</p>
+          </div>`).join("") : ""}
+      </article>
+
+      <!-- FOLHA 3: MATRIZ DO DESTINO E CAUDA CÁRMICA -->
+      <article class="dossie-folha">
+        <div class="dossie-folha__cabeca">
+          <small>Pilar II · Os 22 Arcanos Maiores</small>
+          <h2>Sua Matriz do Destino & Cauda Cármica (${matriz.caudaCarmica.codigo})</h2>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.8rem;align-items:center">
+          <div>${window.MotorDesbloqueio.svgMatrizDestino(matriz)}</div>
+          <div>
+            <p><strong>Centro de Poder (Arcano ${matriz.arcanos.centro.rom} — ${matriz.arcanos.centro.nome}):</strong> ${matriz.arcanos.centro.luz}</p>
+            <p><strong>Sombra do Centro (Quando Você Trava):</strong> ${matriz.arcanos.centro.sombra}</p>
+            ${isProf ? `
+              <div class="caixa-chave" style="border-left-color:var(--rosa)">
+                <strong>Sua Cauda Cármica de Vidas Passadas: ${matriz.caudaCarmica.nome}</strong>
+                <p style="margin:0 0 .5rem"><b>Memória de Outras Vidas:</b> ${matriz.caudaCarmica.passado}</p>
+                <p style="margin:0 0 .5rem"><b>Como Isso Trava Você Hoje:</b> ${matriz.caudaCarmica.bloqueioAtual}</p>
+                <p style="margin:0"><b>Chave de Libertação:</b> ${matriz.caudaCarmica.chave}</p>
+              </div>
+            ` : `
+              <div class="caixa-chave">
+                <strong>🔒 Cauda Cármica ${matriz.caudaCarmica.codigo}, Canal do Amor e Canal do Dinheiro</strong>
+                <p style="margin:0 0 .75rem">Na <b>Análise Profunda Completa (R$ 97)</b> você destrava a interpretação completa da sua Cauda Cármica, Linha do Amor, Linha do Dinheiro, Nakshatra Védica, Quíron, Lilith e o Protocolo de 21 Dias.</p>
+                <a class="botao botao--ouro" href="https://loja.infinitepay.io/tryvtuath/kka1436-mapa-do-desbloqueio---analise-profunda" target="_blank" rel="noopener" style="padding:.55rem 1.2rem;font-size:.86rem">✦ Adquirir Análise Profunda na InfinitePay</a>
+              </div>
+            `}
+          </div>
+        </div>
+      </article>
+
+      <!-- FOLHA 4: DIAGNÓSTICO CRUZADO EMOCIONAL -->
+      <article class="dossie-folha">
+        <div class="dossie-folha__cabeca">
+          <small>Diagnóstico Cruzado · Eixo I</small>
+          <h2>${diag.emocional.titulo}</h2>
+        </div>
+        ${diag.emocional.analiseProfunda.map(p => `<p>${fmtMd(p)}</p>`).join("")}
+        <div class="caixa-chave">
+          <strong>Chave de Virada Emocional</strong>
+          <p style="margin:0">${fmtMd(diag.emocional.chaveDesbloqueio)}</p>
+        </div>
+      </article>
+
+      ${isProf ? `
+        <!-- FOLHA 5: ASTROLOGIA OCIDENTAL E JYOTISH VÉDICA -->
+        <article class="dossie-folha">
+          <div class="dossie-folha__cabeca">
+            <small>Pilares III & IV · Efemérides & Jyotish Sideral</small>
+            <h2>Mapa Kármico Ocidental & Nakshatra Védica (${vedica.nakshatra.nome})</h2>
+          </div>
+          <div class="caixa-chave">
+            <strong>Astrologia Védica (Ayanamsa Lahiri ${vedica.ayanamsa}) · Mansão Lunar ${vedica.nakshatra.numero}: ${vedica.nakshatra.nome} (Pada ${vedica.nakshatra.pada})</strong>
+            <p style="margin:0">
+              <b>Lua Sideral (Chandra Rashi):</b> ${vedica.chandraRashi.nome} (${vedica.chandraRashi.sânscrito}) · <b>Sol Sideral:</b> ${vedica.suryaRashi.nome}<br>
+              <b>Regente de Dasha:</b> ${vedica.nakshatra.regenteDasha} · <b>Divindade:</b> ${vedica.nakshatra.divindade} · <b>Símbolo:</b> ${vedica.nakshatra.simbolo}<br>
+              <b>Diagnóstico Sideral:</b> ${vedica.nakshatra.interpretacao}
+            </p>
+          </div>
+          <table class="tabela-astros-diag">
+            <thead>
+              <tr><th>Astro / Ponto</th><th>Signo Tropical</th><th>Grau</th><th>Casa</th><th>Papel no Desbloqueio</th></tr>
+            </thead>
+            <tbody>
+              ${astro.astros.map(a => `
+                <tr>
+                  <td><strong>${a.glifo} ${a.nome}</strong> ${a.retro ? '<small style="color:var(--rosa-claro)">(R)</small>' : ""}</td>
+                  <td>${a.signo.nome}</td>
+                  <td>${a.grau}</td>
+                  <td>${a.casa ? `Casa ${a.casa}` : "—"}</td>
+                  <td>${a.papel}</td>
+                </tr>`).join("")}
+            </tbody>
+          </table>
+        </article>
+
+        <!-- FOLHA 6: DIAGNÓSTICO DE RELACIONAMENTOS E PROSPERIDADE -->
+        <article class="dossie-folha">
+          <div class="dossie-folha__cabeca">
+            <small>Diagnóstico Cruzado · Eixos II & III</small>
+            <h2>Relacionamentos (${matriz.nodos.K1}-${matriz.nodos.AmorCentro}-${matriz.nodos.C1}) & Prosperidade (${matriz.nodos.C}-${matriz.nodos.DinheiroProfissao}-${matriz.nodos.C1})</h2>
+          </div>
+          <h3 style="font-family:var(--titulo);color:var(--rosa-claro);margin-bottom:.6rem">${diag.relacionamento.titulo}</h3>
+          ${diag.relacionamento.analiseProfunda.map(p => `<p>${fmtMd(p)}</p>`).join("")}
+          <div class="caixa-chave" style="border-left-color:var(--rosa);margin-bottom:2rem">
+            <strong>Chave de Desbloqueio no Amor</strong>
+            <p style="margin:0">${fmtMd(diag.relacionamento.chaveDesbloqueio)}</p>
+          </div>
+
+          <h3 style="font-family:var(--titulo);color:var(--ouro-claro);margin-bottom:.6rem">${diag.profissional.titulo}</h3>
+          ${diag.profissional.analiseProfunda.map(p => `<p>${fmtMd(p)}</p>`).join("")}
+          <div class="caixa-chave">
+            <strong>Chave de Desbloqueio da Prosperidade</strong>
+            <p style="margin:0">${fmtMd(diag.profissional.chaveDesbloqueio)}</p>
+          </div>
+        </article>
+
+        <!-- FOLHA 7: PROTOCOLO PRÁTICO DE 21 DIAS TRYV TUATH -->
+        <article class="dossie-folha">
+          <div class="dossie-folha__cabeca">
+            <small>Prescrição Alquímica & Psicomágica</small>
+            <h2>Protocolo Tryv Tuath® de Desbloqueio em 21 Dias</h2>
+          </div>
+          <div class="caixa-chave">
+            <strong>🌿 ${diag.protocoloTryv.banho} (${diag.protocoloTryv.horario})</strong>
+            <p style="margin:0 0 .5rem">${diag.protocoloTryv.preparo}</p>
+            <p style="margin:0"><b>💎 Cristal de Ancoragem:</b> ${diag.protocoloTryv.cristal}</p>
+          </div>
+          <div class="caixa-chave" style="border-left-color:var(--rosa)">
+            <strong>✨ Decreto Pessoal de Reprogramação (Repetir ao acordar por 21 dias)</strong>
+            <p style="margin:0;font-family:var(--livro);font-style:italic;font-size:1.2rem;color:var(--ouro-claro)">${diag.protocoloTryv.mantra}</p>
+          </div>
+          <div style="margin-top:1.4rem;display:grid;gap:1rem">
+            ${diag.protocoloTryv.plano21Dias.map(et => `
+              <div class="codigo-box">
+                <strong style="font-size:1rem">${et.semana}</strong>
+                <p style="margin:.35rem 0 0;color:var(--texto-2);font-size:.95rem">${et.acao}</p>
+              </div>
+            `).join("")}
+          </div>
+        </article>
+      ` : ""}
+    `;
+  }
+
+  // Céu de estrelas suave
+  const ceu = $("#ceu"), cc = ceu.getContext("2d");
+  let W = 0, H = 0, estrelas = [];
+  function medir() {
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    W = innerWidth; H = innerHeight;
+    ceu.width = W * dpr; ceu.height = H * dpr;
+    cc.setTransform(dpr, 0, 0, dpr, 0, 0);
+    estrelas = Array.from({ length: 120 }, () => ({
+      x: Math.random() * W, y: Math.random() * H, r: 0.5 + Math.random() * 1.1
+    }));
+    cc.clearRect(0, 0, W, H);
+    cc.fillStyle = "rgba(255,246,210,0.65)";
+    for (const s of estrelas) { cc.beginPath(); cc.arc(s.x, s.y, s.r, 0, 6.283); cc.fill(); }
+  }
+  medir();
+  addEventListener("resize", medir);
+})();
+</script>
+</body>
+</html>

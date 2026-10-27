@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="pt-BR" translate="no">
+<head>
+<meta charset="utf-8">
+<meta name="google" content="notranslate">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Desbloqueio Invisível — Diagnóstico Oracular & Mapa em PDF | Tryv Tuath®</title>
+<meta name="description" content="Descubra a raiz oculta dos seus bloqueios emocionais, amorosos e financeiros cruzando Astrologia, Astrologia Védica, Numerologia de Batismo e Matriz do Destino com Tryv Tuath.">
+<meta name="theme-color" content="#120e2e">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://tryvtuath.com.br/desbloqueio.html">
+<meta property="og:site_name" content="Tryv Tuath®">
+<meta property="og:title" content="O Desbloqueio Invisível — Diagnóstico Oracular Personalizado em PDF | Tryv Tuath®">
+<meta property="og:description" content="Por que certos padrões emocionais, afetivos e financeiros se repetem na sua vida? Decodifique seu Mapa, Matriz do Destino, Numerologia e Jyotish Védica.">
+<meta property="og:image" content="https://tryvtuath.com.br/assets/og-tryv.jpg">
+<link rel="canonical" href="https://tryvtuath.com.br/desbloqueio.html">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&family=Jost:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --noite: #120e2e;
+  --noite-2: #1b1546;
+  --veludo: #2b1a5e;
+  --ouro: #f2c14e;
+  --ouro-escuro: #b27a1e;
+  --ouro-claro: #ffe6a3;
+  --rosa: #ff2d87;
+  --rosa-claro: #ff8cc0;
+  --lilas: #b9a3ff;
+  --texto: #f6f0ff;
+  --texto-2: #c9bfe6;
+  --linha: rgba(242, 193, 78, .28);
+  --vidro: rgba(255, 255, 255, .048);
+  --raio: 22px;
+  --titulo: "Cinzel", "Trajan Pro", Georgia, serif;
+  --livro: "Cormorant Garamond", Garamond, Georgia, serif;
+  --corpo: "Jost", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --largura: 1160px;
+  --dourado: linear-gradient(180deg, #fff6d2 0%, #f6cd62 42%, #d39a2c 70%, #fbe39a 100%);
+}
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; background: var(--noite); -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; color: var(--texto); background: transparent;
+  font: 400 1.0625rem/1.68 var(--corpo); overflow-x: hidden;
+}
+img { max-width: 100%; height: auto; display: block; }
+a { color: inherit; text-decoration: none; }
+button { font: inherit; color: inherit; cursor: pointer; }
+h1, h2, h3, h4 { margin: 0; font-weight: 600; }
+:focus-visible { outline: 2px solid var(--ouro-claro); outline-offset: 4px; border-radius: 8px; }
+.envelope { width: min(100% - 2.4rem, var(--largura)); margin-inline: auto; }
+
+/* Céu Estrelado de Fundo */
+.ceu-fundo {
+  position: fixed; inset: 0; z-index: -2; pointer-events: none;
+  background:
+    radial-gradient(1100px 620px at 50% -8%, rgba(114, 58, 178, .50), transparent 65%),
+    radial-gradient(850px 540px at 88% 22%, rgba(255, 45, 135, .17), transparent 62%),
+    radial-gradient(900px 600px at 12% 75%, rgba(65, 38, 148, .42), transparent 65%),
+    linear-gradient(180deg, #0d0924 0%, #151039 48%, #1d144b 100%);
+}
+#ceu, #magia { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+#ceu { z-index: -1; }
+#magia { z-index: 90; }
+
+/* Topo */
+.topo {
+  position: sticky; top: 0; z-index: 45;
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  background: rgba(15, 11, 40, .82);
+  border-bottom: 1px solid rgba(242, 193, 78, .22);
+}
+.topo__linha {
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+  min-height: 4.3rem;
+}
+.marca {
+  display: inline-flex; align-items: center; gap: .65rem;
+  font-family: var(--titulo); font-weight: 600; font-size: 1.05rem; letter-spacing: .06em;
+  color: var(--ouro-claro);
+}
+.marca img { width: 34px; height: auto; filter: drop-shadow(0 0 8px rgba(242, 193, 78, .5)); }
+.topo__nav { display: flex; align-items: center; gap: .8rem; flex-wrap: wrap; }
+.topo__link {
+  font-size: .92rem; color: var(--texto-2); padding: .4rem .75rem; border-radius: 999px;
+  transition: color .2s, background .2s;
+}
+.topo__link:hover { color: var(--ouro-claro); background: rgba(255, 255, 255, .06); }
+
+/* Botões */
+.botao {
+  display: inline-flex; align-items: center; justify-content: center; gap: .6rem;
+  padding: .9rem 1.75rem; border-radius: 999px; border: 0;
+  font-weight: 600; font-size: 1rem; letter-spacing: .03em;
+  transition: transform .22s ease, box-shadow .22s ease, filter .22s ease;
+  text-align: center; position: relative;
+}
+.botao:hover { transform: translateY(-2px); }
+.botao--ouro {
+  background: var(--dourado); color: #1b0f02;
+  box-shadow: 0 10px 30px -6px rgba(242, 193, 78, .55), 0 0 0 1px rgba(255, 255, 255, .45) inset;
+}
+.botao--ouro:hover { box-shadow: 0 14px 36px -4px rgba(242, 193, 78, .78), 0 0 0 1px #fff inset; }
+.botao--rosa {
+  background: linear-gradient(135deg, #ff4d9e 0%, #ff2d87 55%, #b81466 100%);
+  color: #fff;
+  box-shadow: 0 12px 32px -6px rgba(255, 45, 135, .6), 0 0 0 1px rgba(255, 210, 232, .4) inset;
+}
+.botao--rosa:hover { box-shadow: 0 16px 38px -4px rgba(255, 45, 135, .82); }
+.botao--vidro {
+  background: rgba(255, 255, 255, .07); color: var(--ouro-claro);
+  box-shadow: 0 0 0 1px rgba(242, 193, 78, .38) inset;
+}
+.botao--vidro:hover { background: rgba(255, 255, 255, .12); }
+
+/* Hero */
+.heroi-funil {
+  padding: clamp(3rem, 7vw, 5.5rem) 0 clamp(2.5rem, 5vw, 4rem);
+  text-align: center; position: relative;
+}
+.selo-topo {
+  display: inline-flex; align-items: center; gap: .5rem;
+  padding: .42rem 1.1rem; border-radius: 999px;
+  background: rgba(242, 193, 78, .12); border: 1px solid rgba(242, 193, 78, .42);
+  color: var(--ouro-claro); font-size: .85rem; font-weight: 600; letter-spacing: .12em;
+  text-transform: uppercase; margin-bottom: 1.3rem;
+}
+.heroi-funil h1 {
+  font-family: var(--titulo);
+  font-size: clamp(2rem, 4.8vw, 3.65rem);
+  line-height: 1.15; letter-spacing: .02em;
+  max-width: 22ch; margin: 0 auto 1.2rem;
+  background: linear-gradient(180deg, #ffffff 0%, #ffe6a3 60%, #f2c14e 100%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  filter: drop-shadow(0 4px 24px rgba(242, 193, 78, .22));
+}
+.heroi-funil__sub {
+  font-family: var(--livro); font-style: italic;
+  font-size: clamp(1.25rem, 2.3vw, 1.65rem);
+  color: var(--rosa-claro); max-width: 46ch; margin: 0 auto 1.2rem;
+}
+.heroi-funil__texto {
+  color: var(--texto-2); max-width: 64ch; margin: 0 auto 2.2rem; font-size: 1.08rem;
+}
+.heroi-funil__acoes {
+  display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-bottom: 2.2rem;
+}
+.heroi-selos {
+  display: flex; justify-content: center; gap: 1.5rem; flex-wrap: wrap;
+  color: var(--texto-2); font-size: .92rem;
+}
+.heroi-selos span { display: inline-flex; align-items: center; gap: .45rem; }
+.heroi-selos i { color: var(--ouro); font-style: normal; }
+
+/* Seções Gerais */
+.secao { padding: clamp(3rem, 6vw, 5rem) 0; position: relative; }
+.cabeca { text-align: center; max-width: 68ch; margin: 0 auto 2.8rem; }
+.chamada {
+  display: inline-block; font-size: .82rem; font-weight: 600;
+  letter-spacing: .18em; text-transform: uppercase;
+  color: var(--rosa-claro); margin-bottom: .55rem;
+}
+.titulo {
+  font-family: var(--titulo); font-size: clamp(1.65rem, 3.4vw, 2.55rem);
+  color: var(--ouro-claro); line-height: 1.2; margin-bottom: .85rem;
+}
+.intro { color: var(--texto-2); margin: 0; font-size: 1.06rem; }
+
+/* Grade dos 3 Espelhos de Dor */
+.grade-3 {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 1.5rem;
+}
+.cartao-dor {
+  background: linear-gradient(165deg, rgba(43, 26, 94, .68) 0%, rgba(20, 14, 52, .86) 100%);
+  border: 1px solid var(--linha); border-radius: var(--raio);
+  padding: 1.85rem; position: relative; overflow: hidden;
+  box-shadow: 0 18px 42px -12px rgba(0, 0, 0, .55);
+  transition: transform .25s ease, border-color .25s ease;
+}
+.cartao-dor:hover { transform: translateY(-4px); border-color: rgba(242, 193, 78, .65); }
+.cartao-dor__icone {
+  width: 52px; height: 52px; border-radius: 14px;
+  display: grid; place-items: center; font-size: 1.55rem;
+  background: rgba(242, 193, 78, .12); border: 1px solid rgba(242, 193, 78, .38);
+  color: var(--ouro-claro); margin-bottom: 1.1rem;
+}
+.cartao-dor h3 { font-family: var(--titulo); font-size: 1.22rem; color: var(--ouro-claro); margin-bottom: .75rem; }
+.cartao-dor ul { list-style: none; padding: 0; margin: 0; display: grid; gap: .65rem; color: var(--texto-2); font-size: .98rem; }
+.cartao-dor li { display: flex; gap: .6rem; align-items: flex-start; }
+.cartao-dor li::before { content: "✦"; color: var(--rosa-claro); flex-shrink: 0; margin-top: .1rem; }
+
+/* Simulador / Teaser Interativo na Página de Vendas */
+.teaser-oraculo {
+  background: radial-gradient(circle at 50% 0%, rgba(255, 45, 135, .16), transparent 70%),
+    linear-gradient(180deg, rgba(34, 21, 78, .92), rgba(18, 13, 46, .96));
+  border: 1.5px solid rgba(242, 193, 78, .55);
+  border-radius: 26px; padding: clamp(1.6rem, 4vw, 2.8rem);
+  box-shadow: 0 24px 60px -15px rgba(0, 0, 0, .7), 0 0 40px rgba(242, 193, 78, .12);
+  margin-top: 2.5rem;
+}
+.teaser-form {
+  display: grid; grid-template-columns: 1.2fr 1fr auto; gap: 1rem; align-items: end;
+  max-width: 820px; margin: 1.5rem auto 0;
+}
+@media (max-width: 760px) { .teaser-form { grid-template-columns: 1fr; } }
+.campo-funil { display: flex; flex-direction: column; gap: .4rem; text-align: left; }
+.campo-funil span { font-size: .88rem; font-weight: 600; color: var(--ouro-claro); letter-spacing: .04em; }
+.campo-funil input {
+  width: 100%; padding: .85rem 1rem; border-radius: 12px;
+  border: 1px solid rgba(242, 193, 78, .38);
+  background: rgba(12, 8, 32, .85); color: var(--texto);
+  font: inherit;
+}
+.campo-funil input:focus { outline: 2px solid var(--ouro); border-color: transparent; }
+.teaser-resultado {
+  margin-top: 1.8rem; padding-top: 1.6rem;
+  border-top: 1px solid rgba(242, 193, 78, .28);
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem;
+  text-align: left;
+}
+.teaser-mini {
+  background: rgba(255, 255, 255, .045); border: 1px solid rgba(242, 193, 78, .28);
+  border-radius: 16px; padding: 1.1rem 1.25rem;
+}
+.teaser-mini small { color: var(--rosa-claro); font-size: .76rem; text-transform: uppercase; letter-spacing: .12em; font-weight: 600; }
+.teaser-mini strong { display: block; font-family: var(--titulo); font-size: 1.15rem; color: var(--ouro-claro); margin: .25rem 0; }
+.teaser-mini p { margin: 0; font-size: .9rem; color: var(--texto-2); }
+.teaser-trancado {
+  grid-column: 1 / -1; text-align: center;
+  background: rgba(255, 45, 135, .1); border: 1px dashed rgba(255, 140, 192, .5);
+  border-radius: 16px; padding: 1.1rem; color: var(--texto);
+}
+
+/* Os 4 Pilares */
+.grade-pilares {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.25rem;
+}
+.pilar-card {
+  background: rgba(255, 255, 255, .04); border: 1px solid var(--linha);
+  border-radius: 20px; padding: 1.6rem; position: relative;
+}
+.pilar-card__num {
+  font-family: var(--titulo); font-size: .82rem; letter-spacing: .15em;
+  color: var(--ouro); display: block; margin-bottom: .4rem;
+}
+.pilar-card h3 { font-family: var(--titulo); font-size: 1.18rem; color: var(--ouro-claro); margin-bottom: .6rem; }
+.pilar-card p { margin: 0; color: var(--texto-2); font-size: .95rem; }
+
+/* Como funciona em 3 passos */
+.passos-funil {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 1.5rem;
+  counter-reset: passo;
+}
+.passo-card {
+  background: linear-gradient(180deg, rgba(35, 24, 78, .75), rgba(19, 14, 46, .9));
+  border: 1px solid var(--linha); border-radius: 20px; padding: 1.8rem;
+  position: relative;
+}
+.passo-card__num {
+  width: 42px; height: 42px; border-radius: 50%;
+  background: var(--dourado); color: #1a0f02;
+  font-family: var(--titulo); font-weight: 700; font-size: 1.1rem;
+  display: grid; place-items: center; margin-bottom: 1rem;
+}
+.passo-card h3 { font-family: var(--titulo); color: var(--ouro-claro); font-size: 1.16rem; margin-bottom: .5rem; }
+.passo-card p { margin: 0; color: var(--texto-2); font-size: .96rem; }
+
+/* Tabela / Cards de Planos (R$ 37 vs R$ 97) */
+.planos-grade {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 2rem; align-items: stretch; max-width: 980px; margin: 0 auto;
+}
+.plano-card {
+  background: linear-gradient(175deg, rgba(31, 22, 70, .92) 0%, rgba(16, 12, 42, .96) 100%);
+  border: 1px solid rgba(242, 193, 78, .32);
+  border-radius: 26px; padding: clamp(1.75rem, 3.5vw, 2.5rem);
+  display: flex; flex-direction: column; justify-content: space-between;
+  position: relative; box-shadow: 0 20px 50px -15px rgba(0, 0, 0, .6);
+}
+.plano-card--profunda {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(242, 193, 78, .18), transparent 62%),
+    linear-gradient(175deg, rgba(48, 26, 98, .96) 0%, rgba(21, 13, 52, .98) 100%);
+  border: 2px solid var(--ouro);
+  box-shadow: 0 24px 65px -10px rgba(242, 193, 78, .32), 0 0 0 1px rgba(255, 230, 163, .35) inset;
+  transform: translateY(-6px);
+}
+@media (max-width: 760px) { .plano-card--profunda { transform: none; } }
+.plano-selo {
+  position: absolute; top: -15px; left: 50%; transform: translateX(-50%);
+  background: var(--dourado); color: #1b0f02;
+  font-size: .78rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+  padding: .38rem 1.2rem; border-radius: 999px; white-space: nowrap;
+  box-shadow: 0 6px 20px rgba(242, 193, 78, .55);
+}
+.plano-card__nome {
+  font-family: var(--titulo); font-size: 1.5rem; color: var(--ouro-claro); margin-bottom: .35rem;
+}
+.plano-card__sub { color: var(--texto-2); font-size: .95rem; margin-bottom: 1.4rem; }
+.plano-preco {
+  margin: .5rem 0 1.5rem; padding: 1.1rem; border-radius: 18px;
+  background: rgba(0, 0, 0, .28); border: 1px solid rgba(242, 193, 78, .2);
+}
+.plano-preco__de {
+  font-size: .88rem; color: var(--texto-2); text-decoration: line-through; display: block;
+}
+.plano-preco__valor {
+  font-family: var(--titulo); font-size: 2.75rem; font-weight: 700;
+  color: var(--ouro-claro); line-height: 1.1;
+}
+.plano-preco__valor small { font-size: 1rem; font-weight: 500; color: var(--texto-2); }
+.plano-preco__nota { display: block; font-size: .84rem; color: var(--rosa-claro); margin-top: .25rem; }
+.plano-lista {
+  list-style: none; padding: 0; margin: 0 0 2rem; display: grid; gap: .78rem;
+  font-size: .96rem; color: var(--texto);
+}
+.plano-lista li { display: flex; gap: .65rem; align-items: flex-start; }
+.plano-lista li i {
+  font-style: normal; color: var(--ouro); font-weight: 700; flex-shrink: 0; margin-top: .08rem;
+}
+.plano-lista li.ausente { color: rgba(201, 191, 230, .42); text-decoration: line-through; }
+.plano-lista li.ausente i { color: rgba(201, 191, 230, .35); }
+
+/* Garantia e FAQ */
+.garantia-box {
+  max-width: 820px; margin: 3.2rem auto 0;
+  background: rgba(255, 255, 255, .04); border: 1px solid rgba(242, 193, 78, .38);
+  border-radius: 22px; padding: 1.8rem 2rem;
+  display: flex; align-items: center; gap: 1.5rem;
+}
+@media (max-width: 640px) { .garantia-box { flex-direction: column; text-align: center; } }
+.garantia-box__selo {
+  width: 74px; height: 74px; border-radius: 50%; flex-shrink: 0;
+  background: var(--dourado); color: #1b0f02;
+  display: grid; place-items: center; font-family: var(--titulo); font-weight: 700; font-size: 1.5rem;
+  box-shadow: 0 0 28px rgba(242, 193, 78, .45);
+}
+.faq-lista { max-width: 820px; margin: 0 auto; display: grid; gap: .9rem; }
+.faq-item {
+  background: rgba(255, 255, 255, .04); border: 1px solid var(--linha);
+  border-radius: 16px; padding: 1.1rem 1.4rem;
+}
+.faq-item summary {
+  font-family: var(--titulo); font-size: 1.05rem; color: var(--ouro-claro);
+  cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; gap: 1rem;
+}
+.faq-item summary::-webkit-details-marker { display: none; }
+.faq-item summary::after { content: "✦"; color: var(--ouro); transition: transform .25s; }
+.faq-item[open] summary::after { transform: rotate(45deg); color: var(--rosa-claro); }
+.faq-item p { margin: .85rem 0 0; color: var(--texto-2); font-size: .96rem; }
+
+/* Rodapé */
+.rodape {
+  padding: 3rem 0 2.5rem; text-align: center;
+  border-top: 1px solid rgba(242, 193, 78, .2); color: var(--texto-2); font-size: .9rem;
+}
+</style>
+</head>
+<body>
+<div class="ceu-fundo" aria-hidden="true"></div>
+<canvas id="ceu" aria-hidden="true"></canvas>
+<canvas id="magia" aria-hidden="true"></canvas>
+
+<header class="topo">
+  <div class="envelope topo__linha">
+    <a class="marca" href="index.html">
+      <img src="assets/logo-tryv-icone.webp" alt="" width="34" height="44">
+      <span>Tryv Tuath®</span>
+    </a>
+    <nav class="topo__nav" aria-label="Navegação do Funil">
+      <a class="topo__link" href="#espelhos">Padrões Ocultos</a>
+      <a class="topo__link" href="#pilares">Os 4 Saberes</a>
+      <a class="topo__link" href="#simulador">Prévia Gratuita</a>
+      <a class="topo__link" href="#planos">Escolher Análise</a>
+      <a class="topo__link" href="index.html">← Voltar ao Site</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <!-- ==================== HERO ==================== -->
+  <section class="heroi-funil">
+    <div class="envelope">
+      <span class="selo-topo" id="txt-chamada">✦ Mapeamento Espiritual, Kármico & Psicanalítico · Tryv Tuath®</span>
+      <h1 id="txt-titulo">O Desbloqueio Invisível</h1>
+      <p class="heroi-funil__sub" id="txt-subtitulo">
+        Por que você tenta mudar, estuda, se esforça, mas os mesmos ciclos emocionais, amorosos e financeiros voltam a se repetir?
+      </p>
+      <p class="heroi-funil__texto" id="txt-intro">
+        Existe um código oculto gravado no seu <strong>Nome Completo de Batismo</strong> e no instante astronômico do seu <strong>Nascimento</strong>. Quando os seus 4 mapas sagrados (Astrologia Ocidental, Astrologia Védica Jyotish, Numerologia e Matriz do Destino) são cruzados com o seu diagnóstico atual, a raiz invisível do seu bloqueio é revelada — e o caminho para destravar se abre em um <strong>Dossiê PDF Personalizado</strong> gerado para você.
+      </p>
+      <div class="heroi-funil__acoes">
+        <a class="botao botao--ouro" href="#planos">✦ Quero Descobrir Meu Bloqueio Invisível</a>
+        <a class="botao botao--vidro" href="#simulador">Ver Prévia com Minha Data de Nascimento</a>
+      </div>
+      <div class="heroi-selos">
+        <span><i>✦</i> Entrega Imediata em PDF Personalizado</span>
+        <span><i>✦</i> 4 Saberes Milenares Cruzados</span>
+        <span><i>✦</i> Metodologia Exclusiva Tryv Tuath®</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== OS 3 ESPELHOS DE DOR ==================== -->
+  <section class="secao" id="espelhos">
+    <div class="envelope">
+      <div class="cabeca">
+        <span class="chamada">Reconheça os sinais</span>
+        <h2 class="titulo">Onde o Bloqueio Invisível está atuando na sua vida?</h2>
+        <p class="intro">O bloqueio nunca é falta de capacidade sua. Ele é uma lealdade inconsciente, uma ferida primordial (Quíron) ou uma Cauda Cármica que opera no piloto automático nestes 3 eixos:</p>
+      </div>
+      <div class="grade-3">
+        <article class="cartao-dor">
+          <div class="cartao-dor__icone" aria-hidden="true">☽</div>
+          <h3>1. Padrões Emocionais</h3>
+          <ul>
+            <li>Sensação constante de carregar o peso do mundo nas costas sem ter em quem apoiar.</li>
+            <li>Ansiedade noturna, autossabotagem ou medo de brilhar e ser julgada.</li>
+            <li>Culpas antigas e exaustão por absorver as dores da família e do ambiente.</li>
+            <li>Sensação de não pertencer ou de nunca ser verdadeiramente compreendida.</li>
+          </ul>
+        </article>
+        <article class="cartao-dor">
+          <div class="cartao-dor__icone" aria-hidden="true">♀</div>
+          <h3>2. Ciclos de Relacionamento</h3>
+          <ul>
+            <li>Atração repetitiva por parceiros emocionalmente indisponíveis, confusos ou imaturos.</li>
+            <li>Assumir o papel de “salvadora” ou “mãe” da relação, entregando muito e recebendo migalhas.</li>
+            <li>Medo inconsciente da entrega profunda por marcas de traição, rejeição ou abandono.</li>
+            <li>Dificuldade de encerrar laços energéticos com pessoas do passado.</li>
+          </ul>
+        </article>
+        <article class="cartao-dor">
+          <div class="cartao-dor__icone" aria-hidden="true">♄</div>
+          <h3>3. Travas Profissionais & Dinheiro</h3>
+          <ul>
+            <li>O “teto invisível”: o dinheiro até entra, mas escorre pelas mãos com imprevistos.</li>
+            <li>Síndrome da impostora: ter grande talento, mas travar na hora de aparecer, vender ou cobrar o justo.</li>
+            <li>Trabalhar no modo de esforço exaustivo e sentir que o reconhecimento demora o dobro.</li>
+            <li>Dúvida vocacional sobre qual caminho realmente alinha sua alma com a prosperidade.</li>
+          </ul>
+        </article>
+      </div>
+
+      <!-- SIMULADOR GRATUITO DE AMOSTRA -->
+      <div class="teaser-oraculo" id="simulador">
+        <div class="cabeca" style="margin-bottom:1rem">
+          <span class="chamada">Amostra Instantânea</span>
+          <h3 class="titulo" style="font-size:clamp(1.35rem,2.6vw,1.9rem)">Descubra agora o número do seu Centro de Força e sua Cauda Cármica</h3>
+          <p class="intro">Digite seu primeiro nome e sua data de nascimento para ver um vislumbre do código que o motor oracular calculará no seu PDF:</p>
+        </div>
+        <form class="teaser-form" id="form-teaser">
+          <label class="campo-funil">
+            <span>Seu Nome</span>
+            <input type="text" id="t-nome" placeholder="Ex.: Maria Clara" required>
+          </label>
+          <label class="campo-funil">
+            <span>Data de Nascimento</span>
+            <input type="date" id="t-data" required min="1920-01-01">
+          </label>
+          <button type="submit" class="botao botao--ouro">✦ Revelar Meu Código</button>
+        </form>
+        <div class="teaser-resultado" id="teaser-resultado" hidden aria-live="polite"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== OS 4 SABERES MILENARES ==================== -->
+  <section class="secao" id="pilares">
+    <div class="envelope">
+      <div class="cabeca">
+        <span class="chamada">Engenharia Espiritual & Psicanálise</span>
+        <h2 class="titulo">4 Sistemas Sagrados Cruzados em um Único Dossiê</h2>
+        <p class="intro">Análises comuns olham apenas o seu signo solar. O <strong>Desbloqueio Invisível</strong> cruza quatro tradições milenares com as respostas do seu questionário pessoal:</p>
+      </div>
+      <div class="grade-pilares">
+        <div class="pilar-card">
+          <span class="pilar-card__num">PILAR I · ASTROLOGIA KÁRMICA</span>
+          <h3>Quíron, Lilith, Saturno & Mapa Natal</h3>
+          <p>Mapeamos a posição exata do Sol, Lua, Vênus, Marte, Ascendente, Meio do Céu, <strong>Quíron</strong> (sua ferida primordial), <strong>Lilith</strong> (sua sombra magnética) e <strong>Saturno</strong> (onde mora o seu medo e a sua maior autoridade).</p>
+        </div>
+        <div class="pilar-card">
+          <span class="pilar-card__num">PILAR II · ASTROLOGIA VÉDICA (JYOTISH)</span>
+          <h3>As 27 Nakshatras & Ayanamsa Lahiri</h3>
+          <p>Calculamos o seu mapa no <strong>Zodíaco Sideral Real</strong> da Índia antiga, revelando sua <strong>Nakshatra Lunar</strong> (mansão estelar de nascimento), seu regente de Dasha e o seu Dharma espiritual.</p>
+        </div>
+        <div class="pilar-card">
+          <span class="pilar-card__num">PILAR III · NUMEROLOGIA DE BATISMO</span>
+          <h3>Alma, Expressão, Lições & Dívidas Cármicas</h3>
+          <p>Através das vogais e consoantes do seu <strong>Nome Completo de Batismo</strong> e da sua data, decodificamos sua Motivação da Alma, Destino, Ano Pessoal, <strong>Lições Cármicas</strong> (números ausentes) e <strong>Dívidas Cármicas (13, 14, 16, 19)</strong>.</p>
+        </div>
+        <div class="pilar-card">
+          <span class="pilar-card__num">PILAR IV · MATRIZ DO DESTINO</span>
+          <h3>Os 22 Arcanos, Cauda Cármica, Amor & Dinheiro</h3>
+          <p>Traçamos o Octagrama Sagrado da sua <strong>Matriz do Destino</strong>: seu Arcano Central, a tríade da sua <strong>Cauda Cármica de Vidas Passadas</strong>, o seu <strong>Canal dos Relacionamentos</strong> e o seu <strong>Canal do Dinheiro</strong>.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== COMO FUNCIONA ==================== -->
+  <section class="secao">
+    <div class="envelope">
+      <div class="cabeca">
+        <span class="chamada">Jornada Automatizada</span>
+        <h2 class="titulo">Como funciona o seu Desbloqueio em 3 passos</h2>
+      </div>
+      <div class="passos-funil">
+        <div class="passo-card">
+          <span class="passo-card__num">1</span>
+          <h3>Escolha a profundidade da sua Análise</h3>
+          <p>Selecione abaixo entre a <strong>Análise Standard (R$ 37)</strong> para um diagnóstico rápido da raiz principal, ou a <strong>Análise Profunda (R$ 97)</strong> para o mapeamento completo dos 4 saberes + Protocolo Alquímico de 21 Dias.</p>
+        </div>
+        <div class="passo-card">
+          <span class="passo-card__num">2</span>
+          <h3>Preencha o Diagnóstico Pós-Pagamento</h3>
+          <p>Assim que o pagamento é confirmado, você é redirecionada automaticamente para a <strong>Página Sagrada de Coleta e Diagnóstico</strong>, onde informará seu Nome de Batismo, Data, Hora e Local de Nascimento + o questionário dos 3 eixos.</p>
+        </div>
+        <div class="passo-card">
+          <span class="passo-card__num">3</span>
+          <h3>Receba seu PDF Personalizado na Hora</h3>
+          <p>Nosso motor oracular cruza suas respostas com os cálculos astronômicos, védicos, numerológicos e da Matriz do Destino e gera o seu <strong>Pergaminho em PDF Personalizado</strong> para baixar na hora no celular ou computador.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== PLANOS DE COMPRA (R$ 37 vs R$ 97) ==================== -->
+  <section class="secao" id="planos">
+    <div class="envelope">
+      <div class="cabeca">
+        <span class="chamada">Sua Chave de Virada</span>
+        <h2 class="titulo">Escolha a sua Análise do Desbloqueio Invisível</h2>
+        <p class="intro">Acesso imediato ao formulário de diagnóstico e geração do seu PDF personalizado logo após a confirmação:</p>
+      </div>
+
+      <div class="planos-grade">
+        <!-- PLANO 1: STANDARD (R$ 37) -->
+        <article class="plano-card">
+          <div>
+            <h3 class="plano-card__nome" id="p-std-titulo">Análise Standard</h3>
+            <p class="plano-card__sub" id="p-std-sub">O diagnóstico essencial para identificar seu bloqueio principal e sua vibração numerológica base.</p>
+            <div class="plano-preco">
+              <span class="plano-preco__de" id="p-std-de">De R$ 97,00 por apenas</span>
+              <div class="plano-preco__valor"><span id="p-std-preco">R$ 37</span> <small>à vista</small></div>
+              <span class="plano-preco__nota">Pagamento único · Acesso imediato</span>
+            </div>
+            <ul class="plano-lista">
+              <li><i>✓</i> <span><strong>Diagnóstico do Bloqueio Central</strong> com base nas suas respostas</span></li>
+              <li><i>✓</i> <span><strong>Numerologia do Nome de Batismo</strong> (Motivação da Alma, Expressão e Destino)</span></li>
+              <li><i>✓</i> <span><strong>Arcano Regente Central</strong> da Matriz do Destino (Luz e Sombra)</span></li>
+              <li><i>✓</i> <span><strong>Posição Solar e Lunar</strong> + Diagnóstico do Eixo Emocional</span></li>
+              <li><i>✓</i> <span><strong>Dossiê Essencial em PDF</strong> (4 páginas personalizadas para download)</span></li>
+              <li class="ausente"><i>✕</i> <span>Cauda Cármica de Vidas Passadas + Linha do Amor e Linha do Dinheiro</span></li>
+              <li class="ausente"><i>✕</i> <span>Astrologia Kármica (Quíron, Lilith, Saturno) + Astrologia Védica (Nakshatra)</span></li>
+              <li class="ausente"><i>✕</i> <span>Lições e Dívidas Cármicas + Protocolo Alquímico de 21 Dias (Banhos e Rituais)</span></li>
+            </ul>
+          </div>
+          <a class="botao botao--vidro" id="btn-comprar-standard" href="https://loja.infinitepay.io/tryvtuath/nuw5653-mapa-do-desbloqueio---analise-standard" target="_blank" rel="noopener" style="width:100%">
+            Quero a Análise Standard (R$ 37)
+          </a>
+        </article>
+
+        <!-- PLANO 2: PROFUNDA (R$ 97) -->
+        <article class="plano-card plano-card--profunda">
+          <span class="plano-selo">✦ Mais Escolhida · Recomendada pela Tryv</span>
+          <div>
+            <h3 class="plano-card__nome" id="p-prof-titulo">Análise Profunda Completa</h3>
+            <p class="plano-card__sub" id="p-prof-sub">O dossiê definitivo cruzando os 4 saberes milenares com seu diagnóstico Emocional, Amoroso e Profissional + Rituais de Desbloqueio.</p>
+            <div class="plano-preco">
+              <span class="plano-preco__de" id="p-prof-de">De R$ 247,00 por apenas</span>
+              <div class="plano-preco__valor"><span id="p-prof-preco">R$ 97</span> <small>à vista</small></div>
+              <span class="plano-preco__nota">ou em até 12x no cartão · Entrega imediata do PDF Completo</span>
+            </div>
+            <ul class="plano-lista">
+              <li><i>✦</i> <span><strong>Tudo da Análise Standard incluso +</strong></span></li>
+              <li><i>✦</i> <span><strong>Matriz do Destino Completa (22 Arcanos):</strong> Centro, <strong>Cauda Cármica de Vidas Passadas</strong>, <strong>Canal do Amor</strong> e <strong>Canal do Dinheiro</strong></span></li>
+              <li><i>✦</i> <span><strong>Astrologia Kármica Profunda:</strong> <strong>Quíron</strong> (Ferida Primordial), <strong>Lilith</strong> (Sombra & Magnetismo), <strong>Saturno</strong>, Ascendente, Meio do Céu e Nodos Lunares</span></li>
+              <li><i>✦</i> <span><strong>Astrologia Védica Sideral (Jyotish):</strong> Signo Lunar Védico e sua <strong>Nakshatra de Nascimento</strong> (27 Mansões Lunares)</span></li>
+              <li><i>✦</i> <span><strong>Numerologia Cármica:</strong> Detecção de <strong>Lições Cármicas</strong> (números ausentes no nome) e <strong>Dívidas Cármicas (13, 14, 16, 19)</strong> + Ano Pessoal</span></li>
+              <li><i>✦</i> <span><strong>Cruzamento Completo dos 3 Eixos:</strong> Diagnóstico personalizado Emocional, de Relacionamentos e Profissional/Financeiro</span></li>
+              <li><i>✦</i> <span><strong>Protocolo Alquímico Tryv Tuath®:</strong> Banho de Ervas específico, Cristal de Ancoragem, Decreto Psicomágico e <strong>Plano Prático de 21 Dias</strong></span></li>
+              <li><i>✦</i> <span><strong>PDF Completo de Luxo (6+ páginas densas)</strong> + Botão para enviar seu código direto para o WhatsApp da Tryv</span></li>
+            </ul>
+          </div>
+          <a class="botao botao--ouro" id="btn-comprar-profunda" href="https://loja.infinitepay.io/tryvtuath/kka1436-mapa-do-desbloqueio---analise-profunda" target="_blank" rel="noopener" style="width:100%;font-size:1.06rem;padding:1.05rem 1.8rem">
+            ✦ Quero Minha Análise Profunda Completa (R$ 97)
+          </a>
+        </article>
+      </div>
+
+      <!-- GARANTIA -->
+      <div class="garantia-box">
+        <div class="garantia-box__selo" aria-hidden="true">7d</div>
+        <div>
+          <h3 style="font-family:var(--titulo);color:var(--ouro-claro);margin-bottom:.35rem">Garantia Incondicional de Clareza e Satisfação</h3>
+          <p style="margin:0;color:var(--texto-2);font-size:.95rem">
+            Cada cálculo do <strong>Desbloqueio Invisível</strong> respeita as efemérides astronômicas reais, a tradição védica Lahiri, a gematria do seu nome de batismo e a Matriz dos 22 Arcanos. E se você quiser aprofundar qualquer ponto do seu PDF em uma sessão ao vivo com a Tryv Tuath, o valor investido no seu diagnóstico pode ser abatido na sua consulta completa!
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== PERGUNTAS FREQUENTES ==================== -->
+  <section class="secao">
+    <div class="envelope">
+      <div class="cabeca">
+        <span class="chamada">Tire suas dúvidas</span>
+        <h2 class="titulo">Perguntas Frequentes</h2>
+      </div>
+      <div class="faq-lista">
+        <details class="faq-item" open>
+          <summary>Como recebo o acesso após o pagamento?</summary>
+          <p>Imediatamente após a confirmação do pagamento, você é redirecionada para a nossa <strong>Página Sagrada de Coleta e Diagnóstico</strong> (<code>tryvtuath.com.br/diagnostico.html</code>). Lá você preenche seu Nome Completo de Batismo, Data, Hora e Local de Nascimento e responde ao questionário de padrões emocionais, amorosos e profissionais. Ao finalizar, o seu PDF personalizado é processado e liberado na tela para download na hora!</p>
+        </details>
+        <details class="faq-item">
+          <summary>E se eu não souber a minha hora exata de nascimento?</summary>
+          <p>Não se preocupe! Na página de diagnóstico há a opção <em>“Não sei a minha hora exata”</em>. O sistema utilizará o Mapa Solar do meio-dia e concentrará toda a precisão na sua Matriz do Destino, Cauda Cármica, Numerologia do Nome de Batismo, Quíron, Lilith, Saturno e na posição solar/lunar védica.</p>
+        </details>
+        <details class="faq-item">
+          <summary>Por que preciso informar o meu Nome Completo de Batismo?</summary>
+          <p>Porque na Numerologia Cabalística e Pitagórica o seu nome de certidão de nascimento guarda o código sonoro e vibracional da sua encarnação — é dele que extraímos sua Motivação da Alma (vogais), sua Couraça de Impressão (consoantes), sua Expressão (total) e verificamos quais números de 1 a 9 estão ausentes (suas Lições Cármicas).</p>
+        </details>
+        <details class="faq-item">
+          <summary>Qual a diferença real entre a Análise Standard (R$ 37) e a Análise Profunda (R$ 97)?</summary>
+          <p>A <strong>Análise Standard (R$ 37)</strong> entrega uma visão introdutória do seu bloqueio principal, os números base do seu nome e seu Arcano central. Já a <strong>Análise Profunda (R$ 97)</strong> entrega o cruzamento completo dos 4 sistemas (incluindo sua Cauda Cármica de Vidas Passadas, Canal do Amor, Canal do Dinheiro, Quíron, Lilith, Nakshatra Védica, Lições/Dívidas Cármicas) + o diagnóstico detalhado dos 3 pilares + o Protocolo Alquímico de 21 Dias com banho de ervas, cristal e decreto pessoal.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="rodape">
+  <div class="envelope">
+    <p style="font-family:var(--livro);font-style:italic;font-size:1.2rem;color:var(--ouro-claro);margin:0 0 .5rem">
+      “Mude-se e descobrirá novos outros para refletir-se.”
+    </p>
+    <p style="margin:0 0 .4rem">© 2016 Tryv Tuath® · Everything is Possible — Todos os direitos reservados.</p>
+    <p style="margin:0;font-size:.82rem;opacity:.75">
+      <a href="index.html" style="text-decoration:underline">Início</a> ·
+      <a href="diagnostico.html" style="text-decoration:underline">Área de Diagnóstico (Pós-Compra)</a> ·
+      <a href="configuracoes.html" style="text-decoration:underline">Configurações</a>
+    </p>
+  </div>
+</footer>
+
+<!-- Modal Pós-Checkout InfinitePay: guia a cliente direto para o Diagnóstico assim que ela paga -->
+<div id="modal-pos-checkout" hidden style="position:fixed;inset:0;z-index:120;background:rgba(10,7,28,.85);backdrop-filter:blur(10px);display:grid;place-items:center;padding:1.2rem">
+  <div style="max-width:520px;width:100%;background:linear-gradient(175deg,#261858,#140e36);border:2px solid var(--ouro);border-radius:24px;padding:2rem;text-align:center;box-shadow:0 24px 65px rgba(0,0,0,.8)">
+    <span class="selo-topo" style="margin-bottom:.8rem">✦ Checkout InfinitePay Aberto</span>
+    <h3 style="font-family:var(--titulo);color:var(--ouro-claro);font-size:1.45rem;margin-bottom:.6rem" id="modal-chk-titulo">Finalize seu pagamento na aba da InfinitePay</h3>
+    <p style="color:var(--texto-2);font-size:.96rem;margin:0 0 1.4rem" id="modal-chk-texto">
+      Abrimos o checkout seguro da <strong>InfinitePay</strong> em uma nova guia. Assim que concluir o pagamento via PIX ou Cartão, clique no botão dourado abaixo para preencher seus dados de nascimento e gerar seu <strong>PDF Personalizado</strong> na hora:
+    </p>
+    <div style="display:grid;gap:.75rem">
+      <a class="botao botao--ouro" id="btn-ir-diagnostico" href="diagnostico.html?plano=profunda&acesso=liberado" style="width:100%">
+        ✦ Já Concluí o Pagamento → Gerar Meu PDF Agora
+      </a>
+      <a class="botao botao--vidro" id="btn-reabrir-infinitepay" href="https://loja.infinitepay.io/tryvtuath/kka1436-mapa-do-desbloqueio---analise-profunda" target="_blank" rel="noopener" style="width:100%;font-size:.9rem;padding:.65rem 1rem">
+        ↗ Abrir Checkout da InfinitePay Novamente
+      </a>
+      <button type="button" id="btn-fechar-modal-chk" style="background:transparent;border:0;color:var(--texto-2);font-size:.85rem;margin-top:.3rem;text-decoration:underline">
+        Voltar para a página
+      </button>
+    </div>
+  </div>
+</div>
+
+<script src="motor-desbloqueio.js"></script>
+<script>
+(function() {
+  "use strict";
+  const $ = s => document.querySelector(s);
+  const modalChk = $("#modal-pos-checkout");
+  modalChk.style.display = "none";
+
+  function abrirModalPosCheckout(plano, urlInfinitePay) {
+    const isProf = plano === "profunda";
+    try {
+      localStorage.setItem("tryv_plano_desbloqueio", plano);
+      localStorage.setItem("tryv_checkout_pendente", plano);
+    } catch {}
+    $("#modal-chk-titulo").textContent = isProf
+      ? "Finalize sua Análise Profunda (R$ 97)"
+      : "Finalize sua Análise Standard (R$ 37)";
+    $("#btn-ir-diagnostico").href = `diagnostico.html?plano=${plano}&acesso=liberado`;
+    $("#btn-reabrir-infinitepay").href = urlInfinitePay;
+    modalChk.hidden = false;
+    modalChk.style.display = "grid";
+  }
+
+  $("#btn-fechar-modal-chk").addEventListener("click", () => {
+    modalChk.hidden = true;
+    modalChk.style.display = "none";
+  });
+
+  // Carrega configurações personalizadas do conteudo.json (se a Tryv editou links de checkout/preços no painel)
+  fetch("conteudo.json", { cache: "no-cache" })
+    .then(r => r.ok ? r.json() : null)
+    .then(C => {
+      if (!C || !C.desbloqueio) return;
+      const D = C.desbloqueio;
+      if (D.chamada) $("#txt-chamada").textContent = D.chamada;
+      if (D.titulo) $("#txt-titulo").textContent = D.titulo;
+      if (D.subtitulo) $("#txt-subtitulo").textContent = D.subtitulo;
+      if (D.precoStandard) $("#p-std-preco").textContent = D.precoStandard;
+      if (D.precoProfunda) $("#p-prof-preco").textContent = D.precoProfunda;
+      if (D.checkoutStandard && D.checkoutStandard.trim()) {
+        $("#btn-comprar-standard").href = D.checkoutStandard.trim();
+      }
+      if (D.checkoutProfunda && D.checkoutProfunda.trim()) {
+        $("#btn-comprar-profunda").href = D.checkoutProfunda.trim();
+      }
+    })
+    .catch(() => {});
+
+  // Salva o plano escolhido no navegador e exibe o modal de retorno pós-pagamento da InfinitePay
+  $("#btn-comprar-standard").addEventListener("click", function() {
+    abrirModalPosCheckout("standard", this.href);
+  });
+  $("#btn-comprar-profunda").addEventListener("click", function() {
+    abrirModalPosCheckout("profunda", this.href);
+  });
+
+  // Simulador Gratuito de Amostra na Página de Vendas
+  const formTeaser = $("#form-teaser");
+  const resTeaser = $("#teaser-resultado");
+  const inputData = $("#t-data");
+  const hoje = new Date();
+  inputData.max = hoje.toISOString().split("T")[0];
+
+  formTeaser.addEventListener("submit", e => {
+    e.preventDefault();
+    const nome = $("#t-nome").value.trim();
+    const data = inputData.value;
+    if (!nome || !data) return;
+
+    const prévia = window.MotorDesbloqueio.processarAnaliseCompleta({
+      nomeBatismo: nome,
+      dataNascimento: data,
+      semHora: true,
+      plano: "profunda"
+    });
+
+    const arcCentro = prévia.matriz.arcanos.centro;
+    const cauda = prévia.matriz.caudaCarmica;
+    const quiron = prévia.astro.porId.quiron.signo;
+    const nak = prévia.vedica.nakshatra;
+
+    resTeaser.hidden = false;
+    resTeaser.innerHTML = `
+      <div class="teaser-mini">
+        <small>Centro da Matriz do Destino</small>
+        <strong>Arcano ${arcCentro.rom} · ${arcCentro.nome}</strong>
+        <p>Sombra detectada: ${arcCentro.sombra.slice(0, 95)}…</p>
+      </div>
+      <div class="teaser-mini">
+        <small>Cauda Cármica de Vidas Passadas</small>
+        <strong>Código ${cauda.codigo}</strong>
+        <p>${cauda.nome}</p>
+      </div>
+      <div class="teaser-mini">
+        <small>Ferida Primordial & Jyotish</small>
+        <strong>Quíron em ${quiron.nome}</strong>
+        <p>Mansão Lunar Védica: <b>${nak.nome}</b> (Pada ${nak.pada})</p>
+      </div>
+      <div class="teaser-trancado">
+        <p style="margin:0 0 .75rem">
+          🔒 <strong>${nome.split(" ")[0]}</strong>, identificamos a sua tríade cármica <strong>${cauda.codigo}</strong> e a posição de Quíron em <strong>${quiron.nome}</strong>. Para cruzar esses dados com seu <strong>Nome Completo de Batismo</strong>, sua <strong>Linha do Amor</strong>, sua <strong>Linha do Dinheiro</strong> e o <strong>Questionário dos 3 Pilares</strong>, escolha seu plano abaixo e gere seu PDF completo:
+        </p>
+        <a class="botao botao--ouro" href="#planos" style="padding:.7rem 1.5rem;font-size:.95rem">✦ Desbloquear Meu Dossiê Completo em PDF</a>
+      </div>
+    `;
+    try {
+      localStorage.setItem("tryv_lead_previa", JSON.stringify({ nome, data }));
+    } catch {}
+  });
+
+  // Céu Estrelado e Faíscas Mágicas
+  const ceu = $("#ceu"), cc = ceu.getContext("2d");
+  const magia = $("#magia"), mc = magia.getContext("2d");
+  let W = 0, H = 0, estrelas = [], faiscas = [];
+  function medir() {
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    W = innerWidth; H = innerHeight;
+    [ceu, magia].forEach(c => { c.width = W * dpr; c.height = H * dpr; });
+    cc.setTransform(dpr, 0, 0, dpr, 0, 0);
+    mc.setTransform(dpr, 0, 0, dpr, 0, 0);
+    estrelas = Array.from({ length: 160 }, () => ({
+      x: Math.random() * W, y: Math.random() * H,
+      r: Math.random() < 0.1 ? 1.5 + Math.random() : 0.5 + Math.random() * 0.8,
+      f: Math.random() * 6.28
+    }));
+  }
+  medir();
+  addEventListener("resize", medir);
+
+  addEventListener("pointermove", e => {
+    if (Math.random() < 0.35) {
+      faiscas.push({
+        x: e.clientX, y: e.clientY,
+        vx: (Math.random() - 0.5) * 1.4, vy: (Math.random() - 0.5) * 1.4 - 0.3,
+        vida: 1, r: 1 + Math.random() * 2,
+        cor: Math.random() > 0.3 ? "242,193,78" : "255,140,192"
+      });
+    }
+  }, { passive: true });
+
+  function animar(t) {
+    cc.clearRect(0, 0, W, H);
+    for (const s of estrelas) {
+      cc.globalAlpha = 0.35 + 0.6 * Math.abs(Math.sin(t * 0.001 + s.f));
+      cc.fillStyle = "#fff6d2";
+      cc.beginPath(); cc.arc(s.x, s.y, s.r, 0, 6.283); cc.fill();
+    }
+    mc.clearRect(0, 0, W, H);
+    for (let i = faiscas.length - 1; i >= 0; i--) {
+      const p = faiscas[i];
+      p.x += p.vx; p.y += p.vy; p.vida -= 0.03;
+      if (p.vida <= 0) { faiscas.splice(i, 1); continue; }
+      mc.fillStyle = `rgba(${p.cor},${p.vida.toFixed(2)})`;
+      mc.beginPath(); mc.arc(p.x, p.y, p.r, 0, 6.283); mc.fill();
+    }
+    requestAnimationFrame(animar);
+  }
+  requestAnimationFrame(animar);
+})();
+</script>
+</body>
+</html>

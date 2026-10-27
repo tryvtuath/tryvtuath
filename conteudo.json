@@ -4421,5 +4421,15 @@
                    "intensidade":  "intensity",
                    "verdade":  "true",
                    "visão no escuro":  "vision in the dark"
-               }
+               },
+    "desbloqueio":  {
+                        "chamada":  "✦ Mapeamento Espiritual, Kármico \u0026 Psicanalítico · Tryv Tuath®",
+                        "titulo":  "O Desbloqueio Invisível",
+                        "subtitulo":  "Por que você tenta mudar, estuda, se esforça, mas os mesmos ciclos emocionais, amorosos e financeiros voltam a se repetir?",
+                        "precoStandard":  "R$ 37",
+                        "checkoutStandard":  "https://loja.infinitepay.io/tryvtuath/nuw5653-mapa-do-desbloqueio---analise-standard",
+                        "precoProfunda":  "R$ 97",
+                        "checkoutProfunda":  "https://loja.infinitepay.io/tryvtuath/kka1436-mapa-do-desbloqueio---analise-profunda",
+                        "webhookUrl":  ""
+                    }
 }

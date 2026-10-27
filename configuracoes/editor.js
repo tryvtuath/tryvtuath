@@ -285,6 +285,7 @@ const ABAS = [
   ["casinha", "Casinha", "#casinha"],
   ["panteoes", "Panteões", "#panteoes"],
   ["consultas", "Consultas", "#consultas"],
+  ["desbloqueio", "Desbloqueio Invisível", "#desbloqueio"],
   ["tryv", "Tryv", "#tryv"],
   ["livro", "Livro e citação", "#livro"],
   ["contato", "Contato", "#contato"]
@@ -540,6 +541,36 @@ const PAGINAS = {
           h("div", { class: "duas" }, campo("Botão", s, "botao"), escolha("Desenho", s, "icone", ICONES)),
           campo("Mensagem do botão", s, "mensagem", ZAP)
         ] }))
+    ];
+  },
+
+  desbloqueio() {
+    const D = (est.conteudo.desbloqueio ??= {
+      chamada: "✦ Mapeamento Espiritual, Kármico & Psicanalítico · Tryv Tuath®",
+      titulo: "O Desbloqueio Invisível",
+      subtitulo: "Por que você tenta mudar, estuda, se esforça, mas os mesmos ciclos emocionais, amorosos e financeiros voltam a se repetir?",
+      precoStandard: "R$ 37",
+      checkoutStandard: "https://loja.infinitepay.io/tryvtuath/nuw5653-mapa-do-desbloqueio---analise-standard",
+      precoProfunda: "R$ 97",
+      checkoutProfunda: "https://loja.infinitepay.io/tryvtuath/kka1436-mapa-do-desbloqueio---analise-profunda",
+      webhookUrl: ""
+    });
+    return [
+      h("p", { class: "intro" }, "Configurações do funil automatizado Desbloqueio Invisível (/desbloqueio.html e /diagnostico.html). Configure na sua plataforma de pagamento (Kiwify, Kirvano, Hotmart, Mercado Pago, InfinitePay) a página de obrigado da Análise Standard para https://tryvtuath.com.br/diagnostico.html?plano=standard e da Análise Profunda para https://tryvtuath.com.br/diagnostico.html?plano=profunda."),
+      grupo("Textos da Página de Vendas", null,
+        campo("Chamada do topo", D, "chamada"),
+        campo("Título principal", D, "titulo"),
+        campo("Subtítulo", D, "subtitulo", { area: true })),
+      grupo("Análise Standard (R$ 37)", null,
+        h("div", { class: "duas" },
+          campo("Preço exibido", D, "precoStandard", { en: false }),
+          campo("Link do Checkout Standard", D, "checkoutStandard", { en: false, dica: "Cole o link de pagamento de R$ 37 (ou mantenha diagnostico.html?plano=standard&acesso=liberado para acesso direto)." }))),
+      grupo("Análise Profunda (R$ 97)", null,
+        h("div", { class: "duas" },
+          campo("Preço exibido", D, "precoProfunda", { en: false }),
+          campo("Link do Checkout Profunda", D, "checkoutProfunda", { en: false, dica: "Cole o link de pagamento de R$ 97 (ou mantenha diagnostico.html?plano=profunda&acesso=liberado para acesso direto)." }))),
+      grupo("Integração / Webhook (Opcional)", null,
+        campo("URL de Webhook (Make / Zapier / n8n / Formspree)", D, "webhookUrl", { en: false, tipo: "url", dica: "Quando preenchido, envia automaticamente todas as respostas e o mapa calculado da cliente em JSON." }))
     ];
   },
 
