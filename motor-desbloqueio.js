@@ -1300,6 +1300,9 @@
         `${dados.nomeBatismo.split(" ")[0]}, você relatou sentir **${(respEmo.emocaoPrincipal || "um desgaste interno silencioso").toLowerCase()}** e reagir às pressões através de **${(respEmo.reacaoCrise || "autodefesa emocional").toLowerCase()}**. O cruzamento do seu mapa revela que isso NÃO é fraqueza nem acaso: você nasceu com **Quíron em ${quiron.nome}** e a **Lua em ${lua.nome}** (Nakshatra Védica **${vedica.nakshatra.nome}**).`,
         `${quiron.quiron} Ao mesmo tempo, sua Lua em ${lua.nome} tem como mecanismo de defesa inconsciente: *${lua.sombra.toLowerCase()}*`,
         `Na Numerologia do seu Nome de Batismo, sua **Motivação da Alma é ${num.alma.valor}** (${num.alma.info.titulo}): ${num.alma.info.alma} Porém, quando sua ferida de **${(respEmo.feridaInfancia || "cobrança interna").toLowerCase()}** é acionada, você entra no bloqueio do número ${num.alma.valor} e na paixão inconsciente do **${eneagrama.nome} (${eneagrama.paixao})**: *${eneagrama.feridaNuclear}*`,
+        ...(respEmo.traumaFamiliar || respEmo.ansiedadeManifestacao ? [
+          `No **Questionário Clínico-Oracular Robusto**, você identificou a marca familiar de **${(respEmo.traumaFamiliar || "lealdade invisível e sobrecarga precoce").toLowerCase()}** e a manifestação de ansiedade/esgotamento como **${(respEmo.ansiedadeManifestacao || "tensão constante e hipervigilância").toLowerCase()}**. Na visão clínica e psicanalítica da Tryv Tuath®, essa resposta confirma que o seu sistema nervoso aprendeu a confundir amor e segurança com estado de alerta contínuo — exatamente na intersecção entre o seu **Quíron em ${quiron.nome}** e a sua **Linhagem Ancestral na Matriz do Destino (Arcanos ${matriz.nodos.E}/${matriz.nodos.G})**.`
+        ] : []),
         `Na Matriz do Destino, o seu **Centro de Força é o Arcano ${matriz.arcanos.centro.rom} (${matriz.arcanos.centro.nome})** e sua **Cauda Cármica é ${matriz.caudaCarmica.codigo}**. ${matriz.caudaCarmica.bloqueioAtual}`
       ],
       chaveDesbloqueio: `Para destravar o seu emocional, você precisa parar de lutar contra a sensibilidade da sua Lua em ${lua.nome}, ativar a virtude do seu Eneatipo (${eneagrama.virtudeCura}) e aplicar a chave da sua Cauda Cármica (${matriz.caudaCarmica.codigo}): ${matriz.caudaCarmica.chave}`
@@ -1347,22 +1350,109 @@
       },
       {
         pilar: "3. Ativação do Caminho Suave & Fluxo Material",
-        solucao: `NoAno Pessoal ${num.anoPessoal.valor} (${num.anoPessoal.info.titulo}), sua energia rende o triplo quando você honra seu dom de ${chines.assinaturaCompleta} (${chines.domInato.toLowerCase()}). Concentre 80% da sua rotina na sua zona de genialidade natural (Destino ${num.destino.valor}) e corte tarefas onde você age apenas por culpa.`
+        solucao: `No Ano Pessoal ${num.anoPessoal.valor} (${num.anoPessoal.info.titulo}), sua energia rende o triplo quando você honra seu dom de ${chines.assinaturaCompleta} (${chines.domInato.toLowerCase()}). Concentre 80% da sua rotina na sua zona de genialidade natural (Destino ${num.destino.valor}) e corte tarefas onde você age apenas por culpa.`
       }
     ];
 
+    // Fundamentos Profundos das Terapias e Saberes Milenares (Educação & Desmistificação de Alto Valor)
+    const fundamentosMisticos = {
+      tropicalVsVedica: {
+        titulo: "Astrologia Tropical (Ocidental) vs. Astrologia Védica Sideral (Jyotish): Desmistificando os Dois Céus",
+        subtitulo: "Por que você possui um Mapa Tropical e um Mapa Sideral — e como os dois se completam sem contradição",
+        paragrafos: [
+          `Uma das dúvidas mais fascinantes de quem acessa este dossiê é perceber que a posição dos astros na **Astrologia Ocidental (Tropical)** pode diferir em cerca de 24 graus da **Astrologia Védica Indiana (Jyotish — "A Ciência da Luz")**. No seu caso, por exemplo, seu **Sol Tropical está em ${sol.nome}** e sua **Lua Tropical em ${lua.nome}**, enquanto no cálculo sideral védico seu **Sol Sideral (Surya Rashi) está em ${vedica.suryaRashi.nome}** e sua **Lua Sideral (Chandra Rashi) em ${vedica.chandraRashi.nome}**, sob a mansão estelar (**Nakshatra**) **${vedica.nakshatra.nome}**.`,
+          `**1. O Zodíaco Tropical (Ocidental — A Sua Psicologia e Personalidade):** Utilizado no Ocidente desde Ptolomeu, o Zodíaco Tropical é sincronizado com as **estações do ano da Terra** (o grau 0° de Áries marca exatamente o Equinócio de Primavera no Hemisfério Norte). Ele funciona como o espelho da sua **psique consciente**: descreve como o seu ego se expressa, como você sente as flutuações do ambiente e como constrói sua identidade social.`,
+          `**2. O Zodíaco Sideral Védico (Jyotish — A Bagagem da Alma e o Cronograma Kármico):** Nascido nos Vedas da Índia antiga há mais de 5.000 anos, o Jyotish corrige o fenômeno astronômico da **Precessão dos Equinócios** (a lenta oscilação do eixo da Terra, chamada *Ayanamsa Lahiri*, hoje em ${vedica.ayanamsa}). Ao subtrair essa diferença, o Mapa Védico aponta para as **constelações físicas reais no firmamento**. Ele não substitui o seu signo ocidental: ele revela a camada **anterior ao ego** — os seus *Samskaras* (memórias de outras vidas), a sua **Nakshatra Lunar** (qual das 27 estrelas fixas governa sua mente profunda e intuição) e os seus **Dashas** (os períodos planetários que explicam por que determinada fase da sua vida cobra amadurecimento em uma área específica).`
+        ]
+      },
+      matrizDoDestino: {
+        titulo: "O Que é a Matriz do Destino e a Geometria Sagrada dos 22 Arcanos",
+        subtitulo: "A arquitetura energética que une sua essência pessoal, sua linhagem ancestral e suas memórias cármicas",
+        paragrafos: [
+          `A **Matriz do Destino** é um sistema de geometria sagrada e psicologia arquetípica que traduz a data do seu nascimento em um **Octagrama (Estrela de Oito Pontas)** formado por dois quadrados sobrepostos: o **Quadrado Diagonal (Pessoal)** — que revela seu Cartão de Visita (${matriz.arcanos.retrato.rom} - ${matriz.arcanos.retrato.nome}), sua Conexão Espiritual (${matriz.arcanos.espiritual.rom} - ${matriz.arcanos.espiritual.nome}), sua Linha da Matéria/Prosperidade (${matriz.arcanos.materia.rom} - ${matriz.arcanos.materia.nome}) e sua Base Cármica (${matriz.arcanos.carmaBase.rom} - ${matriz.arcanos.carmaBase.nome}) — e o **Quadrado Reto (Ancestral)**, que guarda as heranças das linhagens paterna e materna.`,
+          `No coração do Octagrama habita o seu **Centro de Força (Arcano ${matriz.arcanos.centro.rom} — ${matriz.arcanos.centro.nome})**, que funciona como o motor energético da sua alma. Cada um dos 22 Arcanos Maiores não é uma "sentença fixa", mas um espectro vibracional que pode operar no **Polo de Luz (Fluxo)** ou no **Polo de Sombra (Bloqueio)**.`,
+          `Na base inferior da Matriz encontra-se a **Cauda Cármica (${matriz.caudaCarmica.codigo})**: uma tríade de arcanos que registra o ponto exato onde sua alma deixou uma lição em aberto em existências passadas. Enquanto essa tríade opera no inconsciente, ela atrai situações repetitivas no amor e nas finanças; quando você toma consciência dela e aplica sua chave de cura, aquela mesma ferida se transforma no seu maior degrau de sabedoria.`
+        ]
+      },
+      eneagramaEAlquimia: {
+        titulo: "Fundamentos do Eneagrama Sagrado & Alquimia Oriental dos 5 Elementos",
+        subtitulo: "O cruzamento entre a sua estrutura clínica de personalidade e o seu biorritmo elemental",
+        paragrafos: [
+          `O **Eneagrama** é uma das ferramentas mais profundas de mapeamento da psique humana, unindo sabedoria iniciática antiga e psicodinâmica clínica. Ele divide a experiência humana em **3 Centros de Inteligência**: o **Centro Instintivo/Visceral (Tipos 8, 9 e 1)**, o **Centro Emocional/Coração (Tipos 2, 3 e 4)** e o **Centro Mental/Intelecto (Tipos 5, 6 e 7)**. O seu arquétipo nuclear (**${eneagrama.nome}**) não define quem você é em essência, mas mostra a **armadura emocional (${eneagrama.paixao})** que você precisou vestir na infância para se sentir segura e amada, bem como a sua **Flecha de Integração** — o movimento prático que liberta você da autossabotagem.`,
+          `Já a **Alquimia Oriental (Horóscopo Chinês & Teoria dos 5 Elementos — Wu Xing)** calcula, pelo calendário astronômico solilunar, a combinação exata entre os **12 Arquétipos Animais** e os **5 Elementos da Natureza (Madeira, Fogo, Terra, Metal e Água)** na polaridade Yin ou Yang. A sua assinatura natal (**${chines.assinaturaCompleta} — ${chines.ideograma}**) revela como a sua energia vital circula no corpo, nos relacionamentos e no trabalho, mostrando quais hábitos nutrem sua força e quais drenam seu magnetismo.`
+        ]
+      },
+      terapiasTryv: {
+        titulo: "A Sinergia das Terapias Utilizadas pela Tryv Tuath®",
+        subtitulo: "Por que unir Psicanálise, Gematria Numerológica e Fitoenergética gera desbloqueios reais",
+        paragrafos: [
+          `O método d’**O Desbloqueio Invisível** foi estruturado por **Tryv Tuath®** porque nenhum bloqueio humano habita apenas um nível: ele possui uma raiz **psíquica e inconsciente** (tratada pela escuta da Psicanálise e do Eneagrama), uma estrutura **cármica e arquetípica** (revelada pela Astrologia Tropical/Védica e pela Matriz do Destino), um código **sonoro e vocacional** (decodificado pela Numerologia Kármica e pelos Dons Natos do Nome de Batismo) e uma condensação **energética no campo sutil** (limpa através da Fitoenergética dos banhos de ervas, da Litoterapia dos cristais e dos Decretos Psicomágicos).`,
+          `Quando você compreende mentalmente o seu padrão, reposiciona suas escolhas práticas e limpa simultaneamente o seu campo vibracional, o ciclo de repetição perde a força e o seu **caminho mais suave** se abre.`
+        ]
+      }
+    };
+
+    // Blocos Estratégicos de Conversão para Análises Individuais Aprofundadas com a Tryv Tuath®
+    const convitesTerapias = [
+      {
+        id: "mapa-astral-vedico",
+        selo: "Terapia Individual I · Astrologia Ocidental & Védica",
+        titulo: "Mapa Astral Kármico & Jyotish Védico Completo com a Tryv",
+        descricao: `Neste dossiê identificamos seu Sol em ${sol.nome}, Lua em ${lua.nome}, Quíron em ${quiron.nome} e sua Nakshatra ${vedica.nakshatra.nome}. Em uma análise individual aprofundada com a Tryv Tuath, mergulhamos nas 12 Casas astrológicas completas, Aspectos Planetários, Revolução Solar do seu ano vigente e cronograma completo dos seus períodos Védicos (Mahadashas e Antardashas) para orientar decisões de carreira, mudanças, saúde e relacionamentos.`,
+        textoBotao: "✦ Agende com a Tryv sua Análise Completa e Aprofundada",
+        avisoAgenda: "Sujeito à análise prévia e disponibilidade de agenda da Tryv Tuath®.",
+        mensagemWhats: `Olá, Tryv! Li meu Dossiê do Desbloqueio Invisível (${dados.nomeBatismo}) e quero agendar minha Análise Completa e Aprofundada de Mapa Astral Kármico & Védico (Sol em ${sol.nome}, Lua em ${lua.nome}, Nakshatra ${vedica.nakshatra.nome}). Poderia verificar a disponibilidade da sua agenda? ✨`
+      },
+      {
+        id: "matriz-do-destino",
+        selo: "Terapia Individual II · Geometria Sagrada dos 22 Arcanos",
+        titulo: "Leitura Completa da Matriz do Destino & Cura das Linhagens Ancestrais",
+        descricao: `Sua Matriz tem como Centro o Arcano ${matriz.arcanos.centro.rom} (${matriz.arcanos.centro.nome}) e a Cauda Cármica ${matriz.caudaCarmica.codigo}. Na sessão exclusiva de Matriz do Destino com a Tryv, abrimos todos os 22 pontos do seu Octagrama: programas herdados das linhagens paterna e materna, mapa de saúde dos 7 Chakras na Matriz, previsão arquetípica ano a ano e desbloqueio guiado dos canais do Amor e do Dinheiro.`,
+        textoBotao: "✦ Agende com a Tryv sua Análise Completa e Aprofundada",
+        avisoAgenda: "Sujeito à análise prévia e disponibilidade de agenda da Tryv Tuath®.",
+        mensagemWhats: `Olá, Tryv! Li meu Dossiê do Desbloqueio Invisível (${dados.nomeBatismo}) e quero agendar minha Análise Completa e Aprofundada da Matriz do Destino (Centro ${matriz.arcanos.centro.rom} · Cauda Cármica ${matriz.caudaCarmica.codigo}). Poderia verificar a disponibilidade da sua agenda? ✨`
+      },
+      {
+        id: "numerologia-karmica",
+        selo: "Terapia Individual III · Gematria, Dons Natos & Assinatura",
+        titulo: "Mapa Numerológico Kármico Completo & Planejamento de Assinatura",
+        descricao: `Seu nome carrega a Alma ${num.alma.valor}, Expressão ${num.expressao.valor} e Destino ${num.destino.valor}. Na consultoria numerológica aprofundada com a Tryv, analisamos seus 3 Grandes Ciclos de Vida, 4 Momentos Decisivos, Desafios Kármicos, Harmonia Conjugal/Societária e desenhamos (se necessário) sua Assinatura de Poder ou Nome Profissional para destravar prosperidade e magnetismo.`,
+        textoBotao: "✦ Agende com a Tryv sua Análise Completa e Aprofundada",
+        avisoAgenda: "Sujeito à análise prévia e disponibilidade de agenda da Tryv Tuath®.",
+        mensagemWhats: `Olá, Tryv! Li meu Dossiê do Desbloqueio Invisível (${dados.nomeBatismo}) e quero agendar minha Análise Completa e Aprofundada de Numerologia Kármica & Dons Natos (Alma ${num.alma.valor}, Expressão ${num.expressao.valor}, Destino ${num.destino.valor}). Poderia verificar a disponibilidade da sua agenda? ✨`
+      },
+      {
+        id: "psicanalise-terapias",
+        selo: "Terapia Individual IV · Psicanálise Clínica & Mentoria por Ligação",
+        titulo: "Mentoria Individual Trimestral ou Semestral com a Tryv Tuath®",
+        descricao: `A Tryv é psicanalista formada em traumas familiares, ansiedade e depressão, além de mentora especializada em guiar a superação de desafios reais. Para trabalhar diretamente na dissolução dos gatilhos do seu ${eneagrama.nome}, curar raízes familiares e sustentar sua virada emocional, afetiva e financeira, conheça o acompanhamento em sessões individuais por pacotes trimestrais ou semestrais realizados por ligações telefônicas.`,
+        textoBotao: "✦ Agende com a Tryv sua Análise Completa e Aprofundada",
+        avisoAgenda: "Sujeito à análise prévia de perfil e disponibilidade de agenda da Tryv Tuath®.",
+        mensagemWhats: `Olá, Tryv! Li meu Dossiê do Desbloqueio Invisível (${dados.nomeBatismo}) e quero saber mais sobre sua Análise Completa e Aprofundada / Pacotes Trimestrais e Semestrais de Sessões Individuais por Ligação Telefônica. Poderia verificar a disponibilidade da sua agenda? ✨`
+      }
+    ];
+
+    // Posicionamento Ético, Clínico e Mentoria da Tryv Tuath®
+    const posicionamentoTryv = {
+      transicaoStandard: "Por um pequeno acréscimo de investimento, você pode ter acesso imediato à Análise Profunda Completa e a um questionário diagnóstico muito mais robusto para compreender melhor a si mesma, mapear suas heranças inconscientes e destravar seus caminhos de melhoria.",
+      avisoEtico: "AVISO ÉTICO E PROFISSIONAL: Nenhuma destas ferramentas ou leituras automatizadas substitui a análise clínica individual e o acompanhamento contínuo de um profissional qualificado.",
+      apresentacaoProfissional: "Sobre a Mentora e Psicanalista: Tryv Tuath® é psicanalista formada em traumas familiares, ansiedade e depressão, além de mentora especializada em guiar a superação de desafios emocionais, relacionais e vocacionais através de sessões individuais estruturadas em pacotes trimestrais ou semestrais por ligações telefônicas — oferecendo escuta clínica segura, direcionamento estratégico e sigilo absoluto onde quer que você esteja.",
+      regraIndicacao: "PROGRAMA DE RECOMPENSA POR INDICAÇÃO (5 INDICAÇÕES = DESCONTO ESPECIAL NO UPGRADE): Caso você tenha adquirido a versão Standard (R$ 37) e posteriormente deseje fazer o upgrade para o pacote completo da Análise Profunda (R$ 97), se você indicar mais 5 pessoas que realizem a análise, você ganha um desconto especial exclusivo para adquirir o valor complementar do pacote completo! Basta informar ao suporte no WhatsApp da Tryv os nomes das 5 pessoas indicadas."
+    };
+
     // Seção Estratégica de Upsell Exclusivo para quem adquiriu a Versão Standard
     const upsellStandard = {
-      titulo: "Acesso Reservado: Desbloqueie as Camadas Ocultas do Seu Dossiê Profundo",
-      subtitulo: "Você acabou de ver a ponta do iceberg do seu código astral e emocional. Mas a verdadeira raiz cármica e financeira ainda está selada.",
-      explicacao: `Na sua Análise Standard, revelamos sua Tríade Solar/Lunar, o padrão central das suas Relações/Afetos (Vênus em ${venus.nome} + Lilith em ${lilith.nome}) e sua síntese de Eneagrama (${eneagrama.nome}) com Horóscopo Chinês (${chines.assinaturaCompleta}). Porém, o seu mapa mostra que a trava mestra está gravada na sua **Cauda Cármica ${matriz.caudaCarmica.codigo}**, no seu **Período Planetário Védico Atual (Regente ${vedica.nakshatra.regenteMomento})** e nas suas **Dívidas e Lições Cármicas do Nome de Batismo**.`,
+      titulo: "Acesso Reservado: Desbloqueie a Análise Profunda Completa & Questionário Expandido",
+      subtitulo: "Por um pequeno acréscimo de investimento, acesse o questionário mais robusto e todas as camadas profundas do seu mapa.",
+      explicacao: `Na sua Análise Standard, revelamos sua Tríade Solar/Lunar, o padrão central das suas Relações/Afetos (Vênus em ${venus.nome} + Lilith em ${lilith.nome}) e sua síntese de Eneagrama (${eneagrama.nome}) com Horóscopo Chinês (${chines.assinaturaCompleta}). Porém, por um pequeno acréscimo de investimento, você libera o **Questionário Diagnóstico Expandido** e o cruzamento completo da sua **Cauda Cármica ${matriz.caudaCarmica.codigo}**, do seu **Período Planetário Védico Atual (Regente ${vedica.nakshatra.regenteMomento})** e dos seus **Dons Natos e Numerologia Kármica do Nome de Batismo**.`,
       beneficiosExclusivos: [
-        `Mapa Védico Sideral Aprofundado (Jyotish): O que o seu momento atual (${vedica.nakshatra.nome} · Regente ${vedica.nakshatra.regenteMomento}) exige de você agora e seu Direcionamento Prático para os próximos meses.`,
+        `Questionário Diagnóstico Mais Robusto: Perguntas clínicas aprofundadas sobre dinâmicas familiares, gatilhos de ansiedade e bloqueios de merecimento para uma leitura ainda mais precisa.`,
+        `Mapa Védico Sideral Aprofundado (Jyotish): Desmistificação completa Tropical vs. Védica + o que o seu momento atual (${vedica.nakshatra.nome} · Regente ${vedica.nakshatra.regenteMomento}) exige de você agora e seu Direcionamento Prático.`,
         `Numerologia Kármica Completa + Dons Natos: Descubra suas Lições e Dívidas Cármicas ocultas no nome e o Mapa dos seus Dons Natos (Dia Natal ${num.donsNatos.diaNatal} + Expressão ${num.expressao.valor}) para seguir por um caminho muito mais suave.`,
-        `Geometria Sagrada da Matriz do Destino (22 Arcanos): Desbloqueio completo da sua Cauda Cármica (${matriz.caudaCarmica.codigo}) e da tríade exata do seu Canal do Dinheiro (${matriz.nodos.C}-${matriz.nodos.DinheiroProfissao}-${matriz.nodos.C1}).`,
-        `Protocolo Prático de 21 Dias da Tryv: Banho energético específico para seu elemento (${lua.elemento}), Cristais de ancoragem, Mantra pessoal de quebra de contrato e plano passo a passo.`
+        `Geometria Sagrada da Matriz do Destino (22 Arcanos) + Protocolo de 21 Dias: Desbloqueio da Cauda Cármica (${matriz.caudaCarmica.codigo}), Canal do Dinheiro (${matriz.nodos.C}-${matriz.nodos.DinheiroProfissao}-${matriz.nodos.C1}), banhos, cristais e decreto pessoal.`
       ],
-      gatilhoDesconto: "CONDIÇÃO ESPECIAL DE UPGRADE PARA CLIENTES STANDARD: Como você já deu o primeiro passo adquirindo a versão Standard (R$ 37), você tem direito a um abatimento especial no seu upgrade para o Dossiê Completo de Análise Profunda.",
+      gatilhoDesconto: "CONDIÇÃO ESPECIAL DE UPGRADE & BÔNUS POR 5 INDICAÇÕES: Como cliente da versão Standard (R$ 37), você pode migrar para a Análise Profunda a qualquer momento. E mais: se você indicar 5 pessoas que realizem a análise, você ganha um desconto especial exclusivo no valor complementar para liberar o pacote completo da Análise Profunda!",
+      regraIndicacao: posicionamentoTryv.regraIndicacao,
       codigoCupom: "UPGRADE-PROFUNDA-VIP",
       urlUpgrade: "https://loja.infinitepay.io/tryvtuath/kka1436-mapa-do-desbloqueio---analise-profunda"
     };
@@ -1388,6 +1478,9 @@
       emocional: diagnosticoEmocional,
       relacionamento: diagnosticoRelacionamento,
       profissional: diagnosticoProfissional,
+      fundamentosMisticos,
+      convitesTerapias,
+      posicionamentoTryv,
       solucoesPraticasStandard,
       upsellStandard,
       protocoloTryv: {
@@ -1494,7 +1587,7 @@
   }
 
   /* =========================================================================
-     14. GERADOR NATIVO DE PDF DE LUXO (CANVAS A4 + JSPDF / DOWNLOAD DIRETO)
+     14. GERADOR NATIVO DE PDF DE LUXO (DIAGRAMAÇÃO PRECISA A4 + JSPDF)
      ========================================================================= */
   async function carregarJsPDF() {
     if (global.jspdf && global.jspdf.jsPDF) return global.jspdf.jsPDF;
@@ -1508,14 +1601,20 @@
   }
 
   function limparMarkdown(txt) {
-    return String(txt || "").replace(/\*\*(.+?)\*\*/g, "$1").replace(/\*(.+?)\*/g, "$1");
+    return String(txt || "")
+      .replace(/\*\*(.+?)\*\*/g, "$1")
+      .replace(/\*(.+?)\*/g, "$1")
+      .replace(/[✦⚷⚸♄☊☋☉☽☿♀♂♃♅♆♇]/g, "")
+      .trim();
   }
 
   async function gerarPDFPersonalizado(resultado, opcoes = {}) {
     const jsPDF = await carregarJsPDF();
     const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4", compress: true });
-    const W = 210, H = 297, M = 14, LARG = W - M * 2;
-    const LIMITE_INFERIOR = H - 14;
+    // Margens e limites rigorosamente calibrados dentro da moldura (moldura interna vai de x=10.5 a x=199.5, y=20 a y=286.5)
+    const W = 210, H = 297, M = 15, LARG = W - M * 2; // LARG = 180mm (de x=15 a x=195)
+    const LIMITE_INFERIOR = H - 15.5; // 281.5mm (5mm acima da linha inferior da moldura)
+    const FATOR_LINHA = 1.24;
     const isProfunda = resultado.plano === "profunda";
     const { cliente, astro, vedica, numerologia: num, matriz, diagnostico: diag } = resultado;
     const chines = resultado.chines || calcularHoroscopoChines(cliente);
@@ -1524,6 +1623,10 @@
 
     let paginaAtual = 1;
     let y = 0;
+
+    function altLinhaMm(pt) {
+      return pt * 0.352778 * FATOR_LINHA;
+    }
 
     function desenharMolduraPagina(escura = false) {
       if (escura) {
@@ -1538,15 +1641,15 @@
         // Pergaminho Creme Real com cabeçalho e moldura dourada calibrada
         doc.setFillColor(252, 249, 242);
         doc.rect(0, 0, W, H, "F");
-        // Faixa superior mística enxuta
+        // Faixa superior mística
         doc.setFillColor(24, 18, 58);
         doc.rect(0, 0, W, 15, "F");
         doc.setTextColor(242, 193, 78);
         doc.setFont("times", "bold");
-        doc.setFontSize(9);
-        doc.text("TRYV TUATH® · DOSSIÊ ORACULAR DO DESBLOQUEIO INVISÍVEL", M, 9.8);
+        doc.setFontSize(8.8);
+        doc.text("TRYV TUATH® · DOSSIÊ ORACULAR & PSICANALÍTICO DO DESBLOQUEIO INVISÍVEL", M, 9.8);
         doc.setFont("helvetica", "normal");
-        doc.setFontSize(8);
+        doc.setFontSize(7.8);
         doc.setTextColor(215, 205, 240);
         doc.text(
           `${isProfunda ? "ANÁLISE PROFUNDA COMPLETA" : "ANÁLISE STANDARD"} · ${primeiroNome.toUpperCase()}`,
@@ -1557,14 +1660,14 @@
         // Moldura dupla perfeitamente alinhada às margens
         doc.setDrawColor(196, 150, 52);
         doc.setLineWidth(0.4);
-        doc.rect(8.5, 18, W - 17, H - 27);
+        doc.rect(9, 18, W - 18, H - 27.5);
         doc.setLineWidth(0.15);
-        doc.rect(10, 19.5, W - 20, H - 30);
+        doc.rect(10.5, 19.5, W - 21, H - 30.5);
         // Rodapé
         doc.setFont("times", "italic");
-        doc.setFontSize(8);
+        doc.setFontSize(7.8);
         doc.setTextColor(110, 95, 130);
-        doc.text("tryvtuath.com.br · Você é o oráculo · Documento confidencial e intransferível", M, H - 4.2);
+        doc.text("tryvtuath.com.br · Você é o oráculo · Não substitui acompanhamento clínico individual", M, H - 4.2);
         doc.text(`Pág. ${paginaAtual}`, W - M, H - 4.2, { align: "right" });
       }
     }
@@ -1573,7 +1676,7 @@
       doc.addPage();
       paginaAtual++;
       desenharMolduraPagina(false);
-      y = 25;
+      y = 25.5;
     }
 
     function garantirEspaco(alturaNecessaria) {
@@ -1583,68 +1686,155 @@
     }
 
     function tituloSecao(sub, titulo) {
-      // Garante espaço para o cabeçalho da seção + pelo menos o início do próximo bloco (evita títulos órfãos no fim da página)
-      garantirEspaco(34);
-      if (y > 26) y += 1.5;
+      doc.setFont("times", "bold");
+      doc.setFontSize(10.6);
+      const linhasTit = doc.splitTextToSize(limparMarkdown(titulo), LARG - 12);
+      const hTit = linhasTit.length * altLinhaMm(10.6);
+      const altBanner = 7 + hTit + 2.5;
+      // Garante espaço para o cabeçalho + pelo menos o primeiro bloco (evita títulos órfãos no fim da página)
+      garantirEspaco(altBanner + 26);
+      if (y > 26.5) y += 1.8;
       doc.setFillColor(27, 21, 70);
-      doc.roundedRect(M, y, LARG, 12.5, 2, 2, "F");
+      doc.roundedRect(M, y, LARG, altBanner, 2, 2, "F");
       doc.setDrawColor(242, 193, 78);
       doc.setLineWidth(0.35);
-      doc.roundedRect(M, y, LARG, 12.5, 2, 2, "S");
+      doc.roundedRect(M, y, LARG, altBanner, 2, 2, "S");
       doc.setFont("helvetica", "bold");
-      doc.setFontSize(7);
+      doc.setFontSize(6.8);
       doc.setTextColor(255, 140, 192);
-      doc.text(sub.toUpperCase(), M + 4, y + 4.4);
+      const subLimpo = doc.splitTextToSize(limparMarkdown(sub).toUpperCase(), LARG - 12)[0];
+      doc.text(subLimpo, M + 5, y + 4.3);
       doc.setFont("times", "bold");
-      doc.setFontSize(11);
+      doc.setFontSize(10.6);
       doc.setTextColor(255, 230, 163);
-      const titCurto = doc.splitTextToSize(limparMarkdown(titulo), LARG - 8)[0];
-      doc.text(titCurto, M + 4, y + 10.1);
-      y += 16;
+      doc.text(linhasTit, M + 5, y + 9.4, { lineHeightFactor: FATOR_LINHA });
+      y += altBanner + 3.2;
     }
 
     function paragrafo(texto, op = {}) {
       const limpo = limparMarkdown(texto);
-      const tam = op.tamanho || 9.8;
+      if (!limpo) return;
+      const tam = op.tamanho || 9.4;
       const estilo = op.estilo || "normal";
       const cor = op.cor || [38, 28, 60];
       const recuo = op.recuo || 0;
+      const largUtil = LARG - recuo * 2 - 4; // folga lateral de segurança
       doc.setFont(op.fonte || "helvetica", estilo);
       doc.setFontSize(tam);
       doc.setTextColor(...cor);
-      const linhas = doc.splitTextToSize(limpo, LARG - recuo * 2);
-      const altLinha = tam * 0.43;
-      garantirEspaco(linhas.length * altLinha + 3);
-      doc.text(linhas, M + recuo, y);
-      y += linhas.length * altLinha + (op.espacoDepois ?? 2.8);
+      const linhas = doc.splitTextToSize(limpo, largUtil);
+      const hLinha = altLinhaMm(tam);
+      const altBloco = linhas.length * hLinha;
+      garantirEspaco(altBloco + 3);
+      doc.text(linhas, M + recuo + 1, y + hLinha * 0.78, { lineHeightFactor: FATOR_LINHA });
+      y += altBloco + (op.espacoDepois ?? 2.6);
     }
 
     function caixaDestaque(rotulo, tituloCaixa, textoCaixa, corBorda = [210, 155, 45], corFundo = [247, 241, 226]) {
-      const limpo = limparMarkdown(textoCaixa);
+      const padX = 5.5;
+      const largInterna = LARG - padX * 2 - 3; // 166mm de largura útil segura dentro da caixa de 180mm
+
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(7);
+      const linhasRot = doc.splitTextToSize(limparMarkdown(rotulo).toUpperCase(), largInterna);
+      const hRot = linhasRot.length * altLinhaMm(7);
+
+      doc.setFont("times", "bold");
+      doc.setFontSize(10.1);
+      const linhasTit = doc.splitTextToSize(limparMarkdown(tituloCaixa), largInterna);
+      const hTit = linhasTit.length * altLinhaMm(10.1);
+
       doc.setFont("helvetica", "normal");
-      doc.setFontSize(9.3);
-      const linhas = doc.splitTextToSize(limpo, LARG - 9);
-      const alt = 12.5 + linhas.length * 4.1 + 3;
-      garantirEspaco(alt + 2.5);
+      doc.setFontSize(9.1);
+      const linhasTxt = doc.splitTextToSize(limparMarkdown(textoCaixa), largInterna);
+      const hTxt = linhasTxt.length * altLinhaMm(9.1);
+
+      const alt = 4.2 + hRot + 1.4 + hTit + 2.0 + hTxt + 3.8;
+      // page-break-inside: avoid (se não couber inteira na página atual, abre nova página)
+      garantirEspaco(alt + 3);
+
       doc.setFillColor(...corFundo);
       doc.setDrawColor(...corBorda);
       doc.setLineWidth(0.38);
       doc.roundedRect(M, y, LARG, alt, 2, 2, "FD");
+
+      let cy = y + 4.2;
       doc.setFont("helvetica", "bold");
-      doc.setFontSize(7.2);
+      doc.setFontSize(7);
       doc.setTextColor(175, 45, 105);
-      const rotCurto = doc.splitTextToSize(String(rotulo).toUpperCase(), LARG - 9)[0];
-      doc.text(rotCurto, M + 4.5, y + 4.6);
+      doc.text(linhasRot, M + padX, cy + altLinhaMm(7) * 0.72, { lineHeightFactor: FATOR_LINHA });
+      cy += hRot + 1.4;
+
       doc.setFont("times", "bold");
-      doc.setFontSize(10.4);
+      doc.setFontSize(10.1);
       doc.setTextColor(27, 21, 70);
-      const titCurto = doc.splitTextToSize(limparMarkdown(tituloCaixa), LARG - 9)[0];
-      doc.text(titCurto, M + 4.5, y + 9.6);
+      doc.text(linhasTit, M + padX, cy + altLinhaMm(10.1) * 0.75, { lineHeightFactor: FATOR_LINHA });
+      cy += hTit + 2.0;
+
       doc.setFont("helvetica", "normal");
-      doc.setFontSize(9.3);
+      doc.setFontSize(9.1);
       doc.setTextColor(45, 35, 68);
-      doc.text(linhas, M + 4.5, y + 14.3);
-      y += alt + 3.2;
+      doc.text(linhasTxt, M + padX, cy + altLinhaMm(9.1) * 0.75, { lineHeightFactor: FATOR_LINHA });
+
+      y += alt + 3;
+    }
+
+    // Tabela estruturada em 2 colunas para as Posições Planetárias Natais (sem estouro de margem nem desalinhamento)
+    function desenharTabelaAstrosPDF(astroObj) {
+      const lista = astroObj.astros || [];
+      const subCab = astroObj.asc
+        ? `Ascendente em ${astroObj.asc.signo.nome} (${astroObj.asc.grau}) · Meio do Céu em ${astroObj.mc.signo.nome} (${astroObj.mc.grau})`
+        : "Mapa Solar Natal (Casas Solares calculadas ao meio-dia)";
+
+      const numLinhasGrade = Math.ceil(lista.length / 2);
+      const altLinhaGrade = 7.4;
+      const altTotal = 12 + numLinhasGrade * altLinhaGrade + 3;
+      garantirEspaco(altTotal + 3);
+
+      doc.setFillColor(247, 241, 226);
+      doc.setDrawColor(196, 150, 52);
+      doc.setLineWidth(0.38);
+      doc.roundedRect(M, y, LARG, altTotal, 2, 2, "FD");
+
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(7);
+      doc.setTextColor(175, 45, 105);
+      doc.text("MAPA ASTRAL NATAL · POSIÇÕES PLANETÁRIAS E PONTOS KÁRMICOS", M + 5, y + 4.5);
+
+      doc.setFont("times", "bold");
+      doc.setFontSize(9.8);
+      doc.setTextColor(27, 21, 70);
+      doc.text(limparMarkdown(subCab), M + 5, y + 9.2);
+
+      const colW = (LARG - 12) / 2;
+      let gy = y + 12;
+
+      for (let r = 0; r < numLinhasGrade; r++) {
+        for (let c = 0; c < 2; c++) {
+          const item = lista[r * 2 + c];
+          if (!item) continue;
+          const gx = M + 4 + c * (colW + 4);
+          doc.setFillColor(r % 2 === 0 ? 255 : 242, r % 2 === 0 ? 252 : 235, r % 2 === 0 ? 245 : 218);
+          doc.setDrawColor(220, 195, 135);
+          doc.setLineWidth(0.2);
+          doc.roundedRect(gx, gy, colW, altLinhaGrade - 0.8, 1.2, 1.2, "FD");
+
+          doc.setFont("helvetica", "bold");
+          doc.setFontSize(8.2);
+          doc.setTextColor(27, 21, 70);
+          const nomeAstro = `${limparMarkdown(item.nome)}${item.retro ? " (R)" : ""}`;
+          doc.text(nomeAstro, gx + 2.5, gy + 4.3);
+
+          doc.setFont("helvetica", "normal");
+          doc.setFontSize(8.1);
+          doc.setTextColor(75, 45, 95);
+          const posTexto = `${item.signo.nome} (${item.grau})${item.casa ? ` · Casa ${item.casa}` : ""}`;
+          doc.text(posTexto, gx + colW - 2.5, gy + 4.3, { align: "right" });
+        }
+        gy += altLinhaGrade;
+      }
+
+      y += altTotal + 3;
     }
 
     // ==================== PÁGINA 1: CAPA DE LUXO NOITE ENCANTADA ====================
@@ -1653,32 +1843,32 @@
     // Ornamento superior
     doc.setDrawColor(242, 193, 78);
     doc.setLineWidth(0.4);
-    doc.circle(W / 2, 46, 18, "S");
-    doc.circle(W / 2, 46, 14, "S");
+    doc.circle(W / 2, 44, 17, "S");
+    doc.circle(W / 2, 44, 13, "S");
     doc.setFont("times", "bold");
-    doc.setFontSize(18);
+    doc.setFontSize(17);
     doc.setTextColor(255, 230, 163);
-    doc.text(matriz.arcanos.centro.rom, W / 2, 48.5, { align: "center" });
+    doc.text(matriz.arcanos.centro.rom, W / 2, 46.5, { align: "center" });
 
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(9);
+    doc.setFontSize(8.8);
     doc.setTextColor(255, 140, 192);
-    doc.text("TRYV TUATH® · ORÁCULOS, PSICANÁLISE & TERAPIAS", W / 2, 74, { align: "center" });
+    doc.text("TRYV TUATH® · ORÁCULOS, PSICANÁLISE & MENTORIA", W / 2, 70, { align: "center" });
 
     doc.setFont("times", "bold");
-    doc.setFontSize(26);
+    doc.setFontSize(25);
     doc.setTextColor(255, 246, 210);
-    doc.text("O DESBLOQUEIO INVISÍVEL", W / 2, 88, { align: "center" });
+    doc.text("O DESBLOQUEIO INVISÍVEL", W / 2, 83, { align: "center" });
 
     doc.setFont("times", "italic");
-    doc.setFontSize(13);
+    doc.setFontSize(12);
     doc.setTextColor(201, 191, 230);
     doc.text(
       isProfunda
         ? "Dossiê Completo: Astrologia, Jyotish Védica, Numerologia Kármica, Matriz & Arquétipos"
         : "Diagnóstico Essencial: Raiz do Bloqueio, Relações/Afetos, Arquétipos & Soluções Práticas",
       W / 2,
-      97,
+      92,
       { align: "center" }
     );
 
@@ -1686,37 +1876,38 @@
     doc.setFillColor(27, 21, 70);
     doc.setDrawColor(242, 193, 78);
     doc.setLineWidth(0.5);
-    doc.roundedRect(24, 110, W - 48, 62, 3, 3, "FD");
+    doc.roundedRect(22, 102, W - 44, 60, 3, 3, "FD");
 
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(8.5);
+    doc.setFontSize(8.2);
     doc.setTextColor(242, 193, 78);
-    doc.text("MAPA CONSAGRADO EXCLUSIVAMENTE PARA:", W / 2, 121, { align: "center" });
+    doc.text("MAPA CONSAGRADO EXCLUSIVAMENTE PARA:", W / 2, 112, { align: "center" });
 
     doc.setFont("times", "bold");
-    doc.setFontSize(16);
+    doc.setFontSize(15);
     doc.setTextColor(255, 255, 255);
-    const nomeLinhas = doc.splitTextToSize(cliente.nomeBatismo.toUpperCase(), W - 64);
-    doc.text(nomeLinhas, W / 2, 131, { align: "center" });
+    const nomeLinhas = doc.splitTextToSize(cliente.nomeBatismo.toUpperCase(), W - 56);
+    doc.text(nomeLinhas[0], W / 2, 122, { align: "center" });
 
     const [anoN, mesN, diaN] = cliente.dataNascimento.split("-");
     const dataFormatada = `${diaN}/${mesN}/${anoN}`;
     const horaFormatada = cliente.semHora ? "Hora não informada (Mapa Solar 12:00)" : `às ${cliente.horaNascimento}`;
     doc.setFont("helvetica", "normal");
-    doc.setFontSize(10);
+    doc.setFontSize(9.6);
     doc.setTextColor(215, 205, 240);
-    doc.text(`Nascimento: ${dataFormatada} ${horaFormatada}`, W / 2, 146, { align: "center" });
-    doc.text(`Local: ${cliente.cidadeNome || "Brasil"}`, W / 2, 153, { align: "center" });
+    doc.text(`Nascimento: ${dataFormatada} ${horaFormatada}`, W / 2, 135, { align: "center" });
+    doc.text(`Local: ${cliente.cidadeNome || "Brasil"}`, W / 2, 142, { align: "center" });
     doc.setTextColor(255, 140, 192);
     doc.setFont("helvetica", "bold");
+    doc.setFontSize(8.8);
     doc.text(
       `Modalidade: ${isProfunda ? "ANÁLISE PROFUNDA COMPLETA (6 SABERES + PROTOCOLO 21 DIAS)" : "ANÁLISE STANDARD (DIAGNÓSTICO ESSENCIAL & AFETOS)"}`,
       W / 2,
-      163,
+      152,
       { align: "center" }
     );
 
-    // Síntese dos Códigos Sagrados na Capa (Incluindo Eneagrama & Horóscopo Chinês)
+    // Síntese dos Códigos Sagrados na Capa (3x3 perfeitamente alinhado)
     const cardsCapa = [
       ["SOL TROPICAL", `${astro.porId.sol.signo.nome} (${astro.porId.sol.grau})`],
       ["LUA & EMOÇÕES", `${astro.porId.lua.signo.nome} (${astro.porId.lua.grau})`],
@@ -1725,48 +1916,58 @@
       ["NAKSHATRA VÉDICA", `${vedica.nakshatra.nome} (Pada ${vedica.nakshatra.pada})`],
       ["ALMA & DESTINO", `Alma ${num.alma.valor} · Destino ${num.destino.valor}`],
       ["CENTRO DA MATRIZ", `Arcano ${matriz.arcanos.centro.rom} · ${matriz.arcanos.centro.nome}`],
-      ["ENEAGRAMA", `${eneagrama.nome} (Asas ${eneagrama.asas})`],
+      ["ENEAGRAMA", `${eneagrama.nome.split("—")[0].trim()} (${eneagrama.asas})`],
       ["ALQUIMIA ORIENTAL", chines.assinaturaCompleta]
     ];
 
-    let cx = 24, cy = 184;
-    const cw = (W - 48 - 8) / 3, ch = 22;
+    const cx = 22, cy = 171;
+    const cw = (W - 44 - 8) / 3, ch = 21;
     cardsCapa.forEach(([rot, val], idx) => {
       const col = idx % 3, lin = Math.floor(idx / 3);
-      const x = cx + col * (cw + 4), yCard = cy + lin * (ch + 4);
+      const x = cx + col * (cw + 4), yCard = cy + lin * (ch + 3.5);
       doc.setFillColor(34, 24, 82);
       doc.setDrawColor(185, 163, 255);
       doc.setLineWidth(0.25);
       doc.roundedRect(x, yCard, cw, ch, 2, 2, "FD");
       doc.setFont("helvetica", "bold");
-      doc.setFontSize(7);
+      doc.setFontSize(6.8);
       doc.setTextColor(242, 193, 78);
-      doc.text(rot, x + cw / 2, yCard + 7.5, { align: "center" });
+      doc.text(rot, x + cw / 2, yCard + 7, { align: "center" });
       doc.setFont("times", "bold");
-      doc.setFontSize(9.5);
+      doc.setFontSize(9.2);
       doc.setTextColor(255, 255, 255);
-      const vCurto = doc.splitTextToSize(val, cw - 4)[0];
-      doc.text(vCurto, x + cw / 2, yCard + 15.5, { align: "center" });
+      const vCurto = doc.splitTextToSize(val, cw - 5)[0];
+      doc.text(vCurto, x + cw / 2, yCard + 14.8, { align: "center" });
     });
 
+    // Aviso ético e apresentação sintética já na capa
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(7.6);
+    doc.setTextColor(210, 200, 235);
+    const linhasEticaCapa = doc.splitTextToSize(
+      "Nota Ética: Esta ferramenta automatizada oferece autoconhecimento profundo, mas não substitui a análise clínica individual de um profissional. Tryv Tuath® é psicanalista formada em traumas familiares, ansiedade e depressão e mentora em pacotes trimestrais/semestrais.",
+      W - 44
+    );
+    doc.text(linhasEticaCapa, W / 2, 251, { align: "center", lineHeightFactor: 1.2 });
+
     doc.setFont("times", "italic");
-    doc.setFontSize(10.5);
+    doc.setFontSize(10.2);
     doc.setTextColor(255, 230, 163);
     doc.text(
       "“Mude-se e descobrirá novos outros para refletir-se. Você é o oráculo.” — Tryv Tuath®",
       W / 2,
-      273,
+      271,
       { align: "center" }
     );
     doc.setFont("helvetica", "normal");
-    doc.setFontSize(8.5);
+    doc.setFontSize(8.2);
     doc.setTextColor(180, 170, 210);
-    doc.text(`Emitido em ${resultado.geradoEm} · tryvtuath.com.br`, W / 2, 281, { align: "center" });
+    doc.text(`Emitido em ${resultado.geradoEm} · tryvtuath.com.br`, W / 2, 279, { align: "center" });
 
     // ==================== FLUXO CONTÍNUO DE PÁGINAS (ZERO ESPAÇOS VAZIOS) ====================
     novaPagina();
 
-    tituloSecao("Parte I · Visão Geral do Diagnóstico", "O Seu Código Central e Índices de Bloqueio");
+    tituloSecao("Parte I · Visão Geral do Diagnóstico & Fundamentos", "O Seu Código Central, Índices de Bloqueio e Sinergia Terapêutica");
     paragrafo(
       `Bem-vinda ao seu Dossiê do Desbloqueio Invisível, ${primeiroNome}. Este documento foi gerado pelo cruzamento entre os seus dados sagrados de nascimento (${dataFormatada}) e as respostas que você entregou sobre seus padrões emocionais, afetivos e profissionais.`
     );
@@ -1786,17 +1987,24 @@
     ];
     barras.forEach(([rot, pct, cor]) => {
       doc.setFont("helvetica", "bold");
-      doc.setFontSize(8.5);
+      doc.setFontSize(8.4);
       doc.setTextColor(38, 28, 60);
-      doc.text(`${rot}: ${pct}% de energia represada`, M, y);
-      y += 2;
+      doc.text(`${rot}: ${pct}% de energia represada`, M, y + 3);
+      y += 4.2;
       doc.setFillColor(230, 224, 212);
-      doc.roundedRect(M, y, LARG, 4, 1.5, 1.5, "F");
+      doc.roundedRect(M, y, LARG, 3.8, 1.5, 1.5, "F");
       doc.setFillColor(...cor);
-      doc.roundedRect(M, y, (LARG * pct) / 100, 4, 1.5, 1.5, "F");
-      y += 7.5;
+      doc.roundedRect(M, y, (LARG * pct) / 100, 3.8, 1.5, 1.5, "F");
+      y += 6.2;
     });
     y += 1.5;
+
+    // Explicação dos Fundamentos das Terapias e Apresentação Profissional da Tryv
+    caixaDestaque(
+      "Fundamentos do Método & Aviso Ético Profissional",
+      diag.fundamentosMisticos.terapiasTryv.titulo,
+      `${diag.fundamentosMisticos.terapiasTryv.paragrafos.join("\n\n")}\n\n${diag.posicionamentoTryv.avisoEtico}\n\n${diag.posicionamentoTryv.apresentacaoProfissional}`
+    );
 
     // ==================== PARTE II: NUMEROLOGIA KÁRMICA & DONS NATOS ====================
     tituloSecao("Parte II · Numerologia do Nome de Batismo", `A Gematria Sagrada de "${cliente.nomeBatismo}"`);
@@ -1817,7 +2025,6 @@
     );
 
     if (isProfunda) {
-      // Dons Natos e Caminho Mais Suave (Exclusivo Profunda)
       tituloSecao("Parte II-B · Dons Natos & Numerologia Kármica Completa", "Seus Talentos de Berço e o Caminho Mais Suave");
       caixaDestaque(
         `Dom de Nascimento (Dia Natal ${num.donsNatos.diaNatal} · Vibração ${num.donsNatos.vibracaoDiaNatal})`,
@@ -1869,9 +2076,10 @@
 
     // ==================== PARTE III: ENEAGRAMA & HORÓSCOPO CHINÊS ====================
     tituloSecao(
-      "Parte III · Arquétipos de Personalidade & Alquimia Oriental",
+      "Parte III · Eneagrama Sagrado & Alquimia Oriental",
       `${eneagrama.nome} + Horóscopo Chinês (${chines.assinaturaCompleta})`
     );
+    diag.fundamentosMisticos.eneagramaEAlquimia.paragrafos.forEach(p => paragrafo(p));
     caixaDestaque(
       `Psicodinâmica do Eneagrama · ${eneagrama.triade} · Asas ${eneagrama.asas}`,
       `${eneagrama.nome} — Paixão Emocional: ${eneagrama.paixao}`,
@@ -1879,7 +2087,7 @@
     );
     caixaDestaque(
       `Horóscopo Chinês & Alquimia dos 5 Elementos · Polaridade ${chines.polaridade}`,
-      `${chines.assinaturaCompleta} (${chines.nomeChines} · Estação: ${chines.estacao})`,
+      `${chines.assinaturaCompleta} (${chines.Estacao || chines.estacao})`,
       `Essência e Dom Nato Oriental: ${chines.arquetipo} ${chines.domInato}\nInfluência do Elemento ${chines.elemento.nome || chines.elemento}: ${chines.essenciaElemento}\nSombra a Vigiar: ${chines.sombraBloqueio}`,
       [175, 45, 105],
       [252, 240, 246]
@@ -1891,6 +2099,7 @@
     caixaDestaque("Chave de Desbloqueio Emocional", "Como virar a chave interna", diag.emocional.chaveDesbloqueio);
 
     tituloSecao("Parte V · Matriz do Destino (22 Arcanos)", `Centro ${matriz.arcanos.centro.rom} (${matriz.arcanos.centro.nome}) & Cauda Cármica ${matriz.caudaCarmica.codigo}`);
+    diag.fundamentosMisticos.matrizDoDestino.paragrafos.forEach(p => paragrafo(p));
     caixaDestaque(
       `Arcano Regente Central (${matriz.arcanos.centro.rom}) & Retrato (${matriz.arcanos.retrato.rom})`,
       `${matriz.arcanos.centro.nome} — ${matriz.arcanos.centro.titulo}`,
@@ -1907,16 +2116,9 @@
       );
 
       // ==================== PARTE VI: ASTROLOGIA OCIDENTAL, QUÍRON, LILITH & VÉDICA APROFUNDADA ====================
-      tituloSecao("Parte VI · Astrologia Kármica & Sombra", "Quíron, Lilith, Saturno e Nodos Lunares");
+      tituloSecao("Parte VI · Astrologia Kármica & Mapa Natal", "Posições Planetárias, Quíron, Lilith, Saturno e Nodos Lunares");
 
-      const linhasAstros = astro.astros.slice(0, 12).map(a =>
-        `${a.nome}: ${a.signo.nome} (${a.grau})${a.casa ? ` · Casa ${a.casa}` : ""}${a.retro ? " [Retrógrado]" : ""}`
-      );
-      caixaDestaque(
-        "Posições Planetárias Natais",
-        astro.asc ? `Ascendente em ${astro.asc.signo.nome} (${astro.asc.grau}) · Meio do Céu em ${astro.mc.signo.nome}` : "Mapa Solar Natal",
-        linhasAstros.join("   |   ")
-      );
+      desenharTabelaAstrosPDF(astro);
 
       caixaDestaque(
         `Quíron em ${astro.porId.quiron.signo.nome} (${astro.porId.quiron.grau})`,
@@ -1929,7 +2131,8 @@
         astro.porId.lilith.signo.lilith
       );
 
-      tituloSecao("Parte VII · Mapa Védico Sideral Aprofundado (Jyotish)", `Nakshatra ${vedica.nakshatra.nome} (Pada ${vedica.nakshatra.pada}) · Momento Atual & Direcionamento`);
+      tituloSecao("Parte VII · Astrologia Tropical vs. Védica Sideral (Jyotish)", `Nakshatra ${vedica.nakshatra.nome} (Pada ${vedica.nakshatra.pada}) · Momento Atual & Direcionamento`);
+      diag.fundamentosMisticos.tropicalVsVedica.paragrafos.forEach(p => paragrafo(p));
       caixaDestaque(
         `Lua Sideral (Chandra Rashi): ${vedica.chandraRashi.nome} (${vedica.chandraRashi.sânscrito}) · Sol Sideral: ${vedica.suryaRashi.nome}`,
         `Mansão Lunar: ${vedica.nakshatra.numero}. ${vedica.nakshatra.nome} — Regente Natal: ${vedica.nakshatra.regenteDasha}`,
@@ -1986,8 +2189,11 @@
         caixaDestaque("Plano Prático de Ação", etapa.semana, etapa.acao);
       });
     } else {
-      // ==================== VERSÃO STANDARD: ANÁLISE DE RELAÇÕES/AFETOS, SOLUÇÕES PRÁTICAS & UPSELL ====================
-      tituloSecao("Parte VI · Análise de Relações, Afetos & Vínculos", diag.relacionamento.titulo);
+      // ==================== VERSÃO STANDARD: TROPICAL VS VÉDICA, RELAÇÕES/AFETOS, SOLUÇÕES PRÁTICAS & UPSELL ====================
+      tituloSecao("Parte VI · Astrologia Tropical vs. Astrologia Védica (Jyotish)", diag.fundamentosMisticos.tropicalVsVedica.titulo);
+      diag.fundamentosMisticos.tropicalVsVedica.paragrafos.forEach(p => paragrafo(p));
+
+      tituloSecao("Parte VII · Análise de Relações, Afetos & Vínculos", diag.relacionamento.titulo);
       diag.relacionamento.analiseProfunda.forEach(p => paragrafo(p));
       caixaDestaque(
         "Chave de Desbloqueio Afetivo & Relacional",
@@ -1997,7 +2203,7 @@
         [252, 240, 246]
       );
 
-      tituloSecao("Parte VII · Soluções Práticas & Direcionamento Imediato", "3 Ações Concretas Para Destravar Sua Energia Hoje");
+      tituloSecao("Parte VIII · Soluções Práticas & Direcionamento Imediato", "3 Ações Concretas Para Destravar Sua Energia Hoje");
       paragrafo(diag.profissional.analiseProfunda[0]);
       diag.solucoesPraticasStandard.forEach(item => {
         caixaDestaque("Solução Prática Recomendada", item.pilar, item.solucao);
@@ -2008,8 +2214,9 @@
         diag.protocoloTryv.mantra
       );
 
-      // Seção Estratégica de Upsell Exclusivo para Clientes Standard
-      tituloSecao("Parte VIII · Acesso Reservado: Dossiê de Análise Profunda", "O Que Ficou Oculto nas Camadas Mais Profundas do Seu Mapa");
+      // Seção Estratégica de Upsell Exclusivo para Clientes Standard + Regra das 5 Indicações
+      tituloSecao("Parte IX · Upgrade Para Análise Profunda & Benefício por Indicação", "Como Acessar o Questionário Mais Robusto e o Dossiê Completo");
+      paragrafo(diag.posicionamentoTryv.transicaoStandard);
       paragrafo(diag.upsellStandard.explicacao);
       caixaDestaque(
         "O Que Você Desbloqueia Ao Fazer o Upgrade Para a Análise Profunda",
@@ -2019,11 +2226,31 @@
         [252, 240, 246]
       );
       caixaDestaque(
-        `Gatilho Especial de Desconto · Código VIP: ${diag.upsellStandard.codigoCupom}`,
-        "Condição Exclusiva para Quem Já Adquiriu a Versão Standard",
-        `${diag.upsellStandard.gatilhoDesconto}\n\nApresente o código [${diag.upsellStandard.codigoCupom}] no WhatsApp da Tryv Tuath (11 99546-3522) para receber seu link com desconto especial de abatimento, ou acesse diretamente em:\n${diag.upsellStandard.urlUpgrade}`
+        `Regra de Desconto por Indicação (5 Indicações) · Código VIP: ${diag.upsellStandard.codigoCupom}`,
+        "Indique 5 Pessoas e Ganhe Desconto Especial no Valor Complementar do Pacote Completo",
+        `${diag.posicionamentoTryv.regraIndicacao}\n\nLink direto da Análise Profunda: ${diag.upsellStandard.urlUpgrade}`
       );
     }
+
+    // ==================== SEÇÃO FINAL (AMBOS OS PLANOS): AGENDAMENTO INDIVIDUAL & MENTORIA TRYV TUATH ====================
+    tituloSecao(
+      "Acompanhamento Clínico, Oracular & Mentoria Individual",
+      "Agende com a Tryv sua Análise Completa e Aprofundada"
+    );
+    caixaDestaque(
+      "Psicanálise Clínica & Mentoria Especializada (Pacotes Trimestrais e Semestrais)",
+      "Tryv Tuath® — Psicanalista Formada em Traumas Familiares, Ansiedade e Depressão",
+      `${diag.posicionamentoTryv.apresentacaoProfissional}\n\n${diag.posicionamentoTryv.avisoEtico}`,
+      [175, 45, 105],
+      [252, 240, 246]
+    );
+    diag.convitesTerapias.forEach(conv => {
+      caixaDestaque(
+        conv.selo,
+        conv.titulo,
+        `${conv.descricao}\n\nCHAMADA PARA AÇÃO: ${conv.textoBotao} (${conv.avisoAgenda})`
+      );
+    });
 
     const slugNome = primeiroNome
       .normalize("NFD")

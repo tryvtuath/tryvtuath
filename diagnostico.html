@@ -347,6 +347,33 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
       <button type="button" id="btn-modo-standard" aria-pressed="false">Análise Standard (R$ 37)</button>
       <button type="button" id="btn-modo-profunda" aria-pressed="true">✦ Análise Profunda Completa (R$ 97)</button>
     </div>
+
+    <!-- AVISO DE TRANSIÇÃO E UPSELL AO SELECIONAR OU VISUALIZAR A VERSÃO STANDARD -->
+    <div id="aviso-transicao-standard" hidden style="max-width:780px;margin:1.25rem auto 0;text-align:left;padding:1.2rem 1.4rem;border-radius:18px;background:linear-gradient(170deg,rgba(46,24,88,.94),rgba(22,14,52,.97));border:1.5px solid var(--ouro);box-shadow:0 14px 36px rgba(0,0,0,.5)">
+      <strong style="font-family:var(--titulo);color:var(--ouro-claro);font-size:1.05rem;display:block;margin-bottom:.35rem">
+        ✦ Nota Importante sobre a Versão Standard vs. Análise Profunda:
+      </strong>
+      <p style="margin:0 0 .65rem;font-size:.92rem;color:var(--texto);line-height:1.6">
+        Você está visualizando a modalidade <strong>Standard (R$ 37)</strong>. Saiba que, por um <strong>pequeno acréscimo de investimento</strong>, você pode ter acesso à <strong>Análise Profunda Completa (R$ 97)</strong> e a um <strong>questionário muito mais robusto</strong> (incluindo mapeamento de raízes familiares, ansiedade, Mapa Védico do momento atual, Numerologia Kármica completa, Dons Natos e Protocolo de 21 Dias) para compreender melhor a si mesma e os seus caminhos de melhoria.
+      </p>
+      <div style="padding:.75rem 1rem;border-radius:12px;background:rgba(255,95,162,.12);border-left:4px solid var(--rosa);font-size:.88rem;color:var(--texto);margin-bottom:.8rem;line-height:1.55">
+        🎁 <strong>Regra Especial de Desconto por Indicação (5 Pessoas):</strong> Caso você adquira a versão Standard agora e posteriormente queira fazer o upgrade para o pacote completo da <strong>Análise Profunda</strong>, se você <strong>indicar mais 5 pessoas</strong> que realizem a análise, você ganha um <strong>desconto especial</strong> para adquirir o valor complementar do pacote completo!
+      </div>
+      <div style="display:flex;gap:.75rem;flex-wrap:wrap;align-items:center">
+        <button type="button" class="botao botao--ouro" id="btn-alternar-para-profunda" style="font-size:.86rem;padding:.55rem 1.1rem">
+          ✦ Alternar para Análise Profunda e Questionário Robusto
+        </button>
+        <a class="botao botao--vidro" href="https://loja.infinitepay.io/tryvtuath/kka1436-mapa-do-desbloqueio---analise-profunda" target="_blank" rel="noopener" style="font-size:.84rem;padding:.5rem 1rem">
+          ↗ Adquirir Análise Profunda na InfinitePay
+        </a>
+      </div>
+    </div>
+
+    <!-- APRESENTAÇÃO PROFISSIONAL DA TRYV E AVISO ÉTICO -->
+    <div style="max-width:780px;margin:1rem auto 0;text-align:left;padding:1rem 1.3rem;border-radius:16px;background:rgba(255,255,255,.04);border:1px solid rgba(242,193,78,.28);font-size:.87rem;color:var(--texto-2);line-height:1.58">
+      <strong style="color:var(--ouro-claro)">👩‍⚕️ Direção Profissional — Tryv Tuath®:</strong> Psicanalista formada em <strong>traumas familiares, ansiedade e depressão</strong>, e mentora especializada em guiar a superação de desafios através de <strong>sessões individuais por pacotes trimestrais ou semestrais por ligações telefônicas</strong>.<br>
+      <span style="color:var(--rosa-claro);font-weight:600">⚖ Aviso Ético:</span> Nenhuma destas ferramentas automatizadas substitui a análise individual de um profissional.
+    </div>
   </section>
 
   <!-- WIZARD FORMULÁRIO DE COLETA -->
@@ -469,8 +496,35 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
           </div>
         </div>
 
+        <!-- MÓDULO DO QUESTIONÁRIO CLÍNICO-ORACULAR ROBUSTO (RAÍZES FAMILIARES & ANSIEDADE) -->
+        <div id="bloco-questionario-robusto" style="margin:1.3rem 0;padding:1.25rem 1.35rem;border-radius:18px;background:rgba(242,193,78,.06);border:1px solid rgba(242,193,78,.32)">
+          <div style="margin-bottom:.9rem">
+            <span style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.15em;color:var(--rosa-claro)">✦ Questionário Robusto · Mapeamento Clínico-Oracular</span>
+            <h3 style="font-family:var(--titulo);color:var(--ouro-claro);font-size:1.15rem;margin:.2rem 0 .25rem">Dinâmicas Familiares, Ansiedade & Sobrecarga Psíquica</h3>
+            <p style="margin:0;color:var(--texto-2);font-size:.88rem" id="sub-questionario-robusto">Estas perguntas aprofundadas mapeiam como padrões transgeracionais e tensões emocionais operam no seu campo:</p>
+          </div>
+
+          <div class="campo-bloco" style="margin-bottom:1rem">
+            <span class="rotulo-pergunta">4. Na sua história familiar (mãe, pai e ancestralidade), qual dinâmica mais marcou a sua formação emocional?</span>
+            <div class="opcoes-grade">
+              <label class="opcao-card"><input type="radio" name="emo_trauma_familiar" value="Inversão de papéis (parentificação): precisei amadurecer cedo demais e ser o pilar emocional da casa" checked><span><strong>Amadurecimento Precoce (Parentificação):</strong> Tive que ser adulta cedo demais e sustentar o emocional da família.</span></label>
+              <label class="opcao-card"><input type="radio" name="emo_trauma_familiar" value="Ambiente de crítica, exigência ou silêncio afetivo onde o amor parecia condicionado ao desempenho"><span><strong>Amor Condicionado ao Desempenho:</strong> Crítica ou frieza emocional que gerou medo constante de errar.</span></label>
+              <label class="opcao-card"><input type="radio" name="emo_trauma_familiar" value="Histórico familiar de sacrifício feminino, perdas bruscas ou instabilidade financeira recorrente"><span><strong>Herança de Sacrifício Feminino:</strong> Mulheres do clã que carregaram fardos pesados e anularam os próprios sonhos.</span></label>
+            </div>
+          </div>
+
+          <div class="campo-bloco" style="margin-bottom:0">
+            <span class="rotulo-pergunta">5. Como a ansiedade, o desânimo ou o esgotamento mais se manifestam no seu corpo e rotina hoje?</span>
+            <div class="opcoes-grade">
+              <label class="opcao-card"><input type="radio" name="emo_ansiedade" value="Mente hipervigilante, sono leve/não reparador e sensação constante de urgência" checked><span><strong>Hipervigilância e Sono Não Reparador:</strong> Dificuldade em relaxar de verdade; sensação de estar sempre devendo algo.</span></label>
+              <label class="opcao-card"><input type="radio" name="emo_ansiedade" value="Oscilação entre picos de produtividade intensa e fases de queda de energia, apatia ou tristeza"><span><strong>Ciclos de Exaustão e Apatia:</strong> Fases em que entrego tudo seguidas por esgotamento profundo e vontade de sumir.</span></label>
+              <label class="opcao-card"><input type="radio" name="emo_ansiedade" value="Tensão física no peito/garganta por guardar mágoas, engolir sapos e evitar conflitos"><span><strong>Tensão Somática e Silêncio:</strong> Aperto no peito ou nó na garganta por calar o que sinto para manter a paz.</span></label>
+            </div>
+          </div>
+        </div>
+
         <div class="campo-bloco">
-          <label for="emo_livre">4. (Opcional) Quer desabafar em uma frase o que mais pesa no seu coração hoje?</label>
+          <label for="emo_livre">6. (Opcional) Quer desabafar em uma frase o que mais pesa no seu coração hoje?</label>
           <textarea id="emo_livre" placeholder="Escreva livremente se desejar…"></textarea>
         </div>
 
@@ -639,7 +693,7 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
   </section>
 </main>
 
-<script src="motor-desbloqueio.js?v=2"></script>
+<script src="motor-desbloqueio.js?v=3"></script>
 <script>
 (function() {
   "use strict";
@@ -666,10 +720,22 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
     $("#btn-modo-profunda").setAttribute("aria-pressed", String(isProf));
     $("#btn-modo-standard").setAttribute("aria-pressed", String(!isProf));
     $("#badge-plano-topo").textContent = isProf ? "✦ Análise Profunda Ativa (R$ 97)" : "✦ Análise Standard Ativa (R$ 37)";
+    const boxAvisoStd = $("#aviso-transicao-standard");
+    if (boxAvisoStd) boxAvisoStd.hidden = isProf;
+    const subRobusto = $("#sub-questionario-robusto");
+    if (subRobusto) {
+      subRobusto.innerHTML = isProf
+        ? "✦ <strong>Questionário Robusto Ativo (Análise Profunda):</strong> Suas respostas sobre raízes familiares e ansiedade serão integralmente cruzadas no dossiê."
+        : "💡 <strong>Nota:</strong> Na versão Standard estas perguntas calibram sua base emocional; por um pequeno acréscimo na <strong>Análise Profunda</strong>, você desbloqueia a leitura completa das dinâmicas familiares, Mapa Védico do momento atual e Dons Natos.";
+    }
     try { localStorage.setItem("tryv_plano_desbloqueio", planoAtivo); } catch {}
   }
   $("#btn-modo-standard").addEventListener("click", () => { planoAtivo = "standard"; atualizarUIPlano(); });
   $("#btn-modo-profunda").addEventListener("click", () => { planoAtivo = "profunda"; atualizarUIPlano(); });
+  const btnAltProf = $("#btn-alternar-para-profunda");
+  if (btnAltProf) {
+    btnAltProf.addEventListener("click", () => { planoAtivo = "profunda"; atualizarUIPlano(); });
+  }
   atualizarUIPlano();
 
   // 2. Preencher Cidades no Select
@@ -789,6 +855,8 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
         emocaoPrincipal: ($('input[name="emo_principal"]:checked') || {}).value || "",
         reacaoCrise: ($('input[name="emo_crise"]:checked') || {}).value || "",
         feridaInfancia: ($('input[name="emo_ferida"]:checked') || {}).value || "",
+        traumaFamiliar: ($('input[name="emo_trauma_familiar"]:checked') || {}).value || "",
+        ansiedadeManifestacao: ($('input[name="emo_ansiedade"]:checked') || {}).value || "",
         relatoLivre: $("#emo_livre").value.trim()
       },
       relacionamento: {
@@ -1223,6 +1291,10 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
               Seu Código de Abatimento VIP: <code style="background:rgba(0,0,0,.45);padding:.2rem .55rem;border-radius:6px;color:var(--ouro-claro);font-weight:700">${diag.upsellStandard.codigoCupom}</code>
             </p>
           </div>
+          <div class="caixa-chave" style="margin-top:1rem;background:rgba(242,193,78,.11);border-left-color:var(--ouro)">
+            <strong>🤝 Regra Especial de Desconto por Indicação (5 Pessoas)</strong>
+            <p style="margin:.25rem 0 0;font-size:.94rem">${fmtMd(diag.upsellStandard.regraIndicacao || (diag.posicionamentoTryv && diag.posicionamentoTryv.regraIndicacao) || "")}</p>
+          </div>
           <div style="display:flex;gap:.9rem;flex-wrap:wrap;margin-top:1.4rem">
             <a class="botao botao--ouro" href="${diag.upsellStandard.urlUpgrade}" target="_blank" rel="noopener">
               ✦ Desbloquear Análise Profunda Agora
@@ -1233,6 +1305,79 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
           </div>
         </article>
       `}
+
+      <!-- FUNDAMENTOS DAS SABEDORIAS MÍSTICAS E TERAPIAS (TROPICAL VS. VÉDICA, MATRIZ, ENEAGRAMA & MÉTODO TRYV) -->
+      ${diag.fundamentosMisticos ? `
+        <article class="dossie-folha">
+          <div class="dossie-folha__cabeca">
+            <small>Fundamentos & Sabedoria Milenar · Desmistificando os Sistemas do Seu Mapa</small>
+            <h2>A Ciência por Trás do Seu Dossiê: Astrologia Tropical vs. Védica, Matriz do Destino & Terapias</h2>
+          </div>
+          <div class="caixa-chave" style="margin-top:0">
+            <strong>☀️🌙 ${diag.fundamentosMisticos.tropicalVsVedica.titulo}</strong>
+            ${(diag.fundamentosMisticos.tropicalVsVedica.paragrafos || []).map(p => `<p style="margin:.45rem 0 0;font-size:.94rem">${fmtMd(p)}</p>`).join("")}
+          </div>
+          <div class="caixa-chave" style="border-left-color:var(--rosa)">
+            <strong>✡️ ${diag.fundamentosMisticos.matrizDoDestino.titulo}</strong>
+            ${(diag.fundamentosMisticos.matrizDoDestino.paragrafos || []).map(p => `<p style="margin:.45rem 0 0;font-size:.94rem">${fmtMd(p)}</p>`).join("")}
+          </div>
+          <div class="caixa-chave">
+            <strong>🧭 ${diag.fundamentosMisticos.eneagramaEAlquimia.titulo}</strong>
+            ${(diag.fundamentosMisticos.eneagramaEAlquimia.paragrafos || []).map(p => `<p style="margin:.45rem 0 0;font-size:.94rem">${fmtMd(p)}</p>`).join("")}
+          </div>
+          <div class="caixa-chave" style="border-left-color:var(--rosa)">
+            <strong>🌿 ${diag.fundamentosMisticos.terapiasTryv.titulo}</strong>
+            ${(diag.fundamentosMisticos.terapiasTryv.paragrafos || []).map(p => `<p style="margin:.45rem 0 0;font-size:.94rem">${fmtMd(p)}</p>`).join("")}
+          </div>
+        </article>
+      ` : ""}
+
+      <!-- APRESENTAÇÃO PROFISSIONAL DA TRYV, AVISO ÉTICO E AGENDAMENTO INDIVIDUAL POR TERAPIA -->
+      <article class="dossie-folha" style="border:2px solid var(--ouro);background:linear-gradient(175deg,rgba(38,22,78,.97),rgba(16,11,40,.99))">
+        <div class="dossie-folha__cabeca">
+          <small style="color:var(--ouro)">✦ Acompanhamento Profissional Individual · Psicanálise, Mentoria & Oráculos</small>
+          <h2>Sobre a Tryv Tuath® & Agendamento de Análises Aprofundadas</h2>
+        </div>
+
+        ${diag.posicionamentoTryv ? `
+          <div class="caixa-chave" style="margin-top:0;background:rgba(242,193,78,.11)">
+            <strong>👩‍⚕️ Apresentação Profissional — Tryv Tuath® (Psicanalista & Mentora)</strong>
+            <p style="margin:.3rem 0 0;font-size:.95rem">${fmtMd(diag.posicionamentoTryv.apresentacaoProfissional)}</p>
+          </div>
+          <div class="caixa-chave" style="border-left-color:var(--rosa);background:rgba(255,95,162,.1)">
+            <strong>⚖ Aviso Ético e de Responsabilidade Clínica</strong>
+            <p style="margin:.3rem 0 0;font-size:.93rem">${fmtMd(diag.posicionamentoTryv.avisoEtico)}</p>
+          </div>
+        ` : ""}
+
+        ${diag.convitesTerapias && diag.convitesTerapias.length ? `
+          <h3 style="font-family:var(--titulo);color:var(--ouro-claro);font-size:1.25rem;margin:1.6rem 0 .9rem">
+            Escolha a Terapia ou Mentoria para Aprofundar Individualmente com a Tryv:
+          </h3>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(275px,1fr));gap:1.15rem">
+            ${diag.convitesTerapias.map(ct => {
+              const zapTerapia = `https://wa.me/${configSite.whatsapp}?text=${encodeURIComponent(ct.mensagemWhats || `Olá, Tryv! Gerei meu dossiê (${cliente.nomeBatismo}) e gostaria de verificar a disponibilidade de agenda para: ${ct.titulo}.`)}`;
+              return `
+                <div class="codigo-box" style="display:flex;flex-direction:column;justify-content:space-between;padding:1.25rem;border-color:rgba(242,193,78,.42)">
+                  <div>
+                    <small style="color:var(--ouro)">✦ ${ct.selo || "Atendimento Individual Especializado"}</small>
+                    <strong style="font-size:1.08rem;margin:.35rem 0 .5rem">${ct.titulo}</strong>
+                    <p style="font-size:.9rem;color:var(--texto-2);margin:0 0 1rem;line-height:1.55">${ct.descricao}</p>
+                  </div>
+                  <div>
+                    <a class="botao botao--ouro" href="${zapTerapia}" target="_blank" rel="noopener" style="width:100%;font-size:.86rem;padding:.75rem 1rem;text-align:center">
+                      ${ct.textoBotao || "✦ Agende com a Tryv sua Análise Completa e Aprofundada"}
+                    </a>
+                    <span style="display:block;text-align:center;font-size:.76rem;color:var(--texto-2);margin-top:.4rem;opacity:.85">
+                      * ${ct.avisoAgenda || "Sujeito à análise e disponibilidade de agenda."}
+                    </span>
+                  </div>
+                </div>
+              `;
+            }).join("")}
+          </div>
+        ` : ""}
+      </article>
     `;
   }
 
