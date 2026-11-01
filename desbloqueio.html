@@ -687,22 +687,46 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
   </div>
 </footer>
 
-<!-- Modal Pós-Checkout InfinitePay: guia a cliente direto para o Diagnóstico assim que ela paga -->
-<div id="modal-pos-checkout" hidden style="position:fixed;inset:0;z-index:120;background:rgba(10,7,28,.85);backdrop-filter:blur(10px);display:grid;place-items:center;padding:1.2rem">
-  <div style="max-width:520px;width:100%;background:linear-gradient(175deg,#261858,#140e36);border:2px solid var(--ouro);border-radius:24px;padding:2rem;text-align:center;box-shadow:0 24px 65px rgba(0,0,0,.8)">
-    <span class="selo-topo" style="margin-bottom:.8rem">✦ Checkout InfinitePay Aberto</span>
-    <h3 style="font-family:var(--titulo);color:var(--ouro-claro);font-size:1.45rem;margin-bottom:.6rem" id="modal-chk-titulo">Finalize seu pagamento na aba da InfinitePay</h3>
-    <p style="color:var(--texto-2);font-size:.96rem;margin:0 0 1.4rem" id="modal-chk-texto">
-      Abrimos o checkout seguro da <strong>InfinitePay</strong> em uma nova guia. Assim que concluir o pagamento via PIX ou Cartão, clique no botão dourado abaixo para preencher seus dados de nascimento e gerar seu <strong>PDF Personalizado</strong> na hora:
+<!-- Modal Pós-Checkout InfinitePay com Bloqueio de Segurança e Polling Automatizado -->
+<div id="modal-pos-checkout" hidden style="position:fixed;inset:0;z-index:120;background:rgba(10,7,28,.88);backdrop-filter:blur(12px);display:grid;place-items:center;padding:1.2rem;overflow-y:auto">
+  <div style="max-width:560px;width:100%;background:linear-gradient(175deg,#261858,#140e36);border:2px solid var(--ouro);border-radius:24px;padding:1.9rem;text-align:center;box-shadow:0 24px 65px rgba(0,0,0,.85)">
+    <span class="selo-topo" id="modal-chk-selo" style="margin-bottom:.7rem">🔒 Validação Automática InfinitePay</span>
+    <h3 style="font-family:var(--titulo);color:var(--ouro-claro);font-size:1.38rem;margin-bottom:.5rem" id="modal-chk-titulo">Aguardando Confirmação do Pagamento</h3>
+    <p style="color:var(--texto-2);font-size:.92rem;margin:0 0 1.1rem;line-height:1.55" id="modal-chk-texto">
+      Abrimos o checkout seguro da <strong>InfinitePay</strong> em uma nova guia. Informe abaixo o <strong>mesmo e-mail</strong> utilizado no pagamento para que nosso sistema identifique automaticamente a confirmação do seu <strong>PIX ou Cartão</strong> e desbloqueie sua Anamnese:
     </p>
+
+    <!-- Identificação do E-mail para Rastreamento no Webhook / Polling -->
+    <div style="text-align:left;background:rgba(255,255,255,.04);border:1px solid rgba(242,193,78,.3);border-radius:14px;padding:1rem 1.15rem;margin-bottom:1rem">
+      <label for="chk-email-cliente" style="display:block;font-size:.82rem;font-weight:700;color:var(--ouro-claro);margin-bottom:.35rem">
+        Seu E-mail utilizado no Checkout da InfinitePay *
+      </label>
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+        <input type="email" id="chk-email-cliente" placeholder="seuemail@exemplo.com" autocomplete="email" style="flex:1;min-width:200px;padding:.7rem .9rem;border-radius:10px;border:1px solid rgba(242,193,78,.4);background:rgba(10,7,28,.8);color:#fff;font-size:.92rem">
+        <button type="button" class="botao botao--vidro" id="btn-vincular-email-chk" style="padding:.65rem 1rem;font-size:.84rem;white-space:nowrap">
+          Vincular & Verificar
+        </button>
+      </div>
+      <small id="chk-pedido-id" style="display:block;margin-top:.4rem;font-size:.76rem;color:var(--texto-2);opacity:.85"></small>
+    </div>
+
+    <!-- Indicador de Status do Polling em Tempo Real -->
+    <div id="chk-status-box" style="display:flex;align-items:center;justify-content:center;gap:.65rem;padding:.8rem 1rem;border-radius:12px;background:rgba(242,193,78,.08);border:1px dashed rgba(242,193,78,.42);margin-bottom:1.15rem;font-size:.86rem;color:var(--ouro-claro)">
+      <span id="chk-spinner" style="display:inline-block;width:14px;height:14px;border:2px solid var(--ouro-claro);border-top-color:transparent;border-radius:50%;animation:giroPolling 1s linear infinite"></span>
+      <span id="chk-status-msg">Verificando confirmação automática via Webhook InfinitePay…</span>
+    </div>
+    <style>@keyframes giroPolling { to { transform: rotate(360deg); } }</style>
+
     <div style="display:grid;gap:.75rem">
-      <a class="botao botao--ouro" id="btn-ir-diagnostico" href="diagnostico.html?plano=profunda&acesso=liberado" style="width:100%">
-        ✦ Já Concluí o Pagamento → Gerar Meu PDF Agora
-      </a>
+      <!-- BOTÃO INTELIGENTE: Permanece TRAVADO (disabled + opacidade reduzida) até a confirmação real -->
+      <button type="button" class="botao botao--ouro" id="btn-ir-diagnostico" disabled aria-disabled="true" style="width:100%;opacity:0.42;cursor:not-allowed;pointer-events:none;filter:grayscale(.35);transition:all .3s ease">
+        🔒 Preencher Anamnese / Gerar PDF (Aguardando Pagamento…)
+      </button>
+
       <a class="botao botao--vidro" id="btn-reabrir-infinitepay" href="https://loja.infinitepay.io/tryvtuath/kka1436-mapa-do-desbloqueio---analise-profunda" target="_blank" rel="noopener" style="width:100%;font-size:.9rem;padding:.65rem 1rem">
         ↗ Abrir Checkout da InfinitePay Novamente
       </a>
-      <button type="button" id="btn-fechar-modal-chk" style="background:transparent;border:0;color:var(--texto-2);font-size:.85rem;margin-top:.3rem;text-decoration:underline">
+      <button type="button" id="btn-fechar-modal-chk" style="background:transparent;border:0;color:var(--texto-2);font-size:.85rem;margin-top:.2rem;text-decoration:underline;cursor:pointer">
         Voltar para a página
       </button>
     </div>
@@ -710,6 +734,7 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
 </div>
 
 <script src="motor-desbloqueio.js?v=3"></script>
+<script src="pagamento-guardiao.js?v=1"></script>
 <script>
 (function() {
   "use strict";
@@ -717,32 +742,146 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
   const modalChk = $("#modal-pos-checkout");
   modalChk.style.display = "none";
 
+  const Guardiao = window.GuardiaoPagamentoInfinitePay;
   const URL_INFINITEPAY_STANDARD = "https://loja.infinitepay.io/tryvtuath/nuw5653-mapa-do-desbloqueio---analise-standard";
   const URL_INFINITEPAY_PROFUNDA = "https://loja.infinitepay.io/tryvtuath/kka1436-mapa-do-desbloqueio---analise-profunda";
 
+  let controladorPolling = null;
+  let planoSelecionadoModal = "profunda";
+  let urlBasePlanoAtual = URL_INFINITEPAY_PROFUNDA;
+
+  const btnIrDiagnostico = $("#btn-ir-diagnostico");
+  const inputEmailChk = $("#chk-email-cliente");
+  const statusMsg = $("#chk-status-msg");
+  const statusBox = $("#chk-status-box");
+  const spinnerEl = $("#chk-spinner");
+
+  function travarBotaoAnamnese() {
+    btnIrDiagnostico.disabled = true;
+    btnIrDiagnostico.setAttribute("aria-disabled", "true");
+    btnIrDiagnostico.style.opacity = "0.42";
+    btnIrDiagnostico.style.cursor = "not-allowed";
+    btnIrDiagnostico.style.pointerEvents = "none";
+    btnIrDiagnostico.style.filter = "grayscale(.35)";
+    btnIrDiagnostico.textContent = "🔒 Preencher Anamnese / Gerar PDF (Aguardando Pagamento…)";
+  }
+
+  function liberarBotaoAnamnese(dadosConfirmados) {
+    btnIrDiagnostico.disabled = false;
+    btnIrDiagnostico.setAttribute("aria-disabled", "false");
+    btnIrDiagnostico.style.opacity = "1";
+    btnIrDiagnostico.style.cursor = "pointer";
+    btnIrDiagnostico.style.pointerEvents = "auto";
+    btnIrDiagnostico.style.filter = "none";
+    btnIrDiagnostico.textContent = "✦ Pagamento Confirmado! Preencher Anamnese & Gerar PDF →";
+
+    if (spinnerEl) spinnerEl.style.display = "none";
+    if (statusBox) {
+      statusBox.style.background = "rgba(88,214,141,.14)";
+      statusBox.style.borderColor = "#58d68d";
+      statusBox.style.color = "#a3f7bf";
+    }
+    if (statusMsg) {
+      statusMsg.innerHTML = "✅ <strong>Pagamento confirmado pela InfinitePay!</strong> Seu acesso à Anamnese está liberado.";
+    }
+    $("#modal-chk-selo").textContent = "✅ Pagamento Validado com Sucesso";
+
+    btnIrDiagnostico.onclick = () => {
+      const qs = new URLSearchParams({
+        plano: dadosConfirmados.plano || planoSelecionadoModal,
+        token: dadosConfirmados.tokenAcesso || "",
+        email: dadosConfirmados.email || ""
+      });
+      window.location.href = `diagnostico.html?${qs.toString()}`;
+    };
+  }
+
+  async function iniciarMonitoramentoAutomatico(plano) {
+    if (controladorPolling) controladorPolling.parar();
+
+    const sessaoAnterior = Guardiao.lerSessaoPedido();
+    const emailAtual = Guardiao.normalizarEmail(inputEmailChk.value || (sessaoAnterior && sessaoAnterior.email) || "");
+    if (emailAtual && !inputEmailChk.value) inputEmailChk.value = emailAtual;
+
+    // Verifica se já existe token confirmado válido para este cliente
+    const tokenExistente = Guardiao.lerTokenConfirmado();
+    if (tokenExistente && (!emailAtual || tokenExistente.email === emailAtual)) {
+      liberarBotaoAnamnese(tokenExistente);
+      return;
+    }
+
+    travarBotaoAnamnese();
+
+    let sessao = sessaoAnterior;
+    if (Guardiao.validarFormatoEmail(emailAtual)) {
+      sessao = await Guardiao.registrarIntencaoNoBackend({
+        email: emailAtual,
+        plano
+      });
+      $("#chk-pedido-id").textContent = `Pedido monitorado: ${sessao.orderId} · E-mail: ${sessao.email}`;
+      $("#btn-reabrir-infinitepay").href = Guardiao.construirUrlCheckoutInfinitePay(
+        plano,
+        sessao.email,
+        sessao.orderId,
+        urlBasePlanoAtual
+      );
+    } else {
+      $("#chk-pedido-id").textContent = "Digite acima o seu e-mail para vincular à confirmação automática do Webhook.";
+    }
+
+    controladorPolling = Guardiao.iniciarPollingConfirmacao({
+      email: emailAtual,
+      orderId: sessao ? sessao.orderId : "",
+      plano,
+      intervaloMs: 4000,
+      aoVerificar(tentativa) {
+        if (!Guardiao.validarFormatoEmail(inputEmailChk.value)) {
+          statusMsg.textContent = "Informe seu e-mail acima para rastrear seu pagamento automaticamente…";
+        } else {
+          statusMsg.textContent = `Aguardando confirmação da InfinitePay (PIX/Cartão)… [verificação #${tentativa}]`;
+        }
+      },
+      aoConfirmar(dadosConfirmados) {
+        liberarBotaoAnamnese(dadosConfirmados);
+      }
+    });
+  }
+
+  $("#btn-vincular-email-chk").addEventListener("click", () => {
+    const em = Guardiao.normalizarEmail(inputEmailChk.value);
+    if (!Guardiao.validarFormatoEmail(em)) {
+      inputEmailChk.focus();
+      statusMsg.textContent = "⚠ Por favor, digite um e-mail válido usado no pagamento.";
+      return;
+    }
+    iniciarMonitoramentoAutomatico(planoSelecionadoModal);
+  });
+
   function abrirModalPosCheckout(plano, urlInfinitePay) {
-    const isProf = plano === "profunda";
-    const urlSegura = urlInfinitePay && urlInfinitePay.startsWith("https://loja.infinitepay.io/")
+    planoSelecionadoModal = plano === "standard" ? "standard" : "profunda";
+    const isProf = planoSelecionadoModal === "profunda";
+    urlBasePlanoAtual = urlInfinitePay && urlInfinitePay.startsWith("https://loja.infinitepay.io/")
       ? urlInfinitePay
       : (isProf ? URL_INFINITEPAY_PROFUNDA : URL_INFINITEPAY_STANDARD);
+
     try {
-      localStorage.setItem("tryv_plano_desbloqueio", plano);
-      localStorage.setItem("tryv_checkout_pendente", plano);
+      localStorage.setItem("tryv_plano_desbloqueio", planoSelecionadoModal);
+      localStorage.setItem("tryv_checkout_pendente", planoSelecionadoModal);
     } catch {}
-    // Adia em 400ms a mutação de DOM do modal para que navegadores mobile (Safari, Chrome, Instagram/WhatsApp WebView)
-    // abram a guia da InfinitePay sem qualquer interrupção no clique nativo do link <a>
+
     setTimeout(() => {
       $("#modal-chk-titulo").textContent = isProf
         ? "Finalize sua Análise Profunda (R$ 97)"
         : "Finalize sua Análise Standard (R$ 37)";
-      $("#btn-ir-diagnostico").href = `diagnostico.html?plano=${plano}&acesso=liberado`;
-      $("#btn-reabrir-infinitepay").href = urlSegura;
+      $("#btn-reabrir-infinitepay").href = urlBasePlanoAtual;
       modalChk.hidden = false;
       modalChk.style.display = "grid";
+      iniciarMonitoramentoAutomatico(planoSelecionadoModal);
     }, 400);
   }
 
   $("#btn-fechar-modal-chk").addEventListener("click", () => {
+    if (controladorPolling) controladorPolling.parar();
     modalChk.hidden = true;
     modalChk.style.display = "none";
   });
@@ -753,6 +892,7 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
     .then(C => {
       if (!C || !C.desbloqueio) return;
       const D = C.desbloqueio;
+      if (D.apiPagamentosUrl) Guardiao.configurarApiBase(D.apiPagamentosUrl);
       if (D.chamada) $("#txt-chamada").textContent = D.chamada;
       if (D.titulo) $("#txt-titulo").textContent = D.titulo;
       if (D.subtitulo) $("#txt-subtitulo").textContent = D.subtitulo;
@@ -774,7 +914,7 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
       $("#btn-comprar-profunda").href = URL_INFINITEPAY_PROFUNDA;
     });
 
-  // Salva o plano escolhido no navegador e exibe o modal de retorno pós-pagamento da InfinitePay
+  // Salva o plano escolhido no navegador e exibe o modal de validação pós-pagamento da InfinitePay
   $("#btn-comprar-standard").addEventListener("click", function() {
     abrirModalPosCheckout("standard", this.href || URL_INFINITEPAY_STANDARD);
   });

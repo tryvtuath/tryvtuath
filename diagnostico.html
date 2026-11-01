@@ -376,8 +376,57 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
     </div>
   </section>
 
-  <!-- WIZARD FORMULÁRIO DE COLETA -->
-  <section id="sec-formulario">
+  <!-- ==================== PORTAL DE LIBERAÇÃO E VALIDAÇÃO AUTOMATIZADA INFINITEPAY ==================== -->
+  <section id="sec-bloqueio-pagamento" class="wizard-card" style="max-width:680px;margin:0 auto 2.5rem;text-align:center">
+    <span class="badge-plano" id="gate-selo" style="margin-bottom:.8rem;display:inline-flex">🔒 Acesso Protegido · Validação InfinitePay</span>
+    <h2 style="font-family:var(--titulo);color:var(--ouro-claro);font-size:clamp(1.35rem,2.6vw,1.8rem);margin:0 0 .55rem" id="gate-titulo">
+      Liberação da Anamnese & Registro Akáshico / Desbloqueio
+    </h2>
+    <p style="color:var(--texto-2);font-size:.95rem;max-width:56ch;margin:0 auto 1.35rem;line-height:1.6">
+      Para proteger a exclusividade do método, o formulário de anamnese e a geração do seu PDF são liberados <strong>automaticamente</strong> assim que o sistema confirma o seu pagamento via <strong>PIX ou Cartão na InfinitePay</strong>.
+    </p>
+
+    <!-- PASSO 1: Informe seu e-mail e abra o Checkout da InfinitePay -->
+    <div style="text-align:left;background:rgba(255,255,255,.04);border:1px solid rgba(242,193,78,.32);border-radius:16px;padding:1.25rem;margin-bottom:1.15rem">
+      <label for="gate-email" style="display:block;font-size:.86rem;font-weight:700;color:var(--ouro-claro);margin-bottom:.35rem">
+        1. Informe o mesmo E-mail que você usará (ou usou) no Checkout da InfinitePay *
+      </label>
+      <div style="display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:.9rem">
+        <input type="email" id="gate-email" placeholder="seuemail@exemplo.com" autocomplete="email" style="flex:1;min-width:210px">
+        <button type="button" class="botao botao--vidro" id="btn-gate-monitorar" style="padding:.65rem 1.1rem;font-size:.86rem;white-space:nowrap">
+          Vincular E-mail & Verificar
+        </button>
+      </div>
+
+      <label style="display:block;font-size:.86rem;font-weight:700;color:var(--ouro-claro);margin-bottom:.45rem">
+        2. Realize o pagamento na InfinitePay (abre em nova aba):
+      </label>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:.75rem">
+        <a class="botao botao--ouro" id="btn-gate-pagar-profunda" href="https://loja.infinitepay.io/tryvtuath/kka1436-mapa-do-desbloqueio---analise-profunda" target="_blank" rel="noopener" style="font-size:.9rem;padding:.85rem 1rem">
+          ✦ Pagar Análise Profunda (R$ 97) ↗
+        </a>
+        <a class="botao botao--vidro" id="btn-gate-pagar-standard" href="https://loja.infinitepay.io/tryvtuath/nuw5653-mapa-do-desbloqueio---analise-standard" target="_blank" rel="noopener" style="font-size:.88rem;padding:.85rem 1rem">
+          Pagar Análise Standard (R$ 37) ↗
+        </a>
+      </div>
+      <small id="gate-order-info" style="display:block;margin-top:.55rem;color:var(--texto-2);font-size:.78rem"></small>
+    </div>
+
+    <!-- Indicador de Polling Periódico -->
+    <div id="gate-status-box" style="display:flex;align-items:center;justify-content:center;gap:.65rem;padding:.85rem 1rem;border-radius:12px;background:rgba(242,193,78,.08);border:1px dashed rgba(242,193,78,.42);margin-bottom:1.15rem;font-size:.88rem;color:var(--ouro-claro)">
+      <span id="gate-spinner" style="display:inline-block;width:15px;height:15px;border:2px solid var(--ouro-claro);border-top-color:transparent;border-radius:50%;animation:giroGate 1s linear infinite"></span>
+      <span id="gate-status-msg">Aguardando confirmação automática da InfinitePay (PIX ou Cartão)…</span>
+    </div>
+    <style>@keyframes giroGate { to { transform: rotate(360deg); } }</style>
+
+    <!-- BOTÃO TRAVADO DE PROSSEGUIR PARA O QUESTIONÁRIO / ANAMNESE -->
+    <button type="button" class="botao botao--ouro" id="btn-liberar-anamnese" disabled aria-disabled="true" style="width:100%;font-size:1.02rem;padding:1rem 1.5rem;opacity:0.42;cursor:not-allowed;pointer-events:none;filter:grayscale(.35);transition:all .3s ease">
+      🔒 Preencher Anamnese / Gerar PDF (Aguardando Confirmação de Pagamento…)
+    </button>
+  </section>
+
+  <!-- WIZARD FORMULÁRIO DE COLETA (Inicia oculto até que o pagamento seja validado) -->
+  <section id="sec-formulario" hidden>
     <div class="etapas-barra" aria-label="Progresso do preenchimento">
       <div class="etapa-item ativa" data-indicador="1">
         <span class="etapa-item__num">1</span>
@@ -694,11 +743,13 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
 </main>
 
 <script src="motor-desbloqueio.js?v=3"></script>
+<script src="pagamento-guardiao.js?v=1"></script>
 <script>
 (function() {
   "use strict";
   const $ = (s, el = document) => el.querySelector(s);
   const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+  const Guardiao = window.GuardiaoPagamentoInfinitePay;
 
   // 1. Detectar Plano (URL ?plano=profunda ou ?plano=standard ou localStorage)
   const params = new URLSearchParams(location.search);
@@ -712,8 +763,155 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
       if (!C) return;
       if (C.contato && C.contato.whatsapp) configSite.whatsapp = String(C.contato.whatsapp).replace(/\D/g, "");
       if (C.desbloqueio && C.desbloqueio.webhookUrl) configSite.webhookUrl = C.desbloqueio.webhookUrl;
+      if (C.desbloqueio && C.desbloqueio.apiPagamentosUrl) Guardiao.configurarApiBase(C.desbloqueio.apiPagamentosUrl);
     })
     .catch(() => {});
+
+  // 1.1. Controle de Bloqueio e Liberação Automatizada (InfinitePay Polling / Webhook / Redirect API)
+  const secBloqueio = $("#sec-bloqueio-pagamento");
+  const secFormulario = $("#sec-formulario");
+  const btnLiberarAnamnese = $("#btn-liberar-anamnese");
+  const inpGateEmail = $("#gate-email");
+  const gateStatusBox = $("#gate-status-box");
+  const gateStatusMsg = $("#gate-status-msg");
+  const gateSpinner = $("#gate-spinner");
+  let pollingGate = null;
+
+  function destravarAnamneseNaTela(dadosConfirmados) {
+    if (pollingGate) pollingGate.parar();
+    if (dadosConfirmados && dadosConfirmados.plano) {
+      planoAtivo = dadosConfirmados.plano;
+      atualizarUIPlano();
+    }
+    if (dadosConfirmados && dadosConfirmados.email && !$("#f-email").value) {
+      $("#f-email").value = dadosConfirmados.email;
+    }
+
+    btnLiberarAnamnese.disabled = false;
+    btnLiberarAnamnese.setAttribute("aria-disabled", "false");
+    btnLiberarAnamnese.style.opacity = "1";
+    btnLiberarAnamnese.style.cursor = "pointer";
+    btnLiberarAnamnese.style.pointerEvents = "auto";
+    btnLiberarAnamnese.style.filter = "none";
+    btnLiberarAnamnese.textContent = "✦ Pagamento Confirmado! Preencher Anamnese / Gerar PDF →";
+
+    if (gateSpinner) gateSpinner.style.display = "none";
+    if (gateStatusBox) {
+      gateStatusBox.style.background = "rgba(88,214,141,.14)";
+      gateStatusBox.style.borderColor = "#58d68d";
+      gateStatusBox.style.color = "#a3f7bf";
+    }
+    if (gateStatusMsg) {
+      gateStatusMsg.innerHTML = "✅ <strong>Pagamento confirmado pela InfinitePay!</strong> Clique no botão abaixo para iniciar sua Anamnese.";
+    }
+    $("#gate-selo").textContent = "✅ Pagamento Validado · Acesso Liberado";
+
+    btnLiberarAnamnese.onclick = () => {
+      secBloqueio.hidden = true;
+      secFormulario.hidden = false;
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    };
+  }
+
+  async function inicializarVerificacaoPagamento() {
+    // a) Verifica se já existe token validado salvo ou retornado via URL da InfinitePay
+    const tokenSalvo = Guardiao.lerTokenConfirmado();
+    const urlTxNsu = params.get("transaction_nsu") || params.get("transaction_id") || "";
+    const urlSlug = params.get("slug") || params.get("invoice_slug") || "";
+    const urlOrderNsu = params.get("order_nsu") || "";
+    const urlEmail = Guardiao.normalizarEmail(params.get("email") || (tokenSalvo && tokenSalvo.email) || "");
+
+    if (tokenSalvo && tokenSalvo.pago && tokenSalvo.tokenAcesso) {
+      destravarAnamneseNaTela(tokenSalvo);
+      // Como já veio validado da página anterior ou do redirect, abre direto o formulário
+      secBloqueio.hidden = true;
+      secFormulario.hidden = false;
+      return;
+    }
+
+    // b) Se retornou da InfinitePay com transaction_nsu + slug na URL, valida na hora
+    if (urlTxNsu && urlSlug) {
+      gateStatusMsg.textContent = "Validando comprovante de retorno da InfinitePay…";
+      const resUrl = await Guardiao.verificarStatusPagamento({
+        email: urlEmail,
+        orderId: urlOrderNsu,
+        transactionNsu: urlTxNsu,
+        slug: urlSlug,
+        plano: planoAtivo
+      });
+      if (resUrl.pago && resUrl.dados) {
+        destravarAnamneseNaTela(resUrl.dados);
+        secBloqueio.hidden = true;
+        secFormulario.hidden = false;
+        return;
+      }
+    }
+
+    // c) Mantém o questionário bloqueado e inicia o polling periódico por e-mail/pedido
+    const sessao = Guardiao.lerSessaoPedido();
+    const emailInicial = urlEmail || (sessao && sessao.email) || "";
+    if (emailInicial && inpGateEmail) inpGateEmail.value = emailInicial;
+
+    iniciarPollingGate(emailInicial, sessao ? sessao.orderId : urlOrderNsu);
+  }
+
+  async function iniciarPollingGate(email, orderIdExistente) {
+    if (pollingGate) pollingGate.parar();
+    const emailLimpo = Guardiao.normalizarEmail(email);
+    let orderId = orderIdExistente || "";
+
+    if (Guardiao.validarFormatoEmail(emailLimpo)) {
+      const sessao = await Guardiao.registrarIntencaoNoBackend({
+        email: emailLimpo,
+        plano: planoAtivo
+      });
+      orderId = sessao.orderId;
+      $("#gate-order-info").textContent = `Monitorando pedido ${orderId} para o e-mail ${emailLimpo}`;
+      $("#btn-gate-pagar-profunda").href = Guardiao.construirUrlCheckoutInfinitePay("profunda", emailLimpo, orderId);
+      $("#btn-gate-pagar-standard").href = Guardiao.construirUrlCheckoutInfinitePay("standard", emailLimpo, orderId);
+    }
+
+    pollingGate = Guardiao.iniciarPollingConfirmacao({
+      email: emailLimpo,
+      orderId,
+      plano: planoAtivo,
+      intervaloMs: 4000,
+      aoVerificar(tentativa) {
+        if (!Guardiao.validarFormatoEmail(inpGateEmail.value)) {
+          gateStatusMsg.textContent = "Informe seu e-mail acima e realize o pagamento na InfinitePay para liberar o botão…";
+        } else {
+          gateStatusMsg.textContent = `Aguardando confirmação automática da InfinitePay (PIX/Cartão)… [checagem #${tentativa}]`;
+        }
+      },
+      aoConfirmar(dadosConfirmados) {
+        destravarAnamneseNaTela(dadosConfirmados);
+      }
+    });
+  }
+
+  $("#btn-gate-monitorar").addEventListener("click", () => {
+    const em = Guardiao.normalizarEmail(inpGateEmail.value);
+    if (!Guardiao.validarFormatoEmail(em)) {
+      inpGateEmail.focus();
+      gateStatusMsg.textContent = "⚠ Digite um e-mail válido para vincular ao seu pagamento na InfinitePay.";
+      return;
+    }
+    iniciarPollingGate(em, "");
+  });
+
+  $("#btn-gate-pagar-profunda").addEventListener("click", () => {
+    planoAtivo = "profunda";
+    atualizarUIPlano();
+    iniciarPollingGate(inpGateEmail.value, "");
+  });
+
+  $("#btn-gate-pagar-standard").addEventListener("click", () => {
+    planoAtivo = "standard";
+    atualizarUIPlano();
+    iniciarPollingGate(inpGateEmail.value, "");
+  });
+
+  inicializarVerificacaoPagamento();
 
   function atualizarUIPlano() {
     const isProf = planoAtivo === "profunda";

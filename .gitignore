@@ -1,2 +1,4 @@
 ferramentas/gerador/saida/
 __pycache__/
+
+backend/db-pagamentos.json
