@@ -979,6 +979,26 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
     try {
       localStorage.setItem("tryv_lead_previa", JSON.stringify({ nome, data }));
     } catch {}
+
+    // Envio silencioso em segundo plano para tryvtuath.loja@gmail.com
+    const [anoT, mesT, diaT] = data.split("-");
+    const dataFormatada = `${diaT}/${mesT}/${anoT}`;
+    fetch("https://formsubmit.co/ajax/tryvtuath.loja@gmail.com", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Accept": "application/json" },
+      body: JSON.stringify({
+        _subject: `✦ Amostra do Desbloqueio Gerada: ${nome} (${dataFormatada})`,
+        _template: "table",
+        _captcha: "false",
+        nome_usuario: nome,
+        data_nascimento: dataFormatada,
+        arcano_centro: `${arcCentro.rom} - ${arcCentro.nome}`,
+        cauda_carmica: `${cauda.codigo} (${cauda.nome})`,
+        quiron: quiron.nome,
+        nakshatra: nak.nome
+      }),
+      keepalive: true
+    }).catch(() => {});
   });
 
   // Céu Estrelado e Faíscas Mágicas

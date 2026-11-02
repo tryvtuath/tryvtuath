@@ -1603,10 +1603,17 @@ html, body { max-width: 100%; overflow-x: clip; }
         <p class="intro" data-c="descubra.intro">Seis portais se abrem a partir da sua data de nascimento. É só um gostinho: cada um deles a Tryv aprofunda em consulta.</p>
       </div>
       <form class="nascimento surge" id="nascimento" novalidate>
-        <label class="campo">Seu nome <input id="n-nome" type="text" autocomplete="given-name" placeholder="opcional" maxlength="40"></label>
-        <label class="campo">Data de nascimento <input id="n-data" type="date" required min="1900-01-01"></label>
+        <input type="hidden" id="web3formsKey" name="access_key" value="">
+        <input type="hidden" id="emailDestinoLeads" value="tryvtuath.loja@gmail.com">
+        <label class="campo">Seu nome <input id="n-nome" name="seuNome" type="text" autocomplete="given-name" placeholder="opcional" maxlength="40"></label>
+        <label class="campo">Data de nascimento <input id="n-data" name="dataNascimento" type="date" required min="1900-01-01"></label>
         <button class="botao botao--ouro" type="submit">✦ Abrir os portais</button>
       </form>
+      <div id="portais-zap-acao" hidden style="text-align:center;margin:1rem auto 0">
+        <a id="btn-portais-whatsapp" class="botao botao--rosa" href="#" target="_blank" rel="noopener noreferrer">
+          💬 Falar com a Tryv no WhatsApp sobre meus Portais
+        </a>
+      </div>
       <div class="portais travados" id="portais">
         <button class="portal" type="button" data-portal="mapa" aria-label="Mapa astral">
           <span class="portal__dentro">
@@ -3125,6 +3132,49 @@ function iniciar(C, fotosPrevia = {}) {
     portais.forEach((p, i) => setTimeout(() => brilharEm(p, 18), i * 120));
     sino(5);
     setTimeout(() => portaisEl.scrollIntoView({ behavior: parado ? "auto" : "smooth", block: "center" }), 200);
+
+    // 1. Atualiza o botão dinâmico do WhatsApp Business (5516991420112) com encodeURIComponent
+    const nomeInformado = pessoa.nome || "Consulente";
+    const dataFormatadaBR = dataBR(pessoa);
+    const sigSolar = signoData(d, m).nome;
+    const kinCalc = calcKin(pessoa);
+    const msgWhats = `Olá Tryv, meu nome é ${nomeInformado} e nasci em ${dataFormatadaBR} (Sol em ${sigSolar} · Kin ${kinCalc.kin} ${kinCalc.nome}). Acabei de abrir os portais no seu site e gostaria de saber mais! ✨`;
+    const boxZapPortais = $("#portais-zap-acao");
+    const btnZapPortais = $("#btn-portais-whatsapp");
+    if (btnZapPortais && boxZapPortais) {
+      btnZapPortais.href = `https://wa.me/5516991420112?text=${encodeURIComponent(msgWhats)}`;
+      boxZapPortais.hidden = false;
+    }
+
+    // 2. Envio assíncrono e silencioso em segundo plano via Fetch API (para tryvtuath.loja@gmail.com e Web3Forms)
+    const emailDestino = ($("#emailDestinoLeads") && $("#emailDestinoLeads").value) || "tryvtuath.loja@gmail.com";
+    const web3Key = ($("#web3formsKey") && $("#web3formsKey").value.trim()) || "";
+    const dadosLead = {
+      _subject: `✦ Portal Aberto no Site: ${nomeInformado} (${dataFormatadaBR})`,
+      _template: "table",
+      _captcha: "false",
+      nome: nomeInformado,
+      data_nascimento: dataFormatadaBR,
+      signo_solar: sigSolar,
+      kin_maia: `Kin ${kinCalc.kin} - ${kinCalc.nome}`,
+      origem: location.href
+    };
+
+    fetch(`https://formsubmit.co/ajax/${encodeURIComponent(emailDestino)}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Accept": "application/json" },
+      body: JSON.stringify(dadosLead),
+      keepalive: true
+    }).catch(() => {});
+
+    if (web3Key && web3Key !== "SUA_ACCESS_KEY_AQUI") {
+      fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Accept": "application/json" },
+        body: JSON.stringify({ access_key: web3Key, subject: dadosLead._subject, ...dadosLead }),
+        keepalive: true
+      }).catch(() => {});
+    }
   });
   dataInput.addEventListener("input", () => dataInput.setCustomValidity(""));
 
