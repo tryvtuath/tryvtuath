@@ -367,6 +367,91 @@ h1, h2, h3 { margin: 0; font-weight: 600; }
 .leitura__acoes { display: flex; flex-wrap: wrap; gap: .6rem; margin-top: 1.6rem; }
 .aviso { margin: 1.2rem 0 0; font-size: .88rem; color: var(--texto-2); opacity: .85; }
 
+/* ---------- Oráculo do I-Ching (Degustação na Mesa Encantada) ---------- */
+.iching-palco {
+  max-width: 760px; margin: 1.8rem auto 0; padding: clamp(1.3rem, 3.5vw, 2rem); border-radius: var(--raio);
+  background: linear-gradient(180deg, rgba(43, 26, 94, .58), rgba(16, 11, 40, .68));
+  box-shadow: 0 0 0 1px var(--linha) inset, 0 20px 55px rgba(0, 0, 0, .4);
+  text-align: center;
+}
+.iching-palco[hidden] { display: none !important; }
+.iching-aviso-box {
+  max-width: 62ch; margin: 0 auto 1.2rem; padding: .85rem 1.1rem; border-radius: 14px;
+  background: rgba(242, 193, 78, .08); border: 1px solid rgba(242, 193, 78, .32);
+  font-size: .92rem; line-height: 1.55; color: var(--texto-2);
+}
+.iching-aviso-box strong { color: var(--ouro-claro); }
+.iching-pergunta-wrap { max-width: 560px; margin: 0 auto 1.4rem; text-align: left; }
+.iching-pergunta-wrap label {
+  display: block; margin-bottom: .4rem; font: 600 .76rem/1.2 var(--corpo);
+  letter-spacing: .16em; text-transform: uppercase; color: var(--ouro);
+}
+.iching-pergunta-wrap input {
+  width: 100%; min-height: 48px; padding: .7rem 1rem; border-radius: 12px;
+  border: 1px solid var(--linha); background: rgba(8, 6, 26, .72); color: var(--texto);
+  font: 400 .98rem/1.3 var(--corpo);
+}
+.iching-pergunta-wrap input:focus { outline: none; border-color: var(--ouro); box-shadow: 0 0 0 3px rgba(242, 193, 78, .22); }
+.iching-arena {
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 1.5rem;
+  align-items: center; margin: 1.2rem 0;
+}
+@media (max-width: 680px) { .iching-arena { grid-template-columns: 1fr; } }
+.iching-moedas-col { display: flex; flex-direction: column; align-items: center; gap: 1rem; }
+.iching-moedas { display: flex; justify-content: center; gap: 1rem; perspective: 700px; min-height: 82px; align-items: center; }
+.moeda-chinesa {
+  position: relative; width: 72px; height: 72px; border-radius: 50%;
+  background: radial-gradient(circle at 32% 28%, #fff1b8, #e6b44c 45%, #9e6b14 82%, #6b4407 100%);
+  box-shadow: 0 0 0 2px #fce29c inset, 0 0 0 5px rgba(92, 54, 6, .75) inset, 0 10px 24px rgba(0, 0, 0, .55), 0 0 18px rgba(242, 193, 78, .35);
+  display: grid; place-items: center; color: #3d2202; font-weight: 800; font-size: .72rem;
+  transform-style: preserve-3d; transition: transform .65s cubic-bezier(.25, .8, .25, 1);
+  user-select: none;
+}
+.moeda-chinesa::before {
+  content: ""; width: 20px; height: 20px; border-radius: 3px;
+  background: #140d30; box-shadow: 0 0 0 2px #b88222, inset 0 2px 5px rgba(0, 0, 0, .85);
+}
+.moeda-chinesa span {
+  position: absolute; font-size: .64rem; letter-spacing: .04em; color: #4a2900; font-weight: 800;
+  text-shadow: 0 1px 0 rgba(255, 245, 200, .6);
+}
+.moeda-chinesa .m-topo { top: 5px; }
+.moeda-chinesa .m-base { bottom: 5px; }
+.moeda-chinesa .m-esq { left: 6px; }
+.moeda-chinesa .m-dir { right: 6px; }
+.moeda-chinesa.girando { animation: girarMoeda .62s cubic-bezier(.3, .7, .2, 1); }
+@keyframes girarMoeda {
+  0% { transform: translateY(0) rotateX(0deg) rotateY(0deg) scale(1); }
+  45% { transform: translateY(-28px) rotateX(540deg) rotateY(180deg) scale(1.12); }
+  100% { transform: translateY(0) rotateX(1080deg) rotateY(360deg) scale(1); }
+}
+.iching-ultimo-lance { min-height: 1.5rem; font-size: .9rem; color: var(--ouro-claro); font-weight: 500; }
+.iching-hex-box {
+  padding: 1.15rem 1.25rem; border-radius: 16px;
+  background: rgba(10, 7, 28, .65); border: 1px solid rgba(242, 193, 78, .28);
+}
+.iching-hex-titulo { font: 600 .76rem/1.2 var(--corpo); letter-spacing: .16em; text-transform: uppercase; color: var(--rosa-claro); margin-bottom: .75rem; }
+.iching-linhas-pilha {
+  display: flex; flex-direction: column-reverse; gap: .52rem; max-width: 240px; margin: 0 auto;
+}
+.iching-linha-slot {
+  display: flex; align-items: center; gap: .6rem; min-height: 22px; opacity: .35; transition: opacity .35s, transform .35s;
+}
+.iching-linha-slot.preenchida { opacity: 1; }
+.iching-linha-num { width: 22px; font-size: .72rem; color: var(--texto-2); text-align: right; font-weight: 600; }
+.iching-linha-barra { flex: 1; height: 11px; display: flex; align-items: center; justify-content: space-between; position: relative; }
+.iching-linha-barra--vazia { border: 1px dashed rgba(242, 193, 78, .3); border-radius: 4px; }
+.iching-linha-barra--yang {
+  background: linear-gradient(90deg, #ffe299, #f2c14e, #ffe299); border-radius: 4px;
+  box-shadow: 0 0 12px rgba(242, 193, 78, .45);
+}
+.iching-linha-barra--yin::before, .iching-linha-barra--yin::after {
+  content: ""; width: 42%; height: 100%; border-radius: 4px;
+  background: linear-gradient(90deg, #ffe299, #f2c14e);
+  box-shadow: 0 0 12px rgba(242, 193, 78, .4);
+}
+.iching-linha-mut { width: 22px; font-size: .76rem; color: var(--rosa-claro); font-weight: 700; text-align: left; }
+
 /* ---------- Consultas ---------- */
 .grade-servicos { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 1.3rem; perspective: 1200px; }
 .servico {
@@ -1576,11 +1661,36 @@ html, body { max-width: 100%; overflow-x: clip; }
           <div class="modos" role="group" aria-label="Tipo de tiragem">
             <button type="button" data-modo="dia" aria-pressed="true">Carta do dia</button>
             <button type="button" data-modo="tres" aria-pressed="false">Três cartas</button>
+            <button type="button" data-modo="iching" aria-pressed="false">☯ I-Ching</button>
           </div>
           <p class="mesa__instrucao" id="instrucao">Toque em uma carta do leque.</p>
         </div>
         <div class="leque" id="leque" aria-label="Baralho embaralhado"></div>
         <div class="vagas" id="vagas"></div>
+        <div class="iching-palco" id="iching-palco" hidden aria-live="polite">
+          <div class="iching-aviso-box">
+            <strong>☯ Degustação do Livro das Mutações (I-Ching):</strong> O Oráculo não responde com <em>"sim"</em> ou <em>"não"</em>. Ele oferece um trecho de sabedoria ancestral para trazer <strong>iluminação e clareza</strong> sobre o momento que você atravessa na sua questão.
+          </div>
+          <div class="iching-pergunta-wrap">
+            <label for="iching-pergunta">Formule sua questão para receber iluminação (opcional):</label>
+            <input type="text" id="iching-pergunta" maxlength="160" placeholder="Ex.: O que preciso compreender sobre este momento da minha vida?">
+          </div>
+          <div class="iching-arena">
+            <div class="iching-moedas-col">
+              <div class="iching-moedas" id="iching-moedas" aria-label="Três moedas chinesas do I-Ching">
+                <div class="moeda-chinesa" data-moeda="0"><span class="m-topo">乾</span><span class="m-base">隆</span><span class="m-esq">通</span><span class="m-dir">寶</span></div>
+                <div class="moeda-chinesa" data-moeda="1"><span class="m-topo">乾</span><span class="m-base">隆</span><span class="m-esq">通</span><span class="m-dir">寶</span></div>
+                <div class="moeda-chinesa" data-moeda="2"><span class="m-topo">乾</span><span class="m-base">隆</span><span class="m-esq">通</span><span class="m-dir">寶</span></div>
+              </div>
+              <div class="iching-ultimo-lance" id="iching-ultimo-lance">Concentre-se na sua questão e lance as 3 moedas 6 vezes.</div>
+              <button type="button" class="botao botao--ouro" id="btn-lancar-moedas">☯ Lançar Moedas (1ª Linha de 6)</button>
+            </div>
+            <div class="iching-hex-box">
+              <div class="iching-hex-titulo" id="iching-hex-progresso">Hexagrama em Formação (de baixo para cima)</div>
+              <div class="iching-linhas-pilha" id="iching-linhas-pilha"></div>
+            </div>
+          </div>
+        </div>
         <div class="leitura" id="leitura" hidden aria-live="polite">
           <div id="leitura-itens"></div>
           <div class="leitura__acoes">
@@ -2542,11 +2652,273 @@ function iniciar(C, fotosPrevia = {}) {
   new IntersectionObserver((e, obs) => { if (!e[0].isIntersecting) return; obs.disconnect(); ARCANOS.forEach(a => { if (a.foto) new Image().src = foto(a.foto); }); }, { rootMargin: "800px" }).observe($("#cartas"));
   const POSICOES = { dia: ["Carta do dia"], tres: ["O que passou", "O que é agora", "O caminho"] };
 
-  const mesaEl = $("#mesa"), leque = $("#leque"), vagasEl = $("#vagas");
+  const mesaEl = $("#mesa"), leque = $("#leque"), vagasEl = $("#vagas"), ichingPalco = $("#iching-palco");
   const leitura = $("#leitura"), itens = $("#leitura-itens"), instrucao = $("#instrucao");
   let modo = "dia", ordem = [], tiradas = [], ocupado = false;
 
+  /* ---------- Oráculo do I-Ching: 8 Trigramas, Matriz do Rei Wen e os 64 Hexagramas ---------- */
+  const TRIGRAMAS_ICHING = {
+    "111": { sim: "☰", nome: "Ch'ien · O Céu (O Criativo)" },
+    "000": { sim: "☷", nome: "K'un · A Terra (O Receptivo)" },
+    "100": { sim: "☳", nome: "Chen · O Trovão (O Incitar)" },
+    "010": { sim: "☵", nome: "K'an · A Água (O Abismal)" },
+    "001": { sim: "☶", nome: "Ken · A Montanha (A Quietude)" },
+    "011": { sim: "☴", nome: "Sun · O Vento / Madeira (A Suavidade)" },
+    "101": { sim: "☲", nome: "Li · O Fogo (A Claridade)" },
+    "110": { sim: "☱", nome: "Tui · O Lago (A Serenidade Alegre)" }
+  };
+
+  // Matriz Oficial do Rei Wen: [trigramaSuperior][trigramaInferior] => Nº do Hexagrama (1 a 64)
+  const MATRIZ_REI_WEN = {
+    "111": { "111": 1,  "100": 25, "010": 6,  "001": 33, "000": 12, "011": 44, "101": 13, "110": 10 },
+    "100": { "111": 34, "100": 51, "010": 40, "001": 62, "000": 16, "011": 32, "101": 55, "110": 54 },
+    "010": { "111": 5,  "100": 3,  "010": 29, "001": 39, "000": 8,  "011": 48, "101": 63, "110": 60 },
+    "001": { "111": 26, "100": 27, "010": 4,  "001": 52, "000": 23, "011": 18, "101": 22, "110": 41 },
+    "000": { "111": 11, "100": 24, "010": 7,  "001": 15, "000": 2,  "011": 46, "101": 36, "110": 19 },
+    "011": { "111": 9,  "100": 42, "010": 59, "001": 53, "000": 20, "011": 57, "101": 37, "110": 61 },
+    "101": { "111": 14, "100": 21, "010": 64, "001": 56, "000": 35, "011": 50, "101": 30, "110": 38 },
+    "110": { "111": 43, "100": 17, "010": 47, "001": 31, "000": 45, "011": 28, "101": 49, "110": 58 }
+  };
+
+  const HEXAGRAMAS_ICHING = {
+    1:  ["Ch'ien · O Criativo", "Força primordial em movimento. O momento pede iniciativa consciente, integridade firme e confiança na sua potência criadora, sem arrogância."],
+    2:  ["K'un · O Receptivo", "A sabedoria da Terra que acolhe e nutre. Não force portas agora: observe os sinais, cultive a paciência fértil e deixe que a resposta amadureça antes de agir."],
+    3:  ["Chun · A Dificuldade Inicial", "Como o broto que rompe a terra, todo começo verdadeiro traz caos aparente. Não desanime diante da confusão inicial: organize os passos e peça auxílio sábio."],
+    4:  ["Meng · A Insensatez Juvenil", "A névoa na base da montanha pede humildade de aprendiz. Reconheça o que você ainda não sabe sobre a questão e ouça a primeira intuição limpa, sem insistir na dúvida."],
+    5:  ["Hsü · A Espera (A Nutrição)", "As nuvens sobem ao céu, mas a chuva ainda não caiu. A ansiedade não apressa a colheita: fortaleça seu corpo e seu espírito enquanto o tempo certo se completa."],
+    6:  ["Sung · O Conflito", "Ainda que você tenha razão, levar o embate até o fim desgasta a alma. Busque o acordo equilibrado, recue um passo na vaidade e preserve sua paz interior."],
+    7:  ["Shih · O Exército", "Como a água guardada sob a terra, sua questão exige disciplina interior, foco claro e liderança justa sobre suas próprias emoções dispersas."],
+    8:  ["Pi · Manter-se Unido", "Examine com sinceridade a quem e ao que você está se aliando. As conexões verdadeiras nascem da afinidade de alma e da lealdade espontânea, nunca do medo."],
+    9:  ["Hsiao Ch'u · O Poder de Domar do Pequeno", "Nuvens densas sem chuva imediata. Grandes movimentos ainda encontram resistência; cuide dos pequenos detalhes diários com gentileza e constância."],
+    10: ["Lü · A Conduta (Pisar)", "Pisar na cauda do tigre sem ser ferido exige presença serena e respeito aos limites. Caminhe com elegância, consciência e autodomínio."],
+    11: ["T'ai · A Paz", "O Céu e a Terra se abraçam em harmonia. É um portal de florescimento onde o que estava pequeno ganha força; aproveite a maré favorável com equilíbrio."],
+    12: ["P'i · A Estagnação", "Quando o diálogo verdadeiro cessa e o ambiente parece bloqueado, não se corrompa para agradar. Recolha sua luz para dentro até que o ciclo volte a girar."],
+    13: ["T'ung Jen · Comunhão com os Homens", "O fogo brilha sob o céu: clareza e união em torno de um propósito maior. Supere interesses estreitos e construa alianças transparentes."],
+    14: ["Ta Yu · Grandes Posses", "O Sol no alto do céu ilumina tudo com generosidade. A verdadeira abundância se mantém quando você une força firme, clareza mental e gratidão compartilhada."],
+    15: ["Ch'ien · A Modéstia", "Uma montanha oculta dentro da terra. O equilíbrio mais nobre nivela os excessos e eleva o que estava esquecido: aja com simplicidade soberana."],
+    16: ["Yü · O Entusiasmo", "O trovão irrompe da terra despertando a vida. Quando sua ação se alinha ao ritmo natural do coração, a energia volta a circular e contagia o caminho."],
+    17: ["Sui · O Seguir", "Para conduzir, primeiro aprenda a fluir com as leis do momento. Solte a teimosia do controle e adapte-se com sabedoria ao movimento real da vida."],
+    18: ["Ku · O Trabalho no que se Deteriorou", "O que estagnou por negligência antiga pede renovação consciente. Olhe de frente para a raiz do problema, limpe os padrões herdados e inaugure um novo começo."],
+    19: ["Lin · A Aproximação", "A primavera se aproxima e a luz cresce. Avance com generosidade e presença, lembrando que toda fase fértil pede sabedoria para construir bases duradouras."],
+    20: ["Kuan · A Contemplação (A Vista)", "O vento sopra sobre a terra. Antes de decidir, suba à torre interna da observação silenciosa e enxergue o todo sem julgamento precipitado."],
+    21: ["Shih Ho · Morder", "Há um obstáculo entre as partes que impede a união. Não contorne o problema: use discernimento firme e clareza para dissolver o que trava a verdade."],
+    22: ["Pi · A Graça (A Beleza)", "O fogo ilumina o pé da montanha. A beleza e a forma encantam os olhos, mas nas decisões essenciais confie na substância verdadeira e não apenas nas aparências."],
+    23: ["Po · A Desintegração", "Quando uma estrutura antiga já cumpriu seu tempo e começa a ruir, não lute contra o desmoronamento do que é falso. Abrigue sua essência e aguarde o renascimento."],
+    24: ["Fu · O Retorno (O Ponto de Mutação)", "Depois da noite mais longa, a luz retorna silenciosa na base. Cuide com ternura dessa nova semente que desperta em você, sem apressá-la."],
+    25: ["Wu Wang · A Inocência (O Inesperado)", "Agir sem segundas intenções e sem apego neurótico ao resultado. Quando o coração é íntegro e natural, até o inesperado serve ao seu propósito."],
+    26: ["Ta Ch'u · O Poder de Domar do Grande", "A montanha retém a força do céu: acumule energia, sabedoria e estudo. Sua reserva interior está sendo preparada para uma realização maior."],
+    27: ["I · As Faces da Nutrição", "Observe com atenção do que você alimenta seu corpo, sua mente e suas palavras. Nutra apenas aquilo que sustenta a vida e a dignidade."],
+    28: ["Ta Kuo · A Preponderância do Grande", "A viga mestra verga sob peso excessivo. O momento é extraordinário e pede coragem para transitar para uma nova estrutura sem medo de ficar só."],
+    29: ["K'an · O Abismal (A Água)", "Como a água que atravessa o desfiladeiro sem perder sua natureza, atravesse o desafio mantendo a fidelidade ao seu próprio coração."],
+    30: ["Li · O Aderir (O Fogo)", "O fogo precisa de algo ao qual aderir para brilhar. Escolha com lucidez onde você deposita sua paixão e mantenha sua chama interior serena."],
+    31: ["Hsien · A Influência (O Cortejo)", "Um lago no alto da montanha: receptividade pura. A verdadeira atração acontece quando você esvazia o orgulho e permite que a sensibilidade toque o outro."],
+    32: ["Heng · A Duração", "Trovão e vento em movimento constante. A constância não é rigidez parada, e sim renovar diariamente o compromisso com o seu eixo interior."],
+    33: ["Tun · A Retirada", "Recuar no momento certo não é fuga, é maestria estratégica. Preserve sua energia afastando-se de desgastes inúteis e ambientes que não honram sua luz."],
+    34: ["Ta Chuang · O Poder do Grande", "A força está no auge, mas a verdadeira grandeza nunca atropela. Use seu vigor sempre alinhado à justiça e à delicadeza ética."],
+    35: ["Chin · O Progresso", "O Sol nasce sobre a terra dissipando a bruma. Avance com clareza tranquila: sua luz natural começa a ser vista e reconhecida."],
+    36: ["Ming I · O Obscurecimento da Luz", "Em tempos ou ambientes hostis, proteja seu brilho interior. Mantenha a lucidez por dentro e a discrição serena por fora até que o céu clareie."],
+    37: ["Chia Jen · A Família (O Clã)", "O vento nasce do fogo: palavras que têm apoio na conduta. A harmonia lá fora começa quando cada papel e sentimento dentro de você encontra seu lugar."],
+    38: ["K'uei · A Oposição", "O fogo sobe e a água do lago desce: naturezas diferentes não precisam se anular. Respeite as singularidades e encontre a ponte nos pequenos pontos em comum."],
+    39: ["Chien · O Obstáculo", "Água à frente, montanha atrás. Quando o caminho externo trava, o convite do Oráculo é parar, voltar-se para dentro e lapidar o caráter junto a bons aliados."],
+    40: ["Hsieh · A Liberação", "A tempestade cai e desfaz a tensão acumulada. Perdoe o que ficou para trás, solte os pesos desnecessários e retome seu caminho com leveza imediata."],
+    41: ["Sun · A Diminuição", "Simplificar o excesso na base fortalece o espírito no alto. Abrir mão de vaidades ou sobrecargas agora abrirá espaço para uma bênção autêntica."],
+    42: ["I · O Aumento", "O vento e o trovão se fortalecem mutuamente. É tempo fértil para expandir projetos, agir com generosidade e corrigir hábitos com rapidez."],
+    43: ["Kuai · A Irrupção (A Decisão)", "As águas acumuladas rompem o dique. Tome a decisão necessária com verdade e firmeza serena, sem usar a mesma agressividade daquilo que você quer superar."],
+    44: ["Kou · Vir ao Encontro", "Uma influência sutil se insinua na base. Esteja desperta para discernir entre um encontro genuíno e uma tentação que pode desviar seu eixo."],
+    45: ["Ts'ui · A Reunião", "O lago se eleva sobre a terra: convergir energias em torno de um centro sagrado. Reúna suas forças dispersas e honre seus vínculos espirituais."],
+    46: ["Sheng · A Ascensão", "A madeira cresce dentro da terra, passo a passo, sem pressa e sem interrupção. O esforço contínuo e humilde leva você ao topo com segurança."],
+    47: ["K'un · A Opressão (A Exaustão)", "O lago secou temporariamente. Quando os recursos externos parecem escassos, sua maior vitória é manter a alegria silenciosa da alma inabalável."],
+    48: ["Ching · O Poço", "As cidades mudam, mas o poço continua oferecendo água viva no fundo. Desça a corda até a sua essência mais profunda: a fonte da sua sabedoria nunca secou."],
+    49: ["Ko · A Revolução (A Muda)", "Fogo e água se transformam: como o animal que troca de pelagem na estação certa, chegou a hora de deixar a pele velha e assumir sua nova verdade."],
+    50: ["Ting · O Caldeirão", "A madeira alimenta o fogo sagrado que transmuta o alimento em oferenda. Tudo o que você viveu está sendo alquimizado em sabedoria superior e realização."],
+    51: ["Chen · O Incitar (O Trovão)", "O trovão sacode a acomodação, mas quem guarda reverência no coração não deixa cair a colher sagrada. O despertar traz renovação e lucidez."],
+    52: ["Ken · A Quietude (A Montanha)", "Duas montanhas em silêncio. Aquiete o coração inquieto: saiba quando parar de agir e quando parar de pensar para escutar a voz da alma."],
+    53: ["Chien · O Progresso Gradual", "A árvore no alto da montanha cria raízes profundas antes de tocar as nuvens. Respeite as etapas orgânicas: o que dura é construído com paciência."],
+    54: ["Kuei Mei · A Jovem que se Casa", "Cuidado com impulsos movidos apenas pelo desejo imediato. Compreenda seu lugar real na situação e guarde sua dignidade acima das aparências."],
+    55: ["Feng · A Abundância (A Plenitude)", "Clareza por dentro e movimento por fora geram o zênite da fartura. Não se entristeça porque o Sol do meio-dia um dia se põe: brilhe intensamente agora."],
+    56: ["Lü · O Viajante", "Fogo no alto da montanha: como quem está de passagem em terra estrangeira, mantenha a bagagem leve, o olhar atento e a conduta impecável."],
+    57: ["Sun · A Suavidade (O Vento Penetrante)", "O vento suave move as árvores não pela violência, mas pela constância invisível. Estabeleça metas claras e penetre a situação com delicadeza persistente."],
+    58: ["Tui · A Alegria (O Lago)", "Dois lagos que se comunicam nunca secam. A verdadeira alegria repousa na firmeza interior e se expressa na doçura do diálogo sincero."],
+    59: ["Huan · A Dispersão (A Dissolução)", "O vento sopra sobre a água e dissolve o gelo rígido do egoísmo e do medo. Deixe derreter as mágoas duras para que o fluxo da vida volte a correr."],
+    60: ["Chieh · A Limitação", "A água precisa de margens para não se perder, mas margens estreitas demais sufocam. Estabeleça limites saudáveis e justos, sem amargura."],
+    61: ["Chung Fu · A Verdade Interior", "O vento sopra sobre o lago porque há espaço aberto no centro. Quando sua alma está livre de preconceitos, sua verdade toca até os corações mais distantes."],
+    62: ["Hsiao Kuo · A Preponderância do Pequeno", "O pássaro que voa alto demais se perde; o que pousa com cuidado encontra abrigo. Momento de atenção redobrada às pequenas atitudes, à sobriedade e ao detalhe."],
+    63: ["Chi Chi · Após a Conclusão", "A travessia foi concluída e tudo está no lugar certo. O segredo agora é não relaxar na vigilância: cuide da manutenção para que a conquista permaneça viva."],
+    64: ["Wei Chi · Antes da Conclusão", "A raposa quase atravessou o rio congelado. Falta o último passo: mantenha a atenção serena, a fé lúcida e o discernimento até que a nova aurora se abra."]
+  };
+
+  let ichingLinhas = []; // 6 valores (6, 7, 8 ou 9) da base (índice 0) ao topo (índice 5)
+  let ichingGirando = false;
+  let ultimoHexIching = null;
+
+  function renderizarPilhaIching() {
+    const pilha = $("#iching-linhas-pilha");
+    if (!pilha) return;
+    let html = "";
+    for (let i = 0; i < 6; i++) {
+      const val = ichingLinhas[i];
+      if (!val) {
+        html += `<div class="iching-linha-slot"><span class="iching-linha-num">${i + 1}ª</span><div class="iching-linha-barra iching-linha-barra--vazia"></div><span class="iching-linha-mut"></span></div>`;
+      } else {
+        const isYang = val === 7 || val === 9;
+        const mutSimb = val === 9 ? "○" : val === 6 ? "✕" : "";
+        html += `<div class="iching-linha-slot preenchida"><span class="iching-linha-num">${i + 1}ª</span><div class="iching-linha-barra ${isYang ? "iching-linha-barra--yang" : "iching-linha-barra--yin"}"></div><span class="iching-linha-mut" title="${mutSimb ? "Linha em mutação" : "Linha estável"}">${mutSimb}</span></div>`;
+      }
+    }
+    pilha.innerHTML = html;
+  }
+
+  function reiniciarIching() {
+    ichingLinhas = [];
+    ichingGirando = false;
+    ultimoHexIching = null;
+    leitura.hidden = true;
+    if ("speechSynthesis" in window) speechSynthesis.cancel();
+    renderizarPilhaIching();
+    const btnM = $("#btn-lancar-moedas");
+    if (btnM) {
+      btnM.disabled = false;
+      btnM.textContent = "☯ Lançar as 3 Moedas (1ª Linha de 6)";
+    }
+    const ult = $("#iching-ultimo-lance");
+    if (ult) ult.textContent = "Concentre-se na sua questão e toque abaixo para lançar as 3 moedas.";
+    const prog = $("#iching-hex-progresso");
+    if (prog) prog.textContent = "Hexagrama em Formação (1ª à 6ª linha)";
+  }
+
+  function obterHexagramaPorBits(bits6) {
+    const infKey = `${bits6[0]}${bits6[1]}${bits6[2]}`;
+    const supKey = `${bits6[3]}${bits6[4]}${bits6[5]}`;
+    const num = (MATRIZ_REI_WEN[supKey] && MATRIZ_REI_WEN[supKey][infKey]) || 1;
+    const info = HEXAGRAMAS_ICHING[num] || HEXAGRAMAS_ICHING[1];
+    return {
+      n: num,
+      nome: info[0],
+      msg: info[1],
+      trigSup: TRIGRAMAS_ICHING[supKey],
+      trigInf: TRIGRAMAS_ICHING[infKey]
+    };
+  }
+
+  function mostrarLeituraIching() {
+    const bitsPrincipais = ichingLinhas.map(v => (v === 7 || v === 9) ? 1 : 0);
+    const temMutacao = ichingLinhas.some(v => v === 6 || v === 9);
+    const bitsMutados = ichingLinhas.map(v => {
+      if (v === 9) return 0; // Yang velho muda para Yin
+      if (v === 6) return 1; // Yin velho muda para Yang
+      return v === 7 ? 1 : 0;
+    });
+
+    const hexPrincipal = obterHexagramaPorBits(bitsPrincipais);
+    const hexMutado = temMutacao ? obterHexagramaPorBits(bitsMutados) : null;
+    const linhasMutantesLista = ichingLinhas
+      .map((v, i) => (v === 6 || v === 9) ? `${i + 1}ª linha (${v === 9 ? "Yang em mutação ○" : "Yin em mutação ✕"})` : null)
+      .filter(Boolean);
+
+    const perguntaUsuario = ($("#iching-pergunta") && $("#iching-pergunta").value.trim()) || "";
+    ultimoHexIching = { hexPrincipal, hexMutado, perguntaUsuario, linhasMutantesLista };
+
+    instrucao.textContent = "O Livro das Mutações revelou seu Hexagrama.";
+    const prog = $("#iching-hex-progresso");
+    if (prog) prog.textContent = `✦ Hexagrama ${hexPrincipal.n} · ${hexPrincipal.nome}`;
+
+    itens.innerHTML = `
+      <div class="leitura__item">
+        <span class="leitura__pos">☯ Iluminação do I-Ching · Hexagrama ${hexPrincipal.n} de 64</span>
+        <h3 class="leitura__nome">Hexagrama ${hexPrincipal.n} — ${hexPrincipal.nome}</h3>
+        ${perguntaUsuario ? `<p style="margin:.4rem 0 .6rem;font-size:.92rem;color:var(--ouro-claro)"><strong>Sua questão:</strong> <em>"${escHTML(perguntaUsuario)}"</em></p>` : ""}
+        <p style="margin:.35rem 0 .65rem;font-size:.88rem;color:var(--rosa-claro)">
+          <strong>Estrutura:</strong> Acima ${hexPrincipal.trigSup.sim} ${hexPrincipal.trigSup.nome} · Abaixo ${hexPrincipal.trigInf.sim} ${hexPrincipal.trigInf.nome}
+        </p>
+        <p class="leitura__msg">${hexPrincipal.msg}</p>
+        <p style="margin:.75rem 0 0;font-size:.85rem;color:var(--texto-2);opacity:.9">
+          ✦ <em>Lembre-se:</em> o I-Ching não entrega um "sim" ou "não" fechado; este trecho é um espelho luminoso para guiar sua postura diante da questão.
+        </p>
+      </div>
+      ${hexMutado ? `
+      <div class="leitura__item">
+        <span class="leitura__pos">✦ Movimento das Linhas (${linhasMutantesLista.join(" · ")}) → Hexagrama ${hexMutado.n}</span>
+        <h3 class="leitura__nome">Mutação para Hexagrama ${hexMutado.n} — ${hexMutado.nome}</h3>
+        <p class="leitura__msg">${hexMutado.msg}</p>
+      </div>` : ""}
+    `;
+
+    const resumoZap = `Olá, Tryv! Consultei o I-Ching na degustação do seu site${perguntaUsuario ? ` sobre "${perguntaUsuario}"` : ""} e formei o Hexagrama ${hexPrincipal.n} (${hexPrincipal.nome})${hexMutado ? ` com mutação para o Hexagrama ${hexMutado.n} (${hexMutado.nome})` : ""}. Quero agendar uma leitura completa ✨`;
+    $("#leitura-zap").href = zap(resumoZap);
+    leitura.hidden = false;
+    setTimeout(() => leitura.scrollIntoView({ behavior: parado ? "auto" : "smooth", block: "nearest" }), 280);
+  }
+
+  const btnLancarMoedas = $("#btn-lancar-moedas");
+  if (btnLancarMoedas) {
+    btnLancarMoedas.addEventListener("click", () => {
+      if (ichingGirando || ichingLinhas.length >= 6) return;
+      ichingGirando = true;
+      const moedasEls = $$(".moeda-chinesa", ichingPalco);
+      moedasEls.forEach(m => {
+        m.classList.remove("girando");
+        void m.offsetWidth;
+        m.classList.add("girando");
+      });
+      sino(4);
+
+      // Sorteio autêntico das 3 moedas chinesas: Cara (Yang) = 3, Coroa (Yin) = 2
+      const lances = [0, 1, 2].map(() => (Math.random() < 0.5 ? 3 : 2));
+      const soma = lances[0] + lances[1] + lances[2]; // 6, 7, 8 ou 9
+
+      setTimeout(() => {
+        moedasEls.forEach((m, idx) => {
+          const valMoeda = lances[idx];
+          m.innerHTML = valMoeda === 3
+            ? `<span class="m-topo">乾</span><span class="m-base">陽</span><span class="m-esq">3</span><span class="m-dir">✦</span>`
+            : `<span class="m-topo">坤</span><span class="m-base">陰</span><span class="m-esq">2</span><span class="m-dir">·</span>`;
+        });
+
+        ichingLinhas.push(soma);
+        renderizarPilhaIching();
+        const r = btnLancarMoedas.getBoundingClientRect();
+        soltar(r.left + r.width / 2, r.top + r.height / 2, 32, { forca: 2.8, anel: true, curta: true });
+
+        const numLinha = ichingLinhas.length;
+        const descSoma = {
+          6: "Soma 6 (2+2+2) · Yin Velho em Mutação (— ✕ —)",
+          7: "Soma 7 (3+2+2) · Yang Jovem Firme (—————)",
+          8: "Soma 8 (3+3+2) · Yin Jovem Maleável (—   —)",
+          9: "Soma 9 (3+3+3) · Yang Velho em Mutação (——○——)"
+        }[soma];
+        const ult = $("#iching-ultimo-lance");
+        if (ult) ult.textContent = `${numLinha}ª Linha: ${descSoma}`;
+
+        ichingGirando = false;
+        if (ichingLinhas.length < 6) {
+          btnLancarMoedas.textContent = `☯ Lançar as 3 Moedas (${ichingLinhas.length + 1}ª Linha de 6)`;
+        } else {
+          btnLancarMoedas.disabled = true;
+          btnLancarMoedas.textContent = "✦ Hexagrama Completo (6 de 6 Linhas)";
+          sino(5);
+          mostrarLeituraIching();
+        }
+      }, parado ? 40 : 540);
+    });
+  }
+
   function embaralhar() {
+    if (modo === "iching") {
+      leque.hidden = true;
+      vagasEl.hidden = true;
+      if (ichingPalco) ichingPalco.hidden = false;
+      instrucao.textContent = "Formule sua questão (sem buscar sim ou não) e lance as 3 moedas 6 vezes para formar seu Hexagrama.";
+      const btnDeNovo = $("#de-novo");
+      if (btnDeNovo) btnDeNovo.textContent = "↻ Jogar as moedas de novo";
+      reiniciarIching();
+      return;
+    }
+    leque.hidden = false;
+    vagasEl.hidden = false;
+    if (ichingPalco) ichingPalco.hidden = true;
+    const btnDeNovo = $("#de-novo");
+    if (btnDeNovo) btnDeNovo.textContent = "↻ Embaralhar de novo";
+
     ordem = ARCANOS.map((_, i) => i);
     for (let i = ordem.length - 1; i > 0; i--) { const j = Math.random() * (i + 1) | 0; [ordem[i], ordem[j]] = [ordem[j], ordem[i]]; }
     tiradas = []; ocupado = false;
@@ -2665,7 +3037,7 @@ function iniciar(C, fotosPrevia = {}) {
   }
 
   $$(".modos [data-modo]").forEach(b => b.addEventListener("click", () => {
-    if (b.dataset.modo === modo && !tiradas.length) return;
+    if (b.dataset.modo === modo && !tiradas.length && !ichingLinhas.length) return;
     modo = b.dataset.modo;
     $$(".modos [data-modo]").forEach(x => x.setAttribute("aria-pressed", x === b));
     embaralhar();
@@ -2676,6 +3048,7 @@ function iniciar(C, fotosPrevia = {}) {
   });
   let larguraAnterior = leque.clientWidth;
   addEventListener("resize", () => {
+    if (modo === "iching") return;
     if (Math.abs(leque.clientWidth - larguraAnterior) < 40) return;
     larguraAnterior = leque.clientWidth;
     if (!tiradas.length) montarLeque();
@@ -2692,9 +3065,9 @@ function iniciar(C, fotosPrevia = {}) {
     botaoOuvir.addEventListener("click", () => {
       if (speechSynthesis.speaking) { speechSynthesis.cancel(); botaoOuvir.textContent = rotuloOuvir(); return; }
       const nomes = POSICOES[modo];
-      // em inglês, lê o texto já traduzido que está na tela
+      // em inglês ou no modo I-Ching, lê o texto que está na tela
       const ingles = document.documentElement.lang === "en";
-      const texto = ingles
+      const texto = (ingles || modo === "iching" || !nomes)
         ? [...document.querySelectorAll("#leitura-itens .leitura__item")].map(el => [...el.children].map(c => c.innerText.trim()).join(". ")).join(". ")
         : tiradas.map((a, i) => `${nomes[i]}: ${a.nome}. ${a.msg}`).join(" ");
       const u = new SpeechSynthesisUtterance(texto);
