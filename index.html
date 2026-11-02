@@ -1612,7 +1612,7 @@ html, body { max-width: 100%; overflow-x: clip; }
         <label class="campo">Seu WhatsApp <input id="n-whatsapp" name="seuWhatsapp" type="tel" inputmode="tel" required autocomplete="tel" placeholder="(11) 99999-9999" maxlength="16"></label>
         <label class="campo">Data de nascimento <input id="n-data" name="dataNascimento" type="date" required min="1900-01-01"></label>
         <button class="botao botao--ouro" type="submit">✦ Abrir os portais</button>
-        <p class="nascimento__seguro" id="nasc-msg-seguro">🔒 Seus dados são confidenciais e ficam visíveis apenas para a Tryv. · <button type="button" id="btn-inline-mestra" style="background:none;border:0;color:var(--ouro-claro);font:inherit;text-decoration:underline;cursor:pointer;padding:0;opacity:.75">🔑 Acesso Tryv</button></p>
+        <p class="nascimento__seguro" id="nasc-msg-seguro">🔒 Seus dados são confidenciais e ficam visíveis apenas para a Tryv. <button type="button" id="btn-inline-mestra" aria-label="✦" style="background:none;border:0;color:var(--ouro-claro);font:inherit;cursor:pointer;padding:0 .15rem;opacity:.45">✦</button></p>
       </form>
       <div id="portais-zap-acao" hidden style="text-align:center;margin:1rem auto 0">
         <a id="btn-portais-whatsapp" class="botao botao--rosa" href="#" target="_blank" rel="noopener noreferrer">
@@ -2018,7 +2018,7 @@ html, body { max-width: 100%; overflow-x: clip; }
   <p>Na <b>Caverna de Eco</b> você escuta as músicas autorais e exclusivas da Tryv (que não estão no Spotify), lê as letras completas dos cânticos no pergaminho místico e assiste aos videoclipes e leituras de Tarot em tela cheia.</p>
 </div>
 
-<script src="pagamento-guardiao.js?v=3"></script>
+<script src="pagamento-guardiao.js?v=4"></script>
 <script>
 "use strict";
 document.documentElement.classList.add("js");
@@ -3129,12 +3129,12 @@ function iniciar(C, fotosPrevia = {}) {
     if (modoMestraAtivo()) {
       if (whatsInput) {
         whatsInput.required = false;
-        whatsInput.placeholder = "opcional (Modo Tryv)";
+        whatsInput.placeholder = "(11) 99999-9999";
       }
       if (nomeInput) {
         nomeInput.required = false;
       }
-      msgEl.innerHTML = `👑 <strong style="color:var(--ouro-claro)">Modo Mestra Tryv Ativo:</strong> gere quantos mapas quiser livremente (sem enviar e-mails) · <a href="diagnostico.html?plano=profunda" style="color:var(--rosa-claro);font-weight:700;text-decoration:underline">Ir para Gerador de PDF Completo →</a>`;
+      msgEl.innerHTML = `✦ <a href="diagnostico.html?plano=profunda" style="color:var(--ouro-claro);font-weight:600;text-decoration:underline">Dossiê Completo →</a>`;
     } else {
       if (whatsInput) {
         whatsInput.required = true;
@@ -3143,7 +3143,7 @@ function iniciar(C, fotosPrevia = {}) {
       if (nomeInput) {
         nomeInput.required = true;
       }
-      msgEl.innerHTML = `🔒 Seus dados são confidenciais e ficam visíveis apenas para a Tryv. · <button type="button" id="btn-inline-mestra" style="background:none;border:0;color:var(--ouro-claro);font:inherit;text-decoration:underline;cursor:pointer;padding:0;opacity:.75">🔑 Acesso Tryv</button>`;
+      msgEl.innerHTML = `🔒 Seus dados são confidenciais e ficam visíveis apenas para a Tryv. <button type="button" id="btn-inline-mestra" aria-label="✦" style="background:none;border:0;color:var(--ouro-claro);font:inherit;cursor:pointer;padding:0 .15rem;opacity:.45">✦</button>`;
       const btnInline = $("#btn-inline-mestra");
       if (btnInline && window.GuardiaoPagamentoInfinitePay) {
         btnInline.addEventListener("click", () => window.GuardiaoPagamentoInfinitePay.abrirModalLoginMestra(atualizarAvisoMestraPortais));

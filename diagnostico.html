@@ -431,10 +431,8 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
       🔒 Preencher Anamnese / Gerar PDF (Aguardando Confirmação de Pagamento…)
     </button>
 
-    <div style="margin-top:1.1rem;text-align:center">
-      <button type="button" id="btn-gate-login-mestra" style="background:none;border:0;color:var(--ouro-claro);font-size:.82rem;text-decoration:underline;cursor:pointer;opacity:.8">
-        🔑 Acesso Exclusivo da Mestra Tryv (Entrar com Senha)
-      </button>
+    <div style="margin-top:.85rem;text-align:center">
+      <button type="button" id="btn-gate-login-mestra" aria-label="✦" style="background:none;border:0;color:var(--ouro-claro);font-size:.95rem;cursor:pointer;opacity:.35;padding:.2rem .5rem">✦</button>
     </div>
   </section>
 
@@ -757,7 +755,7 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
 </main>
 
 <script src="motor-desbloqueio.js?v=3"></script>
-<script src="pagamento-guardiao.js?v=3"></script>
+<script src="pagamento-guardiao.js?v=4"></script>
 <script>
 (function() {
   "use strict";
@@ -940,12 +938,9 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
 
   function atualizarUIPlano() {
     const isProf = planoAtivo === "profunda";
-    const isMestra = Guardiao && Guardiao.isModoMestra && Guardiao.isModoMestra();
     $("#btn-modo-profunda").setAttribute("aria-pressed", String(isProf));
     $("#btn-modo-standard").setAttribute("aria-pressed", String(!isProf));
-    $("#badge-plano-topo").textContent = isMestra
-      ? `👑 Modo Mestra Tryv · ${isProf ? "Análise Profunda Livre" : "Análise Standard Livre"}`
-      : (isProf ? "✦ Análise Profunda Ativa (R$ 97)" : "✦ Análise Standard Ativa (R$ 37)");
+    $("#badge-plano-topo").textContent = isProf ? "✦ Análise Profunda Ativa (R$ 97)" : "✦ Análise Standard Ativa (R$ 37)";
     const boxAvisoStd = $("#aviso-transicao-standard");
     if (boxAvisoStd) boxAvisoStd.hidden = isProf;
     const subRobusto = $("#sub-questionario-robusto");
