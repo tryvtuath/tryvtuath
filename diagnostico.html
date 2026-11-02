@@ -430,6 +430,12 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
     <button type="button" class="botao botao--ouro" id="btn-liberar-anamnese" disabled aria-disabled="true" style="width:100%;font-size:1.02rem;padding:1rem 1.5rem;opacity:0.42;cursor:not-allowed;pointer-events:none;filter:grayscale(.35);transition:all .3s ease">
       🔒 Preencher Anamnese / Gerar PDF (Aguardando Confirmação de Pagamento…)
     </button>
+
+    <div style="margin-top:1.1rem;text-align:center">
+      <button type="button" id="btn-gate-login-mestra" style="background:none;border:0;color:var(--ouro-claro);font-size:.82rem;text-decoration:underline;cursor:pointer;opacity:.8">
+        🔑 Acesso Exclusivo da Mestra Tryv (Entrar com Senha)
+      </button>
+    </div>
   </section>
 
   <!-- WIZARD FORMULÁRIO DE COLETA (Inicia oculto até que o pagamento seja validado) -->
@@ -740,6 +746,7 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
       </div>
       <div style="display:flex;gap:.65rem;flex-wrap:wrap">
         <button type="button" class="botao botao--ouro" id="btn-baixar-pdf">⬇ Baixar Meu PDF Personalizado</button>
+        <button type="button" class="botao botao--vidro" id="btn-novo-mapa-tryv">🔄 Gerar Novo Mapa</button>
         <button type="button" class="botao botao--vidro" id="btn-imprimir-pdf">🖨 Imprimir / Salvar A4</button>
         <a class="botao botao--rosa" id="btn-whats-tryv" href="#" target="_blank" rel="noopener">💬 Enviar Código para a Tryv</a>
       </div>
@@ -750,7 +757,7 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
 </main>
 
 <script src="motor-desbloqueio.js?v=3"></script>
-<script src="pagamento-guardiao.js?v=2"></script>
+<script src="pagamento-guardiao.js?v=3"></script>
 <script>
 (function() {
   "use strict";
@@ -921,13 +928,24 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
     iniciarPollingGate(inpGateEmail.value, "");
   });
 
+  const btnGateLoginMestra = $("#btn-gate-login-mestra");
+  if (btnGateLoginMestra && Guardiao && Guardiao.abrirModalLoginMestra) {
+    btnGateLoginMestra.addEventListener("click", () => {
+      Guardiao.abrirModalLoginMestra(() => inicializarVerificacaoPagamento());
+    });
+  }
+  window.addEventListener("tryv:mestra-ativada", () => inicializarVerificacaoPagamento());
+
   inicializarVerificacaoPagamento();
 
   function atualizarUIPlano() {
     const isProf = planoAtivo === "profunda";
+    const isMestra = Guardiao && Guardiao.isModoMestra && Guardiao.isModoMestra();
     $("#btn-modo-profunda").setAttribute("aria-pressed", String(isProf));
     $("#btn-modo-standard").setAttribute("aria-pressed", String(!isProf));
-    $("#badge-plano-topo").textContent = isProf ? "✦ Análise Profunda Ativa (R$ 97)" : "✦ Análise Standard Ativa (R$ 37)";
+    $("#badge-plano-topo").textContent = isMestra
+      ? `👑 Modo Mestra Tryv · ${isProf ? "Análise Profunda Livre" : "Análise Standard Livre"}`
+      : (isProf ? "✦ Análise Profunda Ativa (R$ 97)" : "✦ Análise Standard Ativa (R$ 37)");
     const boxAvisoStd = $("#aviso-transicao-standard");
     if (boxAvisoStd) boxAvisoStd.hidden = isProf;
     const subRobusto = $("#sub-questionario-robusto");
@@ -1100,8 +1118,9 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
 
     ultimoResultado = window.MotorDesbloqueio.processarAnaliseCompleta(dadosCliente);
 
-    // Envia para Webhook opcional (Make/Zapier/n8n/Formspree) se configurado no conteudo.json
-    if (configSite.webhookUrl) {
+    // Envia para Webhook opcional somente se NÃO estiver no Modo Mestra Tryv
+    const isMestra = Guardiao && Guardiao.isModoMestra && Guardiao.isModoMestra();
+    if (!isMestra && configSite.webhookUrl) {
       fetch(configSite.webhookUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -1149,6 +1168,16 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
       btn.textContent = txtOrig;
     }
   });
+
+  const btnNovoMapaTryv = $("#btn-novo-mapa-tryv");
+  if (btnNovoMapaTryv) {
+    btnNovoMapaTryv.addEventListener("click", () => {
+      $("#sec-resultado").hidden = true;
+      $("#sec-cabecalho").hidden = false;
+      $("#sec-formulario").hidden = false;
+      irParaPasso(1);
+    });
+  }
 
   $("#btn-imprimir-pdf").addEventListener("click", () => window.print());
 

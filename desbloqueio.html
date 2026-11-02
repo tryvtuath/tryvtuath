@@ -741,7 +741,7 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
 </div>
 
 <script src="motor-desbloqueio.js?v=3"></script>
-<script src="pagamento-guardiao.js?v=2"></script>
+<script src="pagamento-guardiao.js?v=3"></script>
 <script>
 (function() {
   "use strict";
@@ -980,6 +980,9 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
       localStorage.setItem("tryv_lead_previa", JSON.stringify({ nome, data }));
     } catch {}
 
+    // Se a própria Tryv estiver logada no Modo Mestra, não envia e-mail de amostra
+    if (Guardiao && Guardiao.isModoMestra && Guardiao.isModoMestra()) return;
+
     // Envio silencioso em segundo plano para tryvtuath.loja@gmail.com (compatível com iOS Safari/Chrome)
     const [anoT, mesT, diaT] = data.split("-");
     const dataFormatada = `${diaT}/${mesT}/${anoT}`;
@@ -1000,6 +1003,11 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
       headers: { "Accept": "application/json" },
       body: fdTeaser
     }).catch(() => {});
+  });
+
+  window.addEventListener("tryv:mestra-ativada", () => {
+    const t = Guardiao.lerTokenConfirmado();
+    if (t && t.pago) liberarBotaoAnamnese(t);
   });
 
   // Céu Estrelado e Faíscas Mágicas
