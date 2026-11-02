@@ -980,24 +980,25 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
       localStorage.setItem("tryv_lead_previa", JSON.stringify({ nome, data }));
     } catch {}
 
-    // Envio silencioso em segundo plano para tryvtuath.loja@gmail.com
+    // Envio silencioso em segundo plano para tryvtuath.loja@gmail.com (compatível com iOS Safari/Chrome)
     const [anoT, mesT, diaT] = data.split("-");
     const dataFormatada = `${diaT}/${mesT}/${anoT}`;
+    const horarioEnvio = new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+    const fdTeaser = new FormData();
+    fdTeaser.append("_subject", `✦ Amostra do Desbloqueio: ${nome} (${dataFormatada}) às ${horarioEnvio}`);
+    fdTeaser.append("_template", "table");
+    fdTeaser.append("_captcha", "false");
+    fdTeaser.append("nome_usuario", nome);
+    fdTeaser.append("data_nascimento", dataFormatada);
+    fdTeaser.append("arcano_centro", `${arcCentro.rom} - ${arcCentro.nome}`);
+    fdTeaser.append("cauda_carmica", `${cauda.codigo} (${cauda.nome})`);
+    fdTeaser.append("quiron", quiron.nome);
+    fdTeaser.append("nakshatra", nak.nome);
+
     fetch("https://formsubmit.co/ajax/tryvtuath.loja@gmail.com", {
       method: "POST",
-      headers: { "Content-Type": "application/json", "Accept": "application/json" },
-      body: JSON.stringify({
-        _subject: `✦ Amostra do Desbloqueio Gerada: ${nome} (${dataFormatada})`,
-        _template: "table",
-        _captcha: "false",
-        nome_usuario: nome,
-        data_nascimento: dataFormatada,
-        arcano_centro: `${arcCentro.rom} - ${arcCentro.nome}`,
-        cauda_carmica: `${cauda.codigo} (${cauda.nome})`,
-        quiron: quiron.nome,
-        nakshatra: nak.nome
-      }),
-      keepalive: true
+      headers: { "Accept": "application/json" },
+      body: fdTeaser
     }).catch(() => {});
   });
 

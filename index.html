@@ -3149,8 +3149,9 @@ function iniciar(C, fotosPrevia = {}) {
     // 2. Envio assíncrono e silencioso em segundo plano via Fetch API (para tryvtuath.loja@gmail.com e Web3Forms)
     const emailDestino = ($("#emailDestinoLeads") && $("#emailDestinoLeads").value) || "tryvtuath.loja@gmail.com";
     const web3Key = ($("#web3formsKey") && $("#web3formsKey").value.trim()) || "";
+    const horarioEnvio = new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
     const dadosLead = {
-      _subject: `✦ Portal Aberto no Site: ${nomeInformado} (${dataFormatadaBR})`,
+      _subject: `✦ Portal Aberto: ${nomeInformado} (${dataFormatadaBR}) às ${horarioEnvio}`,
       _template: "table",
       _captcha: "false",
       nome: nomeInformado,
@@ -3160,19 +3161,20 @@ function iniciar(C, fotosPrevia = {}) {
       origem: location.href
     };
 
-    fetch(`https://formsubmit.co/ajax/${encodeURIComponent(emailDestino)}`, {
+    const formDataLead = new FormData();
+    Object.entries(dadosLead).forEach(([k, v]) => formDataLead.append(k, v));
+
+    fetch(`https://formsubmit.co/ajax/${emailDestino}`, {
       method: "POST",
-      headers: { "Content-Type": "application/json", "Accept": "application/json" },
-      body: JSON.stringify(dadosLead),
-      keepalive: true
+      headers: { "Accept": "application/json" },
+      body: formDataLead
     }).catch(() => {});
 
     if (web3Key && web3Key !== "SUA_ACCESS_KEY_AQUI") {
       fetch("https://api.web3forms.com/submit", {
         method: "POST",
         headers: { "Content-Type": "application/json", "Accept": "application/json" },
-        body: JSON.stringify({ access_key: web3Key, subject: dadosLead._subject, ...dadosLead }),
-        keepalive: true
+        body: JSON.stringify({ access_key: web3Key, subject: dadosLead._subject, ...dadosLead })
       }).catch(() => {});
     }
   });
