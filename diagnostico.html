@@ -386,20 +386,27 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
       Para proteger a exclusividade do método, o formulário de anamnese e a geração do seu PDF são liberados <strong>automaticamente</strong> assim que o sistema confirma o seu pagamento via <strong>PIX ou Cartão na InfinitePay</strong>.
     </p>
 
-    <!-- PASSO 1: Informe seu e-mail e abra o Checkout da InfinitePay -->
+    <!-- PASSO 1: Informe seu e-mail e/ou Comprovante e abra o Checkout da InfinitePay -->
     <div style="text-align:left;background:rgba(255,255,255,.04);border:1px solid rgba(242,193,78,.32);border-radius:16px;padding:1.25rem;margin-bottom:1.15rem">
       <label for="gate-email" style="display:block;font-size:.86rem;font-weight:700;color:var(--ouro-claro);margin-bottom:.35rem">
-        1. Informe o mesmo E-mail que você usará (ou usou) no Checkout da InfinitePay *
+        1. Informe o mesmo E-mail utilizado no Checkout da InfinitePay *
       </label>
-      <div style="display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:.9rem">
+      <div style="display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:.8rem">
         <input type="email" id="gate-email" placeholder="seuemail@exemplo.com" autocomplete="email" style="flex:1;min-width:210px">
+      </div>
+
+      <label for="gate-comprovante" style="display:block;font-size:.82rem;font-weight:600;color:var(--rosa-claro);margin-bottom:.35rem">
+        2. Link do Comprovante ou Código NSU da Transação InfinitePay (opcional para validação imediata):
+      </label>
+      <div style="display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:.95rem">
+        <input type="text" id="gate-comprovante" placeholder="Cole o link do recibo InfinitePay ou código NSU da transação…" style="flex:1;min-width:210px">
         <button type="button" class="botao botao--vidro" id="btn-gate-monitorar" style="padding:.65rem 1.1rem;font-size:.86rem;white-space:nowrap">
-          Vincular E-mail & Verificar
+          Validar Pagamento
         </button>
       </div>
 
       <label style="display:block;font-size:.86rem;font-weight:700;color:var(--ouro-claro);margin-bottom:.45rem">
-        2. Realize o pagamento na InfinitePay (abre em nova aba):
+        3. Ainda não concluiu? Abra o Checkout da InfinitePay em nova aba:
       </label>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:.75rem">
         <a class="botao botao--ouro" id="btn-gate-pagar-profunda" href="https://loja.infinitepay.io/tryvtuath/kka1436-mapa-do-desbloqueio---analise-profunda" target="_blank" rel="noopener" style="font-size:.9rem;padding:.85rem 1rem">
@@ -743,7 +750,7 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
 </main>
 
 <script src="motor-desbloqueio.js?v=3"></script>
-<script src="pagamento-guardiao.js?v=1"></script>
+<script src="pagamento-guardiao.js?v=2"></script>
 <script>
 (function() {
   "use strict";
@@ -772,6 +779,7 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
   const secFormulario = $("#sec-formulario");
   const btnLiberarAnamnese = $("#btn-liberar-anamnese");
   const inpGateEmail = $("#gate-email");
+  const inpGateComp = $("#gate-comprovante");
   const gateStatusBox = $("#gate-status-box");
   const gateStatusMsg = $("#gate-status-msg");
   const gateSpinner = $("#gate-spinner");
@@ -819,24 +827,25 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
     const urlTxNsu = params.get("transaction_nsu") || params.get("transaction_id") || "";
     const urlSlug = params.get("slug") || params.get("invoice_slug") || "";
     const urlOrderNsu = params.get("order_nsu") || "";
+    const urlReceipt = params.get("receipt_url") || "";
     const urlEmail = Guardiao.normalizarEmail(params.get("email") || (tokenSalvo && tokenSalvo.email) || "");
 
     if (tokenSalvo && tokenSalvo.pago && tokenSalvo.tokenAcesso) {
       destravarAnamneseNaTela(tokenSalvo);
-      // Como já veio validado da página anterior ou do redirect, abre direto o formulário
       secBloqueio.hidden = true;
       secFormulario.hidden = false;
       return;
     }
 
-    // b) Se retornou da InfinitePay com transaction_nsu + slug na URL, valida na hora
-    if (urlTxNsu && urlSlug) {
+    // b) Se retornou da InfinitePay com transaction_nsu + slug ou receipt_url na URL, valida na hora
+    if ((urlTxNsu && urlSlug) || urlReceipt) {
       gateStatusMsg.textContent = "Validando comprovante de retorno da InfinitePay…";
       const resUrl = await Guardiao.verificarStatusPagamento({
         email: urlEmail,
         orderId: urlOrderNsu,
         transactionNsu: urlTxNsu,
         slug: urlSlug,
+        receiptUrl: urlReceipt,
         plano: planoAtivo
       });
       if (resUrl.pago && resUrl.dados) {
@@ -867,18 +876,17 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
       });
       orderId = sessao.orderId;
       $("#gate-order-info").textContent = `Monitorando pedido ${orderId} para o e-mail ${emailLimpo}`;
-      $("#btn-gate-pagar-profunda").href = Guardiao.construirUrlCheckoutInfinitePay("profunda", emailLimpo, orderId);
-      $("#btn-gate-pagar-standard").href = Guardiao.construirUrlCheckoutInfinitePay("standard", emailLimpo, orderId);
     }
 
     pollingGate = Guardiao.iniciarPollingConfirmacao({
       email: emailLimpo,
       orderId,
       plano: planoAtivo,
+      getComprovanteInput: () => (inpGateComp ? inpGateComp.value.trim() : ""),
       intervaloMs: 4000,
       aoVerificar(tentativa) {
-        if (!Guardiao.validarFormatoEmail(inpGateEmail.value)) {
-          gateStatusMsg.textContent = "Informe seu e-mail acima e realize o pagamento na InfinitePay para liberar o botão…";
+        if (!Guardiao.validarFormatoEmail(inpGateEmail.value) && !(inpGateComp && inpGateComp.value.trim())) {
+          gateStatusMsg.textContent = "Informe seu e-mail (ou cole o link do recibo InfinitePay) acima para liberar o botão…";
         } else {
           gateStatusMsg.textContent = `Aguardando confirmação automática da InfinitePay (PIX/Cartão)… [checagem #${tentativa}]`;
         }
@@ -889,14 +897,16 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
     });
   }
 
-  $("#btn-gate-monitorar").addEventListener("click", () => {
+  $("#btn-gate-monitorar").addEventListener("click", async () => {
     const em = Guardiao.normalizarEmail(inpGateEmail.value);
-    if (!Guardiao.validarFormatoEmail(em)) {
+    const comp = inpGateComp ? inpGateComp.value.trim() : "";
+    if (!Guardiao.validarFormatoEmail(em) && !comp) {
       inpGateEmail.focus();
-      gateStatusMsg.textContent = "⚠ Digite um e-mail válido para vincular ao seu pagamento na InfinitePay.";
+      gateStatusMsg.textContent = "⚠ Digite seu e-mail ou cole o link do comprovante da InfinitePay.";
       return;
     }
-    iniciarPollingGate(em, "");
+    await iniciarPollingGate(em, "");
+    if (pollingGate) pollingGate.forcarVerificacaoAgora();
   });
 
   $("#btn-gate-pagar-profunda").addEventListener("click", () => {

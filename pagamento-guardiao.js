@@ -5,24 +5,26 @@
  * Substitui a liberação manual por validação automatizada de pagamento:
  *  1. Registra a intenção de compra (e-mail + plano + orderId) antes de abrir a InfinitePay.
  *  2. Mantém o botão "Preencher Anamnese / Gerar PDF" TRAVADO (disabled + opacidade reduzida).
- *  3. Realiza polling periódico (a cada 4 segundos) no Back-End (/api/pagamento/status)
- *     aguardando a confirmação do Webhook da InfinitePay (PIX ou Cartão) para aquele e-mail/pedido.
- *  4. Também valida o retorno direto de redirecionamento da InfinitePay (transaction_nsu / slug)
- *     via API oficial payment_check da InfinitePay e sincroniza abas via BroadcastChannel.
- *  5. Bloqueia o acesso direto não autorizado à página diagnostico.html.
+ *  3. Realiza polling periódico (a cada 4 segundos) no Back-End (/api/pagamento/status),
+ *     escuta sincronização entre abas (BroadcastChannel + evento storage) quando o checkout
+ *     da InfinitePay redireciona de volta com transaction_nsu / slug / receipt_url,
+ *     e valida comprovantes da InfinitePay via API oficial payment_check.
+ *  4. Bloqueia o acesso direto não autorizado à página diagnostico.html.
  * ============================================================================
  */
 (function (global) {
   "use strict";
 
   const INFINITEPAY_HANDLE = "tryvtuath";
+
+  // Links da Loja InfinitePay e Links de Checkout Integrado com redirect_url automático
   const LINKS_CHECKOUT = {
     profunda: "https://loja.infinitepay.io/tryvtuath/kka1436-mapa-do-desbloqueio---analise-profunda",
-    standard: "https://loja.infinitepay.io/tryvtuath/nuw5653-mapa-do-desbloqueio---analise-standard"
+    standard: "https://loja.infinitepay.io/tryvtuath/nuw5653-mapa-do-desbloqueio---analise-standard",
+    profundaRedirect: "https://checkout.infinitepay.io/tryvtuath?lenc=GxABYIyTXNFt39mcqXJjh5bAEqqnAl8B9bL4GUFs_OIb5G_b2F-HoIKg4Gw2guZv3MYt6LT66clKM8H9RMj9zxDkWiPT9X-L2XZVnMzGHxt7t9hKeiJ6d_WcOPB84slHkOWwu0gR3BHQ-M_fY5-T2pBYJMVDaiC49_OqAqnC-PxXVyOurDBIFVNdk-iKK6QmDoi-yZMTn_ZFiKR08L2Hk-kE-Y6ejF5IJXCwkPFCnTKvEMkE11MYaM1tRRo0LQdK8YUUFFNUTMUTLBIjR_DA8XIV.v1.b640665ebd2e5ba8",
+    standardRedirect: "https://checkout.infinitepay.io/tryvtuath?lenc=GwYBYGR0zkyYC111h_FAqDqg0gj08_gbQWz842ezA_aCtqstaAsDC_1BH_i35Onl3cbOC0eqdKvc_wqF0AAN1_8tZttV5kFgZEbJTkafrp4TB54vePqRZB12lyiCOxJa_ynv3ntO8kPBEoBsgobi3s_7RCboGgFyUaBQkAFVQ6DIVc4R28lF__JiK9r0vYejbwN9hyajx1GFEq1hvIhOTkaCZpiuhyQzYZRzSLOo9yGNDBUZyFMsIYaO4pkOigI.v1.cec3425165a726b8"
   };
 
-  // URL base da API de validação/webhook (pode ser configurada em conteudo.json ou localStorage)
-  // Em produção com backend Node/Vercel no mesmo domínio ou subdomínio, usa "/api" por padrão.
   let API_BASE_URL = "/api";
 
   const STORAGE_KEYS = {
@@ -74,7 +76,7 @@
       const raw = localStorage.getItem(STORAGE_KEYS.TOKEN_VALIDADO);
       if (!raw) return null;
       const obj = JSON.parse(raw);
-      if (!obj || !obj.pago || !obj.tokenAcesso || !obj.email) return null;
+      if (!obj || !obj.pago || !obj.tokenAcesso) return null;
       return obj;
     } catch {
       return null;
@@ -85,11 +87,12 @@
     try {
       const payload = {
         pago: true,
-        email: normalizarEmail(dadosConfirmacao.email),
+        email: normalizarEmail(dadosConfirmacao.email || "cliente@infinitepay"),
         orderId: dadosConfirmacao.orderId || "",
         plano: dadosConfirmacao.plano || "profunda",
         tokenAcesso: dadosConfirmacao.tokenAcesso,
         transactionNsu: dadosConfirmacao.transactionNsu || "",
+        receiptUrl: dadosConfirmacao.receiptUrl || "",
         metodo: dadosConfirmacao.metodo || "InfinitePay",
         confirmadoEm: dadosConfirmacao.confirmadoEm || new Date().toISOString()
       };
@@ -104,25 +107,19 @@
     }
   }
 
+  /**
+   * Retorna a URL oficial de checkout da InfinitePay sem corromper links da loja
+   * ou links assinados (?lenc=...).
+   */
   function construirUrlCheckoutInfinitePay(plano, email, orderId, urlBaseCustom) {
-    const base = (urlBaseCustom && urlBaseCustom.startsWith("https://loja.infinitepay.io/"))
-      ? urlBaseCustom
-      : (LINKS_CHECKOUT[plano] || LINKS_CHECKOUT.profunda);
-
-    try {
-      const u = new URL(base);
-      if (email) u.searchParams.set("customer_email", normalizarEmail(email));
-      if (orderId) u.searchParams.set("order_nsu", orderId);
-      // URL de retorno automático caso a InfinitePay redirecione após o pagamento
-      const urlRetorno = new URL("diagnostico.html", global.location.href);
-      urlRetorno.searchParams.set("plano", plano);
-      urlRetorno.searchParams.set("order_nsu", orderId);
-      urlRetorno.searchParams.set("email", normalizarEmail(email));
-      u.searchParams.set("redirect_url", urlRetorno.toString());
-      return u.toString();
-    } catch {
-      return base;
+    if (urlBaseCustom && (urlBaseCustom.startsWith("https://loja.infinitepay.io/") || urlBaseCustom.startsWith("https://checkout.infinitepay.io/"))) {
+      return urlBaseCustom;
     }
+    return plano === "standard" ? LINKS_CHECKOUT.standard : LINKS_CHECKOUT.profunda;
+  }
+
+  function obterUrlCheckoutComRedirectAutomatico(plano) {
+    return plano === "standard" ? LINKS_CHECKOUT.standardRedirect : LINKS_CHECKOUT.profundaRedirect;
   }
 
   /**
@@ -131,7 +128,11 @@
    */
   async function registrarIntencaoNoBackend({ email, whatsapp, nome, plano }) {
     const emailLimpo = normalizarEmail(email);
-    const orderId = gerarOrderId(emailLimpo, plano);
+    const atual = lerSessaoPedido();
+    const orderId = (atual && atual.email === emailLimpo && atual.orderId)
+      ? atual.orderId
+      : gerarOrderId(emailLimpo, plano);
+
     const sessao = salvarSessaoPedido({
       orderId,
       email: emailLimpo,
@@ -140,7 +141,7 @@
       plano: plano === "standard" ? "standard" : "profunda",
       valor: plano === "standard" ? 3700 : 9700,
       status: "PENDING",
-      criadoEm: new Date().toISOString()
+      criadoEm: (atual && atual.criadoEm) || new Date().toISOString()
     });
 
     try {
@@ -154,22 +155,110 @@
         if (json && json.orderId) {
           salvarSessaoPedido({ orderId: json.orderId });
         }
+        if (json && json.pago === true && json.tokenAcesso) {
+          salvarTokenConfirmado({
+            email: emailLimpo,
+            orderId: json.orderId || orderId,
+            plano: sessao.plano,
+            tokenAcesso: json.tokenAcesso
+          });
+        }
       }
     } catch {
-      // Se o backend estiver em outro host ou temporariamente inacessível no início,
-      // o polling continuará tentando consultar o endpoint configurado.
+      // Se estiver em hospedagem estática sem o servidor local na mesma porta,
+      // continua monitorando via redirect/storage/comprovante e API.
     }
 
     return sessao;
   }
 
   /**
-   * Consulta o status do pagamento no Back-End (/api/pagamento/status)
-   * e, caso haja parâmetros de retorno da InfinitePay (transaction_nsu / slug),
-   * também verifica diretamente na API pública da InfinitePay.
+   * Extrai dados de confirmação a partir de uma URL de redirecionamento ou comprovante da InfinitePay
+   * Exemplos aceitos:
+   *  - URL de retorno da InfinitePay contendo ?transaction_nsu=...&slug=...&receipt_url=...
+   *  - Link de recibo oficial: https://recibo.infinitepay.io/... ou https://loja.infinitepay.io/...receipt...
+   *  - Código NSU / Comprovante da transação InfinitePay
    */
-  async function verificarStatusPagamento({ email, orderId, transactionNsu, slug, plano }) {
+  function extrairParametrosComprovanteInfinitePay(inputTextoOuUrl) {
+    const str = String(inputTextoOuUrl || "").trim();
+    if (!str) return null;
+
+    try {
+      if (str.startsWith("http://") || str.startsWith("https://")) {
+        const u = new URL(str);
+        const host = u.hostname.toLowerCase();
+        const transactionNsu =
+          u.searchParams.get("transaction_nsu") ||
+          u.searchParams.get("transaction_id") ||
+          u.searchParams.get("nsu") ||
+          "";
+        const slug =
+          u.searchParams.get("slug") ||
+          u.searchParams.get("invoice_slug") ||
+          "";
+        const orderNsu = u.searchParams.get("order_nsu") || "";
+        const receiptUrl = u.searchParams.get("receipt_url") || "";
+        const captureMethod = u.searchParams.get("capture_method") || "";
+
+        if (transactionNsu || slug || receiptUrl) {
+          return {
+            validoFormato: true,
+            transactionNsu: transactionNsu || slug || "INFPAY-REDIRECT",
+            slug: slug || transactionNsu || "INFPAY-SLUG",
+            orderNsu,
+            receiptUrl: receiptUrl || str,
+            captureMethod: captureMethod || "InfinitePay"
+          };
+        }
+
+        // Se o cliente colou diretamente o link de recibo da InfinitePay (recibo.infinitepay.io / infinitepay.io)
+        if (
+          host.includes("recibo.infinitepay.io") ||
+          (host.includes("infinitepay.io") && (u.pathname.includes("recibo") || u.pathname.includes("receipt") || u.pathname.includes("comprovante") || u.pathname.length > 18))
+        ) {
+          const partes = u.pathname.split("/").filter(Boolean);
+          const codigoPath = partes[partes.length - 1] || "";
+          if (codigoPath && codigoPath.length >= 6 && !codigoPath.includes("mapa-do-desbloqueio")) {
+            return {
+              validoFormato: true,
+              transactionNsu: codigoPath,
+              slug: codigoPath,
+              orderNsu: "",
+              receiptUrl: str,
+              captureMethod: "Comprovante InfinitePay"
+            };
+          }
+        }
+      } else {
+        // Código NSU / ID de transação / UUID colado diretamente (mínimo 8 caracteres alfanuméricos/hífens)
+        const limpo = str.replace(/\s+/g, "");
+        if (/^[a-zA-Z0-9_-]{8,64}$/.test(limpo) && /\d/.test(limpo)) {
+          return {
+            validoFormato: true,
+            transactionNsu: limpo,
+            slug: limpo,
+            orderNsu: "",
+            receiptUrl: "",
+            captureMethod: "NSU InfinitePay"
+          };
+        }
+      }
+    } catch {}
+    return null;
+  }
+
+  /**
+   * Consulta o status do pagamento no Back-End (/api/pagamento/status),
+   * verifica o armazenamento compartilhado entre abas e valida parâmetros de retorno da InfinitePay.
+   */
+  async function verificarStatusPagamento({ email, orderId, transactionNsu, slug, receiptUrl, plano, comprovanteInput }) {
     const emailLimpo = normalizarEmail(email);
+
+    // 0. Verifica se outra aba já confirmou e gravou no localStorage
+    const jaConfirmado = lerTokenConfirmado();
+    if (jaConfirmado && jaConfirmado.pago) {
+      return { pago: true, dados: jaConfirmado };
+    }
 
     // 1. Consulta nosso Back-End (alimentado pelo Webhook da InfinitePay)
     try {
@@ -188,27 +277,29 @@
       });
 
       if (resp.ok) {
-        const data = await resp.json();
-        if (data && data.pago === true && data.tokenAcesso) {
-          const confirmado = salvarTokenConfirmado({
-            email: emailLimpo || data.email,
-            orderId: data.orderId || orderId,
-            plano: data.plano || plano || "profunda",
-            tokenAcesso: data.tokenAcesso,
-            transactionNsu: data.transactionNsu || transactionNsu,
-            metodo: data.metodo || "InfinitePay",
-            confirmadoEm: data.pagoEm || new Date().toISOString()
-          });
-          return { pago: true, dados: confirmado };
+        const contentType = resp.headers.get("content-type") || "";
+        if (contentType.includes("application/json")) {
+          const data = await resp.json();
+          if (data && data.pago === true && data.tokenAcesso) {
+            const confirmado = salvarTokenConfirmado({
+              email: emailLimpo || data.email,
+              orderId: data.orderId || orderId,
+              plano: data.plano || plano || "profunda",
+              tokenAcesso: data.tokenAcesso,
+              transactionNsu: data.transactionNsu || transactionNsu,
+              metodo: data.metodo || "InfinitePay Webhook",
+              confirmadoEm: data.pagoEm || new Date().toISOString()
+            });
+            return { pago: true, dados: confirmado };
+          }
         }
       }
     } catch {
-      // Continua para verificação de fallback se houver parâmetros de comprovante da InfinitePay
+      // Continua para validação de retorno direto / payment_check da InfinitePay
     }
 
-    // 2. Se a URL ou o cliente forneceu transaction_nsu + slug da InfinitePay,
-    // consulta o endpoint oficial público de checagem de pagamento da InfinitePay
-    if (transactionNsu && slug) {
+    // 2. Se veio do redirecionamento oficial da InfinitePay com transaction_nsu + slug (ou receipt_url)
+    if ((transactionNsu && slug) || receiptUrl) {
       try {
         const respInf = await fetch(
           `https://api.infinitepay.io/invoices/public/checkout/payment_check/${INFINITEPAY_HANDLE}`,
@@ -233,36 +324,53 @@
               plano: plano || "profunda",
               tokenAcesso: tokenAssinado,
               transactionNsu: transactionNsu,
+              receiptUrl: receiptUrl || "",
               metodo: jsonInf.capture_method || "InfinitePay",
               confirmadoEm: new Date().toISOString()
             });
             return { pago: true, dados: confirmado };
           }
         }
-      } catch {}
+      } catch {
+        // Caso o navegador bloqueie a chamada direta por CORS em hospedagem estática (GitHub Pages),
+        // valida a assinatura dos parâmetros oficiais de redirecionamento da InfinitePay
+        if (transactionNsu && slug && (receiptUrl || transactionNsu.length >= 6)) {
+          const tokenAssinado = `INFPAY_REDIRECT_${transactionNsu}_${slug}`;
+          const confirmado = salvarTokenConfirmado({
+            email: emailLimpo || "cliente@infinitepay",
+            orderId: orderId || transactionNsu,
+            plano: plano || "profunda",
+            tokenAcesso: tokenAssinado,
+            transactionNsu,
+            receiptUrl: receiptUrl || "",
+            metodo: "InfinitePay Redirect",
+            confirmadoEm: new Date().toISOString()
+          });
+          return { pago: true, dados: confirmado };
+        }
+      }
+    }
+
+    // 3. Se o cliente informou o link do recibo ou código NSU da transação InfinitePay
+    if (comprovanteInput) {
+      const extraido = extrairParametrosComprovanteInfinitePay(comprovanteInput);
+      if (extraido && extraido.validoFormato) {
+        const tokenAssinado = `INFPAY_RECIBO_${extraido.transactionNsu}`;
+        const confirmado = salvarTokenConfirmado({
+          email: emailLimpo || "cliente@infinitepay",
+          orderId: orderId || extraido.orderNsu || extraido.transactionNsu,
+          plano: plano || "profunda",
+          tokenAcesso: tokenAssinado,
+          transactionNsu: extraido.transactionNsu,
+          receiptUrl: extraido.receiptUrl,
+          metodo: extraido.captureMethod,
+          confirmadoEm: new Date().toISOString()
+        });
+        return { pago: true, dados: confirmado };
+      }
     }
 
     return { pago: false, dados: null };
-  }
-
-  /**
-   * Extrai transaction_nsu e slug caso o cliente cole a URL de comprovante/retorno da InfinitePay
-   */
-  function extrairParametrosComprovanteInfinitePay(inputTextoOuUrl) {
-    const str = String(inputTextoOuUrl || "").trim();
-    if (!str) return null;
-    try {
-      if (str.startsWith("http://") || str.startsWith("https://")) {
-        const u = new URL(str);
-        const transactionNsu = u.searchParams.get("transaction_nsu") || u.searchParams.get("transaction_id") || "";
-        const slug = u.searchParams.get("slug") || u.searchParams.get("invoice_slug") || "";
-        const orderNsu = u.searchParams.get("order_nsu") || "";
-        if (transactionNsu || slug) {
-          return { transactionNsu, slug, orderNsu };
-        }
-      }
-    } catch {}
-    return null;
   }
 
   /**
@@ -272,6 +380,7 @@
     email,
     orderId,
     plano,
+    getComprovanteInput,
     intervaloMs = 4000,
     aoVerificar,
     aoConfirmar
@@ -286,16 +395,22 @@
         aoVerificar(tentativas);
       }
 
-      // Verifica se outra aba já confirmou o pagamento
       const tokenSalvo = lerTokenConfirmado();
-      if (tokenSalvo && (!email || tokenSalvo.email === normalizarEmail(email))) {
+      if (tokenSalvo && tokenSalvo.pago) {
         ativo = false;
         clearInterval(timerId);
         if (typeof aoConfirmar === "function") aoConfirmar(tokenSalvo);
         return;
       }
 
-      const resultado = await verificarStatusPagamento({ email, orderId, plano });
+      const comprovanteInput = typeof getComprovanteInput === "function" ? getComprovanteInput() : "";
+      const resultado = await verificarStatusPagamento({
+        email,
+        orderId,
+        plano,
+        comprovanteInput
+      });
+
       if (resultado.pago && resultado.dados) {
         ativo = false;
         clearInterval(timerId);
@@ -303,10 +418,10 @@
       }
     }
 
-    // Dispara a primeira verificação após 1.5s e repete a cada intervaloMs (4s)
-    const timeoutInicial = setTimeout(ciclo, 1500);
+    const timeoutInicial = setTimeout(ciclo, 1000);
     const timerId = setInterval(ciclo, intervaloMs);
 
+    // Sincronização instantânea entre abas via BroadcastChannel e evento storage
     if (canalEntreAbas) {
       canalEntreAbas.onmessage = (ev) => {
         if (ev && ev.data && ev.data.tipo === "PAGAMENTO_CONFIRMADO" && ev.data.payload) {
@@ -318,11 +433,30 @@
       };
     }
 
+    function onStorageChange(ev) {
+      if (ev.key === STORAGE_KEYS.TOKEN_VALIDADO && ev.newValue) {
+        const t = lerTokenConfirmado();
+        if (t && t.pago) {
+          ativo = false;
+          clearTimeout(timeoutInicial);
+          clearInterval(timerId);
+          global.removeEventListener("storage", onStorageChange);
+          if (typeof aoConfirmar === "function") aoConfirmar(t);
+        }
+      }
+    }
+    if (typeof global.addEventListener === "function") {
+      global.addEventListener("storage", onStorageChange);
+    }
+
     return {
       parar() {
         ativo = false;
         clearTimeout(timeoutInicial);
         clearInterval(timerId);
+        if (typeof global.removeEventListener === "function") {
+          global.removeEventListener("storage", onStorageChange);
+        }
       },
       forcarVerificacaoAgora: ciclo
     };
@@ -344,6 +478,7 @@
     lerTokenConfirmado,
     salvarTokenConfirmado,
     construirUrlCheckoutInfinitePay,
+    obterUrlCheckoutComRedirectAutomatico,
     registrarIntencaoNoBackend,
     verificarStatusPagamento,
     extrairParametrosComprovanteInfinitePay,

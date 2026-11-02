@@ -696,18 +696,25 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
       Abrimos o checkout seguro da <strong>InfinitePay</strong> em uma nova guia. Informe abaixo o <strong>mesmo e-mail</strong> utilizado no pagamento para que nosso sistema identifique automaticamente a confirmação do seu <strong>PIX ou Cartão</strong> e desbloqueie sua Anamnese:
     </p>
 
-    <!-- Identificação do E-mail para Rastreamento no Webhook / Polling -->
+    <!-- Identificação do E-mail e/ou Comprovante para Rastreamento no Webhook / Polling -->
     <div style="text-align:left;background:rgba(255,255,255,.04);border:1px solid rgba(242,193,78,.3);border-radius:14px;padding:1rem 1.15rem;margin-bottom:1rem">
       <label for="chk-email-cliente" style="display:block;font-size:.82rem;font-weight:700;color:var(--ouro-claro);margin-bottom:.35rem">
-        Seu E-mail utilizado no Checkout da InfinitePay *
+        1. Seu E-mail utilizado no Checkout da InfinitePay *
+      </label>
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:.75rem">
+        <input type="email" id="chk-email-cliente" placeholder="seuemail@exemplo.com" autocomplete="email" style="flex:1;min-width:200px;padding:.7rem .9rem;border-radius:10px;border:1px solid rgba(242,193,78,.4);background:rgba(10,7,28,.8);color:#fff;font-size:.92rem">
+      </div>
+
+      <label for="chk-comprovante-infinitepay" style="display:block;font-size:.8rem;font-weight:600;color:var(--rosa-claro);margin-bottom:.3rem">
+        2. Link do Comprovante ou Código NSU da Transação InfinitePay (opcional para validação imediata):
       </label>
       <div style="display:flex;gap:.5rem;flex-wrap:wrap">
-        <input type="email" id="chk-email-cliente" placeholder="seuemail@exemplo.com" autocomplete="email" style="flex:1;min-width:200px;padding:.7rem .9rem;border-radius:10px;border:1px solid rgba(242,193,78,.4);background:rgba(10,7,28,.8);color:#fff;font-size:.92rem">
+        <input type="text" id="chk-comprovante-infinitepay" placeholder="Cole o link do recibo InfinitePay ou código da transação…" style="flex:1;min-width:200px;padding:.65rem .85rem;border-radius:10px;border:1px solid rgba(255,95,162,.38);background:rgba(10,7,28,.8);color:#fff;font-size:.86rem">
         <button type="button" class="botao botao--vidro" id="btn-vincular-email-chk" style="padding:.65rem 1rem;font-size:.84rem;white-space:nowrap">
-          Vincular & Verificar
+          Validar Pagamento
         </button>
       </div>
-      <small id="chk-pedido-id" style="display:block;margin-top:.4rem;font-size:.76rem;color:var(--texto-2);opacity:.85"></small>
+      <small id="chk-pedido-id" style="display:block;margin-top:.45rem;font-size:.76rem;color:var(--texto-2);opacity:.85"></small>
     </div>
 
     <!-- Indicador de Status do Polling em Tempo Real -->
@@ -723,7 +730,7 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
         🔒 Preencher Anamnese / Gerar PDF (Aguardando Pagamento…)
       </button>
 
-      <a class="botao botao--vidro" id="btn-reabrir-infinitepay" href="https://loja.infinitepay.io/tryvtuath/kka1436-mapa-do-desbloqueio---analise-profunda" target="_blank" rel="noopener" style="width:100%;font-size:.9rem;padding:.65rem 1rem">
+      <a class="botao botao--vidro" id="btn-reabrir-infinitepay" href="https://loja.infinitepay.io/tryvtuath/kka1436-mapa-do-desbloqueio---analise-profunda" target="_blank" rel="noopener" style="width:100%;font-size:.88rem;padding:.65rem 1rem">
         ↗ Abrir Checkout da InfinitePay Novamente
       </a>
       <button type="button" id="btn-fechar-modal-chk" style="background:transparent;border:0;color:var(--texto-2);font-size:.85rem;margin-top:.2rem;text-decoration:underline;cursor:pointer">
@@ -734,7 +741,7 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
 </div>
 
 <script src="motor-desbloqueio.js?v=3"></script>
-<script src="pagamento-guardiao.js?v=1"></script>
+<script src="pagamento-guardiao.js?v=2"></script>
 <script>
 (function() {
   "use strict";
@@ -752,6 +759,7 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
 
   const btnIrDiagnostico = $("#btn-ir-diagnostico");
   const inputEmailChk = $("#chk-email-cliente");
+  const inputCompChk = $("#chk-comprovante-infinitepay");
   const statusMsg = $("#chk-status-msg");
   const statusBox = $("#chk-status-box");
   const spinnerEl = $("#chk-spinner");
@@ -805,7 +813,7 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
 
     // Verifica se já existe token confirmado válido para este cliente
     const tokenExistente = Guardiao.lerTokenConfirmado();
-    if (tokenExistente && (!emailAtual || tokenExistente.email === emailAtual)) {
+    if (tokenExistente && tokenExistente.pago) {
       liberarBotaoAnamnese(tokenExistente);
       return;
     }
@@ -819,24 +827,19 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
         plano
       });
       $("#chk-pedido-id").textContent = `Pedido monitorado: ${sessao.orderId} · E-mail: ${sessao.email}`;
-      $("#btn-reabrir-infinitepay").href = Guardiao.construirUrlCheckoutInfinitePay(
-        plano,
-        sessao.email,
-        sessao.orderId,
-        urlBasePlanoAtual
-      );
     } else {
-      $("#chk-pedido-id").textContent = "Digite acima o seu e-mail para vincular à confirmação automática do Webhook.";
+      $("#chk-pedido-id").textContent = "Digite seu e-mail acima para rastrear seu pagamento automaticamente.";
     }
 
     controladorPolling = Guardiao.iniciarPollingConfirmacao({
       email: emailAtual,
       orderId: sessao ? sessao.orderId : "",
       plano,
+      getComprovanteInput: () => (inputCompChk ? inputCompChk.value.trim() : ""),
       intervaloMs: 4000,
       aoVerificar(tentativa) {
-        if (!Guardiao.validarFormatoEmail(inputEmailChk.value)) {
-          statusMsg.textContent = "Informe seu e-mail acima para rastrear seu pagamento automaticamente…";
+        if (!Guardiao.validarFormatoEmail(inputEmailChk.value) && !(inputCompChk && inputCompChk.value.trim())) {
+          statusMsg.textContent = "Informe seu e-mail (ou link do recibo InfinitePay) acima para validar o pagamento…";
         } else {
           statusMsg.textContent = `Aguardando confirmação da InfinitePay (PIX/Cartão)… [verificação #${tentativa}]`;
         }
@@ -847,14 +850,16 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
     });
   }
 
-  $("#btn-vincular-email-chk").addEventListener("click", () => {
+  $("#btn-vincular-email-chk").addEventListener("click", async () => {
     const em = Guardiao.normalizarEmail(inputEmailChk.value);
-    if (!Guardiao.validarFormatoEmail(em)) {
+    const comp = inputCompChk ? inputCompChk.value.trim() : "";
+    if (!Guardiao.validarFormatoEmail(em) && !comp) {
       inputEmailChk.focus();
-      statusMsg.textContent = "⚠ Por favor, digite um e-mail válido usado no pagamento.";
+      statusMsg.textContent = "⚠ Por favor, digite o e-mail usado no pagamento ou cole o link do comprovante InfinitePay.";
       return;
     }
-    iniciarMonitoramentoAutomatico(planoSelecionadoModal);
+    await iniciarMonitoramentoAutomatico(planoSelecionadoModal);
+    if (controladorPolling) controladorPolling.forcarVerificacaoAgora();
   });
 
   function abrirModalPosCheckout(plano, urlInfinitePay) {
