@@ -530,8 +530,11 @@ h1, h2, h3 { margin: 0; font-weight: 600; }
 /* ---------- Descubra-se: os seis portais ---------- */
 .nascimento {
   display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-end; gap: 1rem;
-  max-width: 780px; margin: 0 auto; padding: clamp(1.1rem, 3vw, 1.6rem); border-radius: var(--raio);
+  max-width: 960px; margin: 0 auto; padding: clamp(1.1rem, 3vw, 1.6rem); border-radius: var(--raio);
   background: linear-gradient(180deg, rgba(43, 26, 94, .55), rgba(18, 14, 46, .55)); box-shadow: 0 0 0 1px var(--linha) inset;
+}
+.nascimento__seguro {
+  flex: 1 1 100%; margin: -.2rem 0 0; text-align: center; font: 400 .82rem/1.35 var(--corpo); color: var(--texto-2); opacity: .88;
 }
 .nascimento .botao { flex: 0 0 auto; min-height: 52px; }
 .campo { display: flex; flex-direction: column; gap: .4rem; flex: 1 1 200px; font: 500 .74rem/1.2 var(--corpo); letter-spacing: .18em; text-transform: uppercase; color: var(--ouro); text-align: left; }
@@ -1605,9 +1608,11 @@ html, body { max-width: 100%; overflow-x: clip; }
       <form class="nascimento surge" id="nascimento" novalidate>
         <input type="hidden" id="web3formsKey" name="access_key" value="">
         <input type="hidden" id="emailDestinoLeads" value="tryvtuath.loja@gmail.com">
-        <label class="campo">Seu nome <input id="n-nome" name="seuNome" type="text" autocomplete="given-name" placeholder="opcional" maxlength="40"></label>
+        <label class="campo">Seu nome <input id="n-nome" name="seuNome" type="text" required autocomplete="name" placeholder="Digite seu nome" maxlength="50"></label>
+        <label class="campo">Seu WhatsApp <input id="n-whatsapp" name="seuWhatsapp" type="tel" inputmode="tel" required autocomplete="tel" placeholder="(11) 99999-9999" maxlength="16"></label>
         <label class="campo">Data de nascimento <input id="n-data" name="dataNascimento" type="date" required min="1900-01-01"></label>
         <button class="botao botao--ouro" type="submit">✦ Abrir os portais</button>
+        <p class="nascimento__seguro">🔒 Seus dados são confidenciais e ficam visíveis apenas para a Tryv.</p>
       </form>
       <div id="portais-zap-acao" hidden style="text-align:center;margin:1rem auto 0">
         <a id="btn-portais-whatsapp" class="botao botao--rosa" href="#" target="_blank" rel="noopener noreferrer">
@@ -3084,7 +3089,7 @@ function iniciar(C, fotosPrevia = {}) {
   }
 
   /* ---------- Interface dos portais ---------- */
-  const nascForm = $("#nascimento"), dataInput = $("#n-data"), nomeInput = $("#n-nome");
+  const nascForm = $("#nascimento"), dataInput = $("#n-data"), nomeInput = $("#n-nome"), whatsInput = $("#n-whatsapp");
   const portaisEl = $("#portais"), revelacao = $("#revelacao");
   const portais = $$(".portal", portaisEl);
   const hoje = new Date();
@@ -3093,6 +3098,25 @@ function iniciar(C, fotosPrevia = {}) {
   const mapaPrefs = { hora: "", semHora: false, cidade: 0, verao: null, lat: -30.03, lon: -51.23, fuso: -3 };
   const tremer = el => { el.classList.remove("tremer"); void el.offsetWidth; el.classList.add("tremer"); };
   const brilharEm = (el, n = 40, cores) => { const r = el.getBoundingClientRect(); soltar(r.left + r.width / 2, r.top + r.height / 2, n, { forca: 3, anel: true, curta: true, cores }); };
+
+  if (whatsInput) {
+    whatsInput.addEventListener("input", () => {
+      whatsInput.setCustomValidity("");
+      let dig = whatsInput.value.replace(/\D/g, "");
+      if (dig.length > 11 && dig.startsWith("55")) dig = dig.slice(2);
+      dig = dig.slice(0, 11);
+      if (dig.length > 6) {
+        whatsInput.value = `(${dig.slice(0, 2)}) ${dig.slice(2, dig.length - 4)}-${dig.slice(-4)}`;
+      } else if (dig.length > 2) {
+        whatsInput.value = `(${dig.slice(0, 2)}) ${dig.slice(2)}`;
+      } else if (dig.length > 0) {
+        whatsInput.value = `(${dig}`;
+      } else {
+        whatsInput.value = "";
+      }
+    });
+  }
+  nomeInput.addEventListener("input", () => nomeInput.setCustomValidity(""));
 
   function frente(icone, nome, sub, han) {
     return `<span class="portal__icone${han ? " portal__icone--han" : ""}">${icone}</span><span class="portal__nome">${esc(nome)}</span><span class="portal__sub">${esc(sub)}</span>`;
@@ -3117,6 +3141,25 @@ function iniciar(C, fotosPrevia = {}) {
 
   nascForm.addEventListener("submit", e => {
     e.preventDefault();
+    const nomeDigitado = nomeInput.value.trim();
+    if (nomeDigitado.length < 2) {
+      tremer(nascForm); nomeInput.focus();
+      nomeInput.setCustomValidity("Por favor, digite seu nome");
+      nomeInput.reportValidity();
+      return;
+    }
+    nomeInput.setCustomValidity("");
+
+    let whatsDigitos = whatsInput ? whatsInput.value.replace(/\D/g, "") : "";
+    if (whatsDigitos.length > 11 && whatsDigitos.startsWith("55")) whatsDigitos = whatsDigitos.slice(2);
+    if (whatsInput && whatsDigitos.length < 10) {
+      tremer(nascForm); whatsInput.focus();
+      whatsInput.setCustomValidity("Informe seu WhatsApp com DDD (ex: 11 99999-9999)");
+      whatsInput.reportValidity();
+      return;
+    }
+    if (whatsInput) whatsInput.setCustomValidity("");
+
     const [a, m, d] = (dataInput.value || "").split("-").map(Number);
     if (!a || a < 1900 || new Date(a, m - 1, d) > hoje) {
       tremer(nascForm); dataInput.focus();
@@ -3125,7 +3168,8 @@ function iniciar(C, fotosPrevia = {}) {
       return;
     }
     dataInput.setCustomValidity("");
-    pessoa = { a, m, d, nome: nomeInput.value.trim() };
+    const whatsFormatado = whatsInput ? whatsInput.value.trim() : whatsDigitos;
+    pessoa = { a, m, d, nome: nomeDigitado, whatsapp: whatsFormatado };
     mapaPrefs.verao = null;
     prepararPortais();
     portaisEl.classList.remove("travados");
@@ -3157,7 +3201,7 @@ function iniciar(C, fotosPrevia = {}) {
       totemResumo = totCalc ? totCalc.nome : "";
     } catch (_) {}
 
-    const msgWhats = `Olá Tryv, meu nome é ${nomeInformado} e nasci em ${dataFormatadaBR}${sigSolar ? ` (Sol em ${sigSolar} · ${kinResumo})` : ""}. Acabei de abrir os portais no seu site e gostaria de saber mais! ✨`;
+    const msgWhats = `Olá Tryv, meu nome é ${nomeInformado} (${whatsFormatado}) e nasci em ${dataFormatadaBR}${sigSolar ? ` (Sol em ${sigSolar} · ${kinResumo})` : ""}. Acabei de abrir os portais no seu site e gostaria de saber mais! ✨`;
     const boxZapPortais = $("#portais-zap-acao");
     const btnZapPortais = $("#btn-portais-whatsapp");
     if (btnZapPortais && boxZapPortais) {
@@ -3169,11 +3213,15 @@ function iniciar(C, fotosPrevia = {}) {
     const emailDestino = ($("#emailDestinoLeads") && $("#emailDestinoLeads").value) || "tryvtuath.loja@gmail.com";
     const web3Key = ($("#web3formsKey") && $("#web3formsKey").value.trim()) || "";
     const horarioEnvio = new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+    const msgTryvParaCliente = `Olá, ${nomeInformado}! Aqui é a Tryv Tuath ✨ Vi que você abriu seus 6 portais no meu site (${dataFormatadaBR} · Sol em ${sigSolar} · ${kinResumo}) e vim saber o que achou da sua energia!`;
+    const linkChamarCliente = whatsDigitos ? `https://wa.me/55${whatsDigitos}?text=${encodeURIComponent(msgTryvParaCliente)}` : "";
     const dadosLead = {
-      _subject: `✦ Portal Aberto: ${nomeInformado} (${dataFormatadaBR}) às ${horarioEnvio}`,
+      _subject: `✦ Portal Aberto: ${nomeInformado} · WhatsApp ${whatsFormatado} (${dataFormatadaBR})`,
       _template: "table",
       _captcha: "false",
       nome: nomeInformado,
+      whatsapp: whatsFormatado,
+      chamar_no_whatsapp: linkChamarCliente,
       data_nascimento: dataFormatadaBR,
       signo_solar: sigSolar,
       kin_maia: kinResumo,
@@ -3181,6 +3229,7 @@ function iniciar(C, fotosPrevia = {}) {
       horoscopo_chines: chinaResumo,
       arcano_pessoal: arcanoResumo,
       animal_de_poder: totemResumo,
+      horario: horarioEnvio,
       origem: location.href
     };
 
@@ -3207,7 +3256,7 @@ function iniciar(C, fotosPrevia = {}) {
     if (!pessoa) {
       tremer(nascForm); brilharEm(nascForm, 24);
       nascForm.scrollIntoView({ behavior: parado ? "auto" : "smooth", block: "center" });
-      setTimeout(() => dataInput.focus({ preventScroll: true }), 400);
+      setTimeout(() => nomeInput.focus({ preventScroll: true }), 400);
       return;
     }
     portais.forEach(x => x.classList.toggle("ativo", x === p));
