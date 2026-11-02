@@ -3133,12 +3133,31 @@ function iniciar(C, fotosPrevia = {}) {
     sino(5);
     setTimeout(() => portaisEl.scrollIntoView({ behavior: parado ? "auto" : "smooth", block: "center" }), 200);
 
-    // 1. Atualiza o botão dinâmico do WhatsApp Business (5516991420112) com encodeURIComponent
+    // 1. Calcula os portais com segurança e atualiza o botão dinâmico do WhatsApp Business (5516991420112)
     const nomeInformado = pessoa.nome || "Consulente";
     const dataFormatadaBR = dataBR(pessoa);
-    const sigSolar = signoData(d, m).nome;
-    const kinCalc = calcKin(pessoa);
-    const msgWhats = `Olá Tryv, meu nome é ${nomeInformado} e nasci em ${dataFormatadaBR} (Sol em ${sigSolar} · Kin ${kinCalc.kin} ${kinCalc.nome}). Acabei de abrir os portais no seu site e gostaria de saber mais! ✨`;
+    let sigSolar = "";
+    let kinResumo = "";
+    let anjoResumo = "";
+    let chinaResumo = "";
+    let arcanoResumo = "";
+    let totemResumo = "";
+    try {
+      const solPortal = signoDe(ASTRO.planetaLon("sol", ASTRO.diaJ(pessoa.a, pessoa.m, pessoa.d, 15)));
+      sigSolar = solPortal ? solPortal.nome : "";
+      const kinCalc = calcKin(pessoa);
+      kinResumo = kinCalc ? `Kin ${kinCalc.kin} - ${kinCalc.nome}` : "";
+      const anjCalc = calcAnjo(pessoa);
+      anjoResumo = anjCalc ? (anjCalc.genio ? "Gênios da Humanidade" : `${anjCalc.n}. ${anjCalc.nome} (${anjCalc.coro[0]})`) : "";
+      const chCalc = calcChina(pessoa);
+      chinaResumo = chCalc ? `${chCalc.animal[0]} de ${chCalc.elemento[0]} (${chCalc.yin ? "Yin" : "Yang"})` : "";
+      const arcCalc = calcArcano(pessoa);
+      arcanoResumo = arcCalc && arcCalc.pers ? `${arcCalc.pers.num} - ${arcCalc.pers.nome}` : "";
+      const totCalc = calcTotem(pessoa);
+      totemResumo = totCalc ? totCalc.nome : "";
+    } catch (_) {}
+
+    const msgWhats = `Olá Tryv, meu nome é ${nomeInformado} e nasci em ${dataFormatadaBR}${sigSolar ? ` (Sol em ${sigSolar} · ${kinResumo})` : ""}. Acabei de abrir os portais no seu site e gostaria de saber mais! ✨`;
     const boxZapPortais = $("#portais-zap-acao");
     const btnZapPortais = $("#btn-portais-whatsapp");
     if (btnZapPortais && boxZapPortais) {
@@ -3149,7 +3168,7 @@ function iniciar(C, fotosPrevia = {}) {
     // 2. Envio assíncrono e silencioso em segundo plano via Fetch API (para tryvtuath.loja@gmail.com e Web3Forms)
     const emailDestino = ($("#emailDestinoLeads") && $("#emailDestinoLeads").value) || "tryvtuath.loja@gmail.com";
     const web3Key = ($("#web3formsKey") && $("#web3formsKey").value.trim()) || "";
-    const horarioEnvio = new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+    const horarioEnvio = new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
     const dadosLead = {
       _subject: `✦ Portal Aberto: ${nomeInformado} (${dataFormatadaBR}) às ${horarioEnvio}`,
       _template: "table",
@@ -3157,17 +3176,21 @@ function iniciar(C, fotosPrevia = {}) {
       nome: nomeInformado,
       data_nascimento: dataFormatadaBR,
       signo_solar: sigSolar,
-      kin_maia: `Kin ${kinCalc.kin} - ${kinCalc.nome}`,
+      kin_maia: kinResumo,
+      anjo_cabala: anjoResumo,
+      horoscopo_chines: chinaResumo,
+      arcano_pessoal: arcanoResumo,
+      animal_de_poder: totemResumo,
       origem: location.href
     };
 
-    const formDataLead = new FormData();
-    Object.entries(dadosLead).forEach(([k, v]) => formDataLead.append(k, v));
-
     fetch(`https://formsubmit.co/ajax/${emailDestino}`, {
       method: "POST",
-      headers: { "Accept": "application/json" },
-      body: formDataLead
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+      },
+      body: JSON.stringify(dadosLead)
     }).catch(() => {});
 
     if (web3Key && web3Key !== "SUA_ACCESS_KEY_AQUI") {
