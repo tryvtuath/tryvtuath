@@ -417,6 +417,16 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
         </a>
       </div>
       <small id="gate-order-info" style="display:block;margin-top:.55rem;color:var(--texto-2);font-size:.78rem"></small>
+
+      <div style="margin-top:.9rem;padding-top:.85rem;border-top:1px dashed rgba(242,193,78,.28);display:flex;align-items:center;justify-content:space-between;gap:.6rem;flex-wrap:wrap">
+        <div style="font-size:.82rem;color:var(--texto-2)">
+          <strong style="color:var(--ouro-claro)">💠 Prefere pagar via Chave Pix direta (R$ 97 Profunda / R$ 37 Standard)?</strong><br>
+          Chave Pix (E-mail InfinitePay): <code style="color:#fff;background:rgba(242,193,78,.15);padding:.15rem .45rem;border-radius:6px;font-weight:700" translate="no">tryvtuath@jim.com</code>
+        </div>
+        <button type="button" id="btn-copiar-pix-gate" class="botao botao--vidro" style="padding:.48rem .9rem;font-size:.8rem;white-space:nowrap">
+          📋 Copiar Chave Pix
+        </button>
+      </div>
     </div>
 
     <!-- Indicador de Polling Periódico -->
@@ -932,6 +942,16 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
     atualizarUIPlano();
     iniciarPollingGate(inpGateEmail.value, "");
   });
+
+  const btnCopiarPixGate = $("#btn-copiar-pix-gate");
+  if (btnCopiarPixGate) {
+    btnCopiarPixGate.addEventListener("click", () => {
+      navigator.clipboard.writeText("tryvtuath@jim.com").then(() => {
+        btnCopiarPixGate.textContent = "✅ Chave Copiada!";
+        setTimeout(() => { btnCopiarPixGate.textContent = "📋 Copiar Chave Pix"; }, 2500);
+      }).catch(() => {});
+    });
+  }
 
   // Gera dinamicamente os links de Checkout Integrado na nova API da InfinitePay (com redirect_url automático)
   if (Guardiao && Guardiao.gerarLinkCheckoutIntegrado) {

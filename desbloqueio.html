@@ -715,6 +715,16 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
         </button>
       </div>
       <small id="chk-pedido-id" style="display:block;margin-top:.45rem;font-size:.76rem;color:var(--texto-2);opacity:.85"></small>
+
+      <div style="margin-top:.85rem;padding-top:.8rem;border-top:1px dashed rgba(242,193,78,.28);display:flex;align-items:center;justify-content:space-between;gap:.6rem;flex-wrap:wrap">
+        <div style="font-size:.8rem;color:var(--texto-2)">
+          <strong style="color:var(--ouro-claro)">💠 Prefere pagar via Chave Pix direta?</strong><br>
+          Chave Pix (E-mail InfinitePay): <code style="color:#fff;background:rgba(242,193,78,.15);padding:.15rem .45rem;border-radius:6px;font-weight:700" translate="no">tryvtuath@jim.com</code>
+        </div>
+        <button type="button" id="btn-copiar-pix-modal" class="botao botao--vidro" style="padding:.45rem .85rem;font-size:.78rem;white-space:nowrap">
+          📋 Copiar Chave Pix
+        </button>
+      </div>
     </div>
 
     <!-- Indicador de Status do Polling em Tempo Real -->
@@ -897,6 +907,16 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
     modalChk.hidden = true;
     modalChk.style.display = "none";
   });
+
+  const btnCopiarPixModal = $("#btn-copiar-pix-modal");
+  if (btnCopiarPixModal) {
+    btnCopiarPixModal.addEventListener("click", () => {
+      navigator.clipboard.writeText("tryvtuath@jim.com").then(() => {
+        btnCopiarPixModal.textContent = "✅ Chave Copiada!";
+        setTimeout(() => { btnCopiarPixModal.textContent = "📋 Copiar Chave Pix"; }, 2500);
+      }).catch(() => {});
+    });
+  }
 
   // Carrega configurações personalizadas do conteudo.json garantindo que apenas URLs válidas da InfinitePay sejam aplicadas
   fetch("conteudo.json", { cache: "no-cache" })
