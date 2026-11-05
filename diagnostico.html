@@ -933,6 +933,17 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
     iniciarPollingGate(inpGateEmail.value, "");
   });
 
+  // Gera dinamicamente os links de Checkout Integrado na nova API da InfinitePay (com redirect_url automático)
+  if (Guardiao && Guardiao.gerarLinkCheckoutIntegrado) {
+    Promise.all([
+      Guardiao.gerarLinkCheckoutIntegrado("profunda"),
+      Guardiao.gerarLinkCheckoutIntegrado("standard")
+    ]).then(([uProf, uStd]) => {
+      if (uProf && $("#btn-gate-pagar-profunda")) $("#btn-gate-pagar-profunda").href = uProf;
+      if (uStd && $("#btn-gate-pagar-standard")) $("#btn-gate-pagar-standard").href = uStd;
+    }).catch(() => {});
+  }
+
   const btnGateLoginMestra = $("#btn-gate-login-mestra");
   if (btnGateLoginMestra && Guardiao && Guardiao.abrirModalLoginMestra) {
     btnGateLoginMestra.addEventListener("click", () => {

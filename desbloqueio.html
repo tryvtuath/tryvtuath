@@ -872,7 +872,7 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
   function abrirModalPosCheckout(plano, urlInfinitePay) {
     planoSelecionadoModal = plano === "standard" ? "standard" : "profunda";
     const isProf = planoSelecionadoModal === "profunda";
-    urlBasePlanoAtual = urlInfinitePay && urlInfinitePay.startsWith("https://loja.infinitepay.io/")
+    urlBasePlanoAtual = urlInfinitePay && (urlInfinitePay.startsWith("https://checkout.infinitepay.io/") || urlInfinitePay.startsWith("https://loja.infinitepay.io/"))
       ? urlInfinitePay
       : (isProf ? URL_INFINITEPAY_PROFUNDA : URL_INFINITEPAY_STANDARD);
 
@@ -924,7 +924,23 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
     .catch(() => {
       $("#btn-comprar-standard").href = URL_INFINITEPAY_STANDARD;
       $("#btn-comprar-profunda").href = URL_INFINITEPAY_PROFUNDA;
+    })
+    .finally(() => {
+      prepararLinksCheckoutInfinitePay();
     });
+
+  // Gera dinamicamente os links de Checkout Integrado na nova API da InfinitePay (com redirecionamento automático pós-pagamento)
+  async function prepararLinksCheckoutInfinitePay() {
+    if (!Guardiao || !Guardiao.gerarLinkCheckoutIntegrado) return;
+    try {
+      const [urlStd, urlProf] = await Promise.all([
+        Guardiao.gerarLinkCheckoutIntegrado("standard"),
+        Guardiao.gerarLinkCheckoutIntegrado("profunda")
+      ]);
+      if (urlStd) $("#btn-comprar-standard").href = urlStd;
+      if (urlProf) $("#btn-comprar-profunda").href = urlProf;
+    } catch {}
+  }
 
   // Salva o plano escolhido no navegador e exibe o modal de validação pós-pagamento da InfinitePay
   $("#btn-comprar-standard").addEventListener("click", function() {
