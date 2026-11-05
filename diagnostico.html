@@ -396,10 +396,10 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
       </div>
 
       <label for="gate-comprovante" style="display:block;font-size:.82rem;font-weight:600;color:var(--rosa-claro);margin-bottom:.35rem">
-        2. Link do Comprovante ou Código NSU da Transação InfinitePay (opcional para validação imediata):
+        2. Código da Transação / Pedido ou Link do Comprovante (InfinitePay / PIX) *
       </label>
       <div style="display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:.95rem">
-        <input type="text" id="gate-comprovante" placeholder="Cole o link do recibo InfinitePay ou código NSU da transação…" style="flex:1;min-width:210px">
+        <input type="text" id="gate-comprovante" placeholder="Ex.: link do recibo InfinitePay ou código/ID da transação PIX/Cartão…" style="flex:1;min-width:210px">
         <button type="button" class="botao botao--vidro" id="btn-gate-monitorar" style="padding:.65rem 1.1rem;font-size:.86rem;white-space:nowrap">
           Validar Pagamento
         </button>
@@ -755,7 +755,7 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
 </main>
 
 <script src="motor-desbloqueio.js?v=3"></script>
-<script src="pagamento-guardiao.js?v=4"></script>
+<script src="pagamento-guardiao.js?v=5"></script>
 <script>
 (function() {
   "use strict";
@@ -891,9 +891,11 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
       intervaloMs: 4000,
       aoVerificar(tentativa) {
         if (!Guardiao.validarFormatoEmail(inpGateEmail.value) && !(inpGateComp && inpGateComp.value.trim())) {
-          gateStatusMsg.textContent = "Informe seu e-mail (ou cole o link do recibo InfinitePay) acima para liberar o botão…";
+          gateStatusMsg.textContent = "Informe seu e-mail e o código/link do comprovante da InfinitePay acima para liberar o botão…";
+        } else if (!(inpGateComp && inpGateComp.value.trim())) {
+          gateStatusMsg.textContent = `Aguardando confirmação da InfinitePay… (Cole no campo 2 o código ou link do comprovante para liberar na hora)`;
         } else {
-          gateStatusMsg.textContent = `Aguardando confirmação automática da InfinitePay (PIX/Cartão)… [checagem #${tentativa}]`;
+          gateStatusMsg.textContent = `Validando comprovante da InfinitePay… [checagem #${tentativa}]`;
         }
       },
       aoConfirmar(dadosConfirmados) {
@@ -907,7 +909,12 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
     const comp = inpGateComp ? inpGateComp.value.trim() : "";
     if (!Guardiao.validarFormatoEmail(em) && !comp) {
       inpGateEmail.focus();
-      gateStatusMsg.textContent = "⚠ Digite seu e-mail ou cole o link do comprovante da InfinitePay.";
+      gateStatusMsg.textContent = "⚠ Digite seu e-mail e o código/link do comprovante da InfinitePay.";
+      return;
+    }
+    if (!comp && inpGateComp) {
+      inpGateComp.focus();
+      gateStatusMsg.textContent = "⚠ Cole no campo 2 o código/ID da transação ou o link do comprovante exibido na InfinitePay (ou no seu PIX) para liberar imediatamente.";
       return;
     }
     await iniciarPollingGate(em, "");
@@ -1113,14 +1120,40 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
 
     ultimoResultado = window.MotorDesbloqueio.processarAnaliseCompleta(dadosCliente);
 
-    // Envia para Webhook opcional somente se NÃO estiver no Modo Mestra Tryv
+    // Envia notificação de Dossiê Gerado (Pós-Compra) para tryvtuath.loja@gmail.com somente se NÃO estiver no Modo Mestra Tryv
     const isMestra = Guardiao && Guardiao.isModoMestra && Guardiao.isModoMestra();
-    if (!isMestra && configSite.webhookUrl) {
-      fetch(configSite.webhookUrl, {
+    if (!isMestra) {
+      const whatsDig = (dadosCliente.whatsapp || "").replace(/\D/g, "");
+      const linkZapCli = whatsDig.length >= 10
+        ? `https://wa.me/55${whatsDig.startsWith("55") && whatsDig.length > 11 ? whatsDig.slice(2) : whatsDig}?text=${encodeURIComponent(`Olá, ${dadosCliente.nomeBatismo.split(" ")[0]}! Aqui é a Tryv Tuath ✨ Vi que você acabou de gerar seu Dossiê do Desbloqueio Invisível e vim saber o que achou da sua leitura!`)}`
+        : "";
+      const tokenConf = (Guardiao && Guardiao.lerTokenConfirmado && Guardiao.lerTokenConfirmado()) || {};
+      fetch("https://formsubmit.co/ajax/tryvtuath.loja@gmail.com", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(ultimoResultado)
+        headers: { "Content-Type": "application/json", "Accept": "application/json" },
+        body: JSON.stringify({
+          _subject: `✦ Dossiê Gerado (${dadosCliente.plano.toUpperCase()}): ${dadosCliente.nomeBatismo}`,
+          _template: "table",
+          _captcha: "false",
+          plano: dadosCliente.plano === "profunda" ? "Análise Profunda (R$ 97)" : "Análise Standard (R$ 37)",
+          nome_batismo: dadosCliente.nomeBatismo,
+          email: dadosCliente.email,
+          whatsapp: dadosCliente.whatsapp,
+          chamar_no_whatsapp: linkZapCli,
+          data_hora_nascimento: `${dadosCliente.dataNascimento} às ${dadosCliente.semHora ? "Sem hora exata" : dadosCliente.horaNascimento}`,
+          cidade_nascimento: dadosCliente.cidadeNome,
+          comprovante_infinitepay: tokenConf.transactionNsu || tokenConf.receiptUrl || "Validado",
+          meta_90_dias: (dadosCliente.profissional && dadosCliente.profissional.meta90Dias) || ""
+        })
       }).catch(() => {});
+
+      if (configSite.webhookUrl) {
+        fetch(configSite.webhookUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(ultimoResultado)
+        }).catch(() => {});
+      }
     }
 
     secLoad.hidden = true;

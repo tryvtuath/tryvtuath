@@ -696,7 +696,7 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
       Abrimos o checkout seguro da <strong>InfinitePay</strong> em uma nova guia. Informe abaixo o <strong>mesmo e-mail</strong> utilizado no pagamento para que nosso sistema identifique automaticamente a confirmação do seu <strong>PIX ou Cartão</strong> e desbloqueie sua Anamnese:
     </p>
 
-    <!-- Identificação do E-mail e/ou Comprovante para Rastreamento no Webhook / Polling -->
+    <!-- Identificação do E-mail e Comprovante para Liberação -->
     <div style="text-align:left;background:rgba(255,255,255,.04);border:1px solid rgba(242,193,78,.3);border-radius:14px;padding:1rem 1.15rem;margin-bottom:1rem">
       <label for="chk-email-cliente" style="display:block;font-size:.82rem;font-weight:700;color:var(--ouro-claro);margin-bottom:.35rem">
         1. Seu E-mail utilizado no Checkout da InfinitePay *
@@ -706,10 +706,10 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
       </div>
 
       <label for="chk-comprovante-infinitepay" style="display:block;font-size:.8rem;font-weight:600;color:var(--rosa-claro);margin-bottom:.3rem">
-        2. Link do Comprovante ou Código NSU da Transação InfinitePay (opcional para validação imediata):
+        2. Código da Transação / Pedido ou Link do Comprovante (InfinitePay / PIX) *
       </label>
       <div style="display:flex;gap:.5rem;flex-wrap:wrap">
-        <input type="text" id="chk-comprovante-infinitepay" placeholder="Cole o link do recibo InfinitePay ou código da transação…" style="flex:1;min-width:200px;padding:.65rem .85rem;border-radius:10px;border:1px solid rgba(255,95,162,.38);background:rgba(10,7,28,.8);color:#fff;font-size:.86rem">
+        <input type="text" id="chk-comprovante-infinitepay" placeholder="Ex.: link do recibo ou código/ID da transação PIX/Cartão…" style="flex:1;min-width:200px;padding:.65rem .85rem;border-radius:10px;border:1px solid rgba(255,95,162,.38);background:rgba(10,7,28,.8);color:#fff;font-size:.86rem">
         <button type="button" class="botao botao--vidro" id="btn-vincular-email-chk" style="padding:.65rem 1rem;font-size:.84rem;white-space:nowrap">
           Validar Pagamento
         </button>
@@ -741,7 +741,7 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
 </div>
 
 <script src="motor-desbloqueio.js?v=3"></script>
-<script src="pagamento-guardiao.js?v=4"></script>
+<script src="pagamento-guardiao.js?v=5"></script>
 <script>
 (function() {
   "use strict";
@@ -839,9 +839,11 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
       intervaloMs: 4000,
       aoVerificar(tentativa) {
         if (!Guardiao.validarFormatoEmail(inputEmailChk.value) && !(inputCompChk && inputCompChk.value.trim())) {
-          statusMsg.textContent = "Informe seu e-mail (ou link do recibo InfinitePay) acima para validar o pagamento…";
+          statusMsg.textContent = "Informe seu e-mail e o código/link do comprovante da InfinitePay acima para liberar…";
+        } else if (!(inputCompChk && inputCompChk.value.trim())) {
+          statusMsg.textContent = `Aguardando confirmação da InfinitePay… (Cole no campo 2 o código ou link do comprovante para liberar na hora)`;
         } else {
-          statusMsg.textContent = `Aguardando confirmação da InfinitePay (PIX/Cartão)… [verificação #${tentativa}]`;
+          statusMsg.textContent = `Validando comprovante da InfinitePay… [verificação #${tentativa}]`;
         }
       },
       aoConfirmar(dadosConfirmados) {
@@ -855,7 +857,12 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
     const comp = inputCompChk ? inputCompChk.value.trim() : "";
     if (!Guardiao.validarFormatoEmail(em) && !comp) {
       inputEmailChk.focus();
-      statusMsg.textContent = "⚠ Por favor, digite o e-mail usado no pagamento ou cole o link do comprovante InfinitePay.";
+      statusMsg.textContent = "⚠ Por favor, digite o e-mail usado no pagamento e o código/link do comprovante InfinitePay.";
+      return;
+    }
+    if (!comp && inputCompChk) {
+      inputCompChk.focus();
+      statusMsg.textContent = "⚠ Cole no campo 2 o código/ID da transação ou o link do comprovante exibido na InfinitePay (ou no seu PIX) para liberar imediatamente.";
       return;
     }
     await iniciarMonitoramentoAutomatico(planoSelecionadoModal);

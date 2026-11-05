@@ -91,7 +91,7 @@ function consultarApiInfinitePay({ orderNsu, transactionNsu, slug }) {
     });
 
     const req = https.request(
-      `https://api.infinitepay.io/invoices/public/checkout/payment_check/${INFINITEPAY_HANDLE}`,
+      "https://api.checkout.infinitepay.io/payment_check",
       {
         method: "POST",
         headers: {

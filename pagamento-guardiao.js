@@ -190,6 +190,43 @@
   }
 
   /**
+   * Gera um Link de Checkout Integrado na NOVA API oficial da InfinitePay
+   * (POST https://api.checkout.infinitepay.io/links) com redirect_url automático para diagnostico.html
+   */
+  async function gerarLinkCheckoutIntegrado(plano, orderIdCustom) {
+    const isStd = plano === "standard";
+    const orderNsu = orderIdCustom || gerarOrderId("cli", isStd ? "standard" : "profunda");
+    try {
+      const resp = await fetch("https://api.checkout.infinitepay.io/links", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Accept": "application/json" },
+        body: JSON.stringify({
+          handle: INFINITEPAY_HANDLE,
+          redirect_url: `https://tryvtuath.com.br/diagnostico.html?plano=${isStd ? "standard" : "profunda"}`,
+          order_nsu: orderNsu,
+          items: [
+            {
+              quantity: 1,
+              price: isStd ? 3700 : 9700,
+              description: isStd
+                ? "O Desbloqueio Invisivel - Analise Standard"
+                : "O Desbloqueio Invisivel - Analise Profunda"
+            }
+          ]
+        })
+      });
+      if (resp.ok) {
+        const json = await resp.json();
+        if (json && json.url) {
+          salvarSessaoPedido({ orderId: orderNsu, plano: isStd ? "standard" : "profunda" });
+          return json.url;
+        }
+      }
+    } catch {}
+    return isStd ? LINKS_CHECKOUT.standard : LINKS_CHECKOUT.profunda;
+  }
+
+  /**
    * Registra a intenção de pagamento no Back-End para que o Webhook da InfinitePay
    * saiba qual cliente/pedido está aguardando confirmação.
    */
@@ -281,32 +318,31 @@
         // Se o cliente colou diretamente o link de recibo da InfinitePay (recibo.infinitepay.io / infinitepay.io)
         if (
           host.includes("recibo.infinitepay.io") ||
-          (host.includes("infinitepay.io") && (u.pathname.includes("recibo") || u.pathname.includes("receipt") || u.pathname.includes("comprovante") || u.pathname.length > 18))
+          (host.includes("infinitepay.io") && !u.pathname.includes("mapa-do-desbloqueio") && u.pathname.length > 4)
         ) {
           const partes = u.pathname.split("/").filter(Boolean);
-          const codigoPath = partes[partes.length - 1] || "";
-          if (codigoPath && codigoPath.length >= 6 && !codigoPath.includes("mapa-do-desbloqueio")) {
-            return {
-              validoFormato: true,
-              transactionNsu: codigoPath,
-              slug: codigoPath,
-              orderNsu: "",
-              receiptUrl: str,
-              captureMethod: "Comprovante InfinitePay"
-            };
-          }
-        }
-      } else {
-        // Código NSU / ID de transação / UUID colado diretamente (mínimo 8 caracteres alfanuméricos/hífens)
-        const limpo = str.replace(/\s+/g, "");
-        if (/^[a-zA-Z0-9_-]{8,64}$/.test(limpo) && /\d/.test(limpo)) {
+          const codigoPath = partes[partes.length - 1] || "RECIBO-INFPAY";
           return {
             validoFormato: true,
-            transactionNsu: limpo,
-            slug: limpo,
+            transactionNsu: codigoPath,
+            slug: codigoPath,
+            orderNsu: "",
+            receiptUrl: str,
+            captureMethod: "Comprovante InfinitePay"
+          };
+        }
+      } else {
+        // Código NSU / Número do Pedido / ID PIX / Código de Autorização (mínimo de 4 dígitos numéricos no código)
+        const limpo = str.replace(/^(nsu|id|pedido|codigo|código|transacao|transação|comprovante|pix|doc|aut)[:\s#-]*/i, "").replace(/[\s#.:/-]+/g, "");
+        const qtdDigitos = (limpo.match(/\d/g) || []).length;
+        if (/^[a-zA-Z0-9_-]{4,90}$/.test(limpo) && qtdDigitos >= 4 && !/^(1234|0000|9999|teste)/i.test(limpo)) {
+          return {
+            validoFormato: true,
+            transactionNsu: limpo.slice(0, 48),
+            slug: limpo.slice(0, 48),
             orderNsu: "",
             receiptUrl: "",
-            captureMethod: "NSU InfinitePay"
+            captureMethod: "Comprovante / NSU InfinitePay"
           };
         }
       }
@@ -369,7 +405,7 @@
     if ((transactionNsu && slug) || receiptUrl) {
       try {
         const respInf = await fetch(
-          `https://api.infinitepay.io/invoices/public/checkout/payment_check/${INFINITEPAY_HANDLE}`,
+          "https://api.checkout.infinitepay.io/payment_check",
           {
             method: "POST",
             headers: { "Content-Type": "application/json", "Accept": "application/json" },
@@ -645,6 +681,7 @@
     salvarTokenConfirmado,
     construirUrlCheckoutInfinitePay,
     obterUrlCheckoutComRedirectAutomatico,
+    gerarLinkCheckoutIntegrado,
     registrarIntencaoNoBackend,
     verificarStatusPagamento,
     extrairParametrosComprovanteInfinitePay,
