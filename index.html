@@ -1973,7 +1973,6 @@ html, body { max-width: 100%; overflow-x: clip; }
     <p class="rodape__assinatura" data-c="rodape.frase">Mude-se e descobrirá novos outros para refletir-se.</p>
     <p class="rodape__marca"><span translate="no">© 2016 Tryv Tuath® · Everything is Possible</span> — Todos os direitos reservados.</p>
     <p class="rodape__legal"><span translate="no">Tryv Tuath®</span> é marca registrada junto ao INPI (Instituto Nacional da Propriedade Industrial). Obras musicais, letras, fonogramas e demais conteúdos deste site são protegidos pela Lei de Direitos Autorais (Lei nº 9.610/98), sendo vedada sua reprodução ou utilização sem autorização prévia.</p>
-    <p class="rodape__config" translate="no"><a href="configuracoes.html">Configurações</a></p>
   </div>
 </footer>
 
@@ -2128,7 +2127,7 @@ html, body { max-width: 100%; overflow-x: clip; }
   <p>Na <b>Caverna de Eco</b> você escuta as músicas autorais e exclusivas da Tryv (que não estão no Spotify), lê as letras completas dos cânticos no pergaminho místico e assiste aos videoclipes e leituras de Tarot em tela cheia.</p>
 </div>
 
-<script src="pagamento-guardiao.js?v=5"></script>
+<script src="pagamento-guardiao.js?v=8"></script>
 <script>
 "use strict";
 document.documentElement.classList.add("js");
@@ -3493,8 +3492,7 @@ function iniciar(C, fotosPrevia = {}) {
   nomeInput.addEventListener("input", () => nomeInput.setCustomValidity(""));
 
   const modoMestraAtivo = () =>
-    (window.GuardiaoPagamentoInfinitePay && window.GuardiaoPagamentoInfinitePay.isModoMestra()) ||
-    guarda.ler("tryv_modo_mestra_ativo") === "1";
+    Boolean(window.GuardiaoPagamentoInfinitePay && window.GuardiaoPagamentoInfinitePay.isModoMestra());
 
   function atualizarAvisoMestraPortais() {
     const msgEl = $("#nasc-msg-seguro");
@@ -3507,7 +3505,7 @@ function iniciar(C, fotosPrevia = {}) {
       if (nomeInput) {
         nomeInput.required = false;
       }
-      msgEl.innerHTML = `✦ <a href="diagnostico.html?plano=profunda" style="color:var(--ouro-claro);font-weight:600;text-decoration:underline">Dossiê Completo →</a>`;
+      msgEl.innerHTML = `✦ Modo Mestra ativo: <a href="diagnostico.html?plano=standard" style="color:var(--ouro-claro);font-weight:600;text-decoration:underline">Desbloqueio Standard →</a> · <a href="diagnostico.html?plano=profunda" style="color:var(--ouro-claro);font-weight:600;text-decoration:underline">Dossiê Completo →</a>`;
     } else {
       if (whatsInput) {
         whatsInput.required = true;
@@ -3516,7 +3514,7 @@ function iniciar(C, fotosPrevia = {}) {
       if (nomeInput) {
         nomeInput.required = true;
       }
-      msgEl.innerHTML = `🔒 Seus dados são confidenciais e ficam visíveis apenas para a Tryv. <button type="button" id="btn-inline-mestra" aria-label="✦" style="background:none;border:0;color:var(--ouro-claro);font:inherit;cursor:pointer;padding:0 .15rem;opacity:.45">✦</button>`;
+      msgEl.innerHTML = `🔒 Seus dados são confidenciais e ficam visíveis apenas para a Tryv. <button type="button" id="btn-inline-mestra" aria-label="✦" style="background:none;border:0;color:var(--ouro-claro);font:inherit;cursor:pointer;padding:.2rem .35rem;opacity:.45;touch-action:manipulation">✦</button>`;
       const btnInline = $("#btn-inline-mestra");
       if (btnInline && window.GuardiaoPagamentoInfinitePay) {
         btnInline.addEventListener("click", () => window.GuardiaoPagamentoInfinitePay.abrirModalLoginMestra(atualizarAvisoMestraPortais));
@@ -3525,6 +3523,7 @@ function iniciar(C, fotosPrevia = {}) {
   }
   atualizarAvisoMestraPortais();
   window.addEventListener("tryv:mestra-ativada", atualizarAvisoMestraPortais);
+  window.addEventListener("tryv:mestra-desativada", atualizarAvisoMestraPortais);
 
   function frente(icone, nome, sub, han) {
     return `<span class="portal__icone${han ? " portal__icone--han" : ""}">${icone}</span><span class="portal__nome">${esc(nome)}</span><span class="portal__sub">${esc(sub)}</span>`;

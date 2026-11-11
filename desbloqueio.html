@@ -356,6 +356,41 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
 .rodape {
   padding: 3rem 0 2.5rem; text-align: center;
   border-top: 1px solid rgba(242, 193, 78, .2); color: var(--texto-2); font-size: .9rem;
+  position: relative; z-index: 5;
+}
+
+/* Estrela discreta do Modo Mestra no rodapé (idêntica à do Portal das Cartas, sempre visível) */
+.estrela-mestra-rodape {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  min-width: 34px;
+  min-height: 34px;
+  padding: .25rem .45rem;
+  margin: 0 .15rem;
+  background: transparent;
+  border: 0;
+  color: var(--ouro-claro) !important;
+  font-size: 1.05rem;
+  line-height: 1;
+  opacity: .68 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+  cursor: pointer;
+  touch-action: manipulation;
+  vertical-align: middle;
+  transition: opacity .2s ease, transform .2s ease;
+}
+.estrela-mestra-rodape:hover,
+.estrela-mestra-rodape:focus-visible {
+  opacity: 1 !important;
+  transform: scale(1.18);
+}
+.painel-mestra-opcoes {
+  max-width: 680px; margin: 1.4rem auto 0; padding: 1.15rem 1.35rem;
+  border-radius: 18px; background: rgba(18, 12, 44, .94);
+  border: 1px solid rgba(242, 193, 78, .55);
+  box-shadow: 0 14px 36px rgba(0, 0, 0, .55); text-align: center;
 }
 </style>
 </head>
@@ -600,6 +635,21 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
         </article>
       </div>
 
+      <!-- Opções diretas pós-validação do Modo Mestra (visível apenas após autenticar a estrela) -->
+      <div id="painel-mestra-desbloqueio" class="painel-mestra-opcoes" hidden>
+        <p style="margin:0 0 .85rem;font-size:.9rem;color:#ffe6a3;font-weight:600">
+          ✦ Modo Mestra Ativo — Selecione a modalidade para acessar sem pagamento:
+        </p>
+        <div style="display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap">
+          <a class="botao botao--vidro" id="btn-painel-mestra-standard" href="diagnostico.html?plano=standard" style="min-width:210px;padding:.75rem 1.35rem;font-size:.94rem">
+            ✦ STANDARD — Abrir Standard
+          </a>
+          <a class="botao botao--ouro" id="btn-painel-mestra-completo" href="diagnostico.html?plano=profunda" style="min-width:210px;padding:.75rem 1.35rem;font-size:.94rem">
+            ✦ COMPLETO — Abrir Completo
+          </a>
+        </div>
+      </div>
+
       <!-- APRESENTAÇÃO PROFISSIONAL DA TRYV, AVISO ÉTICO E AGENDAMENTO DE ANÁLISES APROFUNDADAS -->
       <div style="margin-top:2.4rem;padding:clamp(1.5rem,3.5vw,2.3rem);border-radius:24px;background:linear-gradient(170deg,rgba(36,23,78,.92),rgba(18,12,44,.96));border:1.5px solid rgba(242,193,78,.42);box-shadow:0 20px 50px rgba(0,0,0,.55)">
         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.5rem;align-items:start">
@@ -678,11 +728,13 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
     <p style="font-family:var(--livro);font-style:italic;font-size:1.2rem;color:var(--ouro-claro);margin:0 0 .5rem">
       “Mude-se e descobrirá novos outros para refletir-se.”
     </p>
-    <p style="margin:0 0 .4rem">© 2016 Tryv Tuath® · Everything is Possible — Todos os direitos reservados.</p>
+    <p style="margin:0 0 .4rem">
+      © 2016 Tryv Tuath® · Everything is Possible — Todos os direitos reservados.
+      <button type="button" id="btn-estrela-mestra" class="estrela-mestra-rodape" aria-label="✦">✦</button>
+    </p>
     <p style="margin:0;font-size:.82rem;opacity:.75">
       <a href="index.html" style="text-decoration:underline">Início</a> ·
-      <a href="diagnostico.html" style="text-decoration:underline">Área de Diagnóstico (Pós-Compra)</a> ·
-      <a href="configuracoes.html" style="text-decoration:underline">Configurações</a>
+      <a href="diagnostico.html" style="text-decoration:underline">Área de Diagnóstico (Pós-Compra)</a>
     </p>
   </div>
 </footer>
@@ -751,7 +803,7 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
 </div>
 
 <script src="motor-desbloqueio.js?v=3"></script>
-<script src="pagamento-guardiao.js?v=5"></script>
+<script src="pagamento-guardiao.js?v=8"></script>
 <script>
 (function() {
   "use strict";
@@ -881,14 +933,25 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
 
   function abrirModalPosCheckout(plano, urlInfinitePay) {
     planoSelecionadoModal = plano === "standard" ? "standard" : "profunda";
+    if (Guardiao && Guardiao.isModoMestra && Guardiao.isModoMestra()) {
+      try {
+        sessionStorage.setItem("tryv_plano_desbloqueio", planoSelecionadoModal);
+        localStorage.setItem("tryv_plano_desbloqueio", planoSelecionadoModal);
+      } catch {}
+      window.location.href = `diagnostico.html?plano=${planoSelecionadoModal}`;
+      return;
+    }
     const isProf = planoSelecionadoModal === "profunda";
     urlBasePlanoAtual = urlInfinitePay && (urlInfinitePay.startsWith("https://checkout.infinitepay.io/") || urlInfinitePay.startsWith("https://loja.infinitepay.io/"))
       ? urlInfinitePay
       : (isProf ? URL_INFINITEPAY_PROFUNDA : URL_INFINITEPAY_STANDARD);
 
     try {
+      sessionStorage.setItem("tryv_plano_desbloqueio", planoSelecionadoModal);
       localStorage.setItem("tryv_plano_desbloqueio", planoSelecionadoModal);
-      localStorage.setItem("tryv_checkout_pendente", planoSelecionadoModal);
+      if (Guardiao && Guardiao.salvarSessaoPedido) {
+        Guardiao.salvarSessaoPedido({ plano: planoSelecionadoModal, status: "PENDING" });
+      }
     } catch {}
 
     setTimeout(() => {
@@ -918,6 +981,56 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
     });
   }
 
+  function sincronizarModoMestraDesbloqueio() {
+    const btnStd = $("#btn-comprar-standard");
+    const btnProf = $("#btn-comprar-profunda");
+    const painelMestra = $("#painel-mestra-desbloqueio");
+    const btnEstrela = $("#btn-estrela-mestra");
+    if (!btnStd || !btnProf) return false;
+
+    if (btnEstrela) {
+      btnEstrela.textContent = "✦";
+    }
+
+    if (Guardiao && Guardiao.isModoMestra && Guardiao.isModoMestra()) {
+      btnStd.href = "diagnostico.html?plano=standard";
+      btnStd.removeAttribute("target");
+      btnStd.textContent = "✦ STANDARD — Acessar sem Pagamento (Modo Mestra) →";
+
+      btnProf.href = "diagnostico.html?plano=profunda";
+      btnProf.removeAttribute("target");
+      btnProf.textContent = "✦ COMPLETO — Acessar sem Pagamento (Modo Mestra) →";
+
+      if (painelMestra) painelMestra.hidden = false;
+
+      if (modalChk && !modalChk.hidden) {
+        if (controladorPolling) controladorPolling.parar();
+        modalChk.hidden = true;
+        modalChk.style.display = "none";
+      }
+      return true;
+    }
+
+    if (painelMestra) painelMestra.hidden = true;
+    btnStd.setAttribute("target", "_blank");
+    btnStd.textContent = "Iniciar Meu Diagnóstico Standard (R$ 37)";
+    btnProf.setAttribute("target", "_blank");
+    btnProf.textContent = "✦ Desbloquear Minha Análise Profunda Completa (R$ 97)";
+    return false;
+  }
+
+  const btnEstrelaMestra = $("#btn-estrela-mestra");
+  if (btnEstrelaMestra) {
+    btnEstrelaMestra.addEventListener("click", (e) => {
+      e.preventDefault();
+      if (Guardiao && Guardiao.abrirModalLoginMestra) {
+        Guardiao.abrirModalLoginMestra(() => sincronizarModoMestraDesbloqueio());
+      }
+    });
+  }
+
+  sincronizarModoMestraDesbloqueio();
+
   // Carrega configurações personalizadas do conteudo.json garantindo que apenas URLs válidas da InfinitePay sejam aplicadas
   fetch("conteudo.json", { cache: "no-cache" })
     .then(r => r.ok ? r.json() : null)
@@ -930,6 +1043,7 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
       if (D.subtitulo) $("#txt-subtitulo").textContent = D.subtitulo;
       if (D.precoStandard) $("#p-std-preco").textContent = D.precoStandard;
       if (D.precoProfunda) $("#p-prof-preco").textContent = D.precoProfunda;
+      if (sincronizarModoMestraDesbloqueio()) return;
       if (D.checkoutStandard && D.checkoutStandard.trim().startsWith("https://loja.infinitepay.io/")) {
         $("#btn-comprar-standard").href = D.checkoutStandard.trim();
       } else {
@@ -942,31 +1056,60 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
       }
     })
     .catch(() => {
+      if (sincronizarModoMestraDesbloqueio()) return;
       $("#btn-comprar-standard").href = URL_INFINITEPAY_STANDARD;
       $("#btn-comprar-profunda").href = URL_INFINITEPAY_PROFUNDA;
     })
     .finally(() => {
-      prepararLinksCheckoutInfinitePay();
+      if (!sincronizarModoMestraDesbloqueio()) {
+        prepararLinksCheckoutInfinitePay();
+      }
     });
 
   // Gera dinamicamente os links de Checkout Integrado na nova API da InfinitePay (com redirecionamento automático pós-pagamento)
   async function prepararLinksCheckoutInfinitePay() {
     if (!Guardiao || !Guardiao.gerarLinkCheckoutIntegrado) return;
+    if (Guardiao.isModoMestra && Guardiao.isModoMestra()) {
+      sincronizarModoMestraDesbloqueio();
+      return;
+    }
     try {
       const [urlStd, urlProf] = await Promise.all([
         Guardiao.gerarLinkCheckoutIntegrado("standard"),
         Guardiao.gerarLinkCheckoutIntegrado("profunda")
       ]);
+      if (Guardiao.isModoMestra && Guardiao.isModoMestra()) {
+        sincronizarModoMestraDesbloqueio();
+        return;
+      }
       if (urlStd) $("#btn-comprar-standard").href = urlStd;
       if (urlProf) $("#btn-comprar-profunda").href = urlProf;
     } catch {}
   }
 
-  // Salva o plano escolhido no navegador e exibe o modal de validação pós-pagamento da InfinitePay
-  $("#btn-comprar-standard").addEventListener("click", function() {
+  // No Modo Mestra, acessa diretamente o questionário (Standard ou Completo) sem abrir checkout da InfinitePay
+  $("#btn-comprar-standard").addEventListener("click", function(e) {
+    if (Guardiao && Guardiao.isModoMestra && Guardiao.isModoMestra()) {
+      e.preventDefault();
+      try {
+        sessionStorage.setItem("tryv_plano_desbloqueio", "standard");
+        localStorage.setItem("tryv_plano_desbloqueio", "standard");
+      } catch {}
+      window.location.href = "diagnostico.html?plano=standard";
+      return;
+    }
     abrirModalPosCheckout("standard", this.href || URL_INFINITEPAY_STANDARD);
   });
-  $("#btn-comprar-profunda").addEventListener("click", function() {
+  $("#btn-comprar-profunda").addEventListener("click", function(e) {
+    if (Guardiao && Guardiao.isModoMestra && Guardiao.isModoMestra()) {
+      e.preventDefault();
+      try {
+        sessionStorage.setItem("tryv_plano_desbloqueio", "profunda");
+        localStorage.setItem("tryv_plano_desbloqueio", "profunda");
+      } catch {}
+      window.location.href = "diagnostico.html?plano=profunda";
+      return;
+    }
     abrirModalPosCheckout("profunda", this.href || URL_INFINITEPAY_PROFUNDA);
   });
 
@@ -1019,38 +1162,21 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
         <a class="botao botao--ouro" href="#planos" style="padding:.7rem 1.5rem;font-size:.95rem">✦ Desbloquear Meu Dossiê Completo em PDF</a>
       </div>
     `;
-    try {
-      localStorage.setItem("tryv_lead_previa", JSON.stringify({ nome, data }));
-    } catch {}
 
-    // Se a própria Tryv estiver logada no Modo Mestra, não envia e-mail de amostra
-    if (Guardiao && Guardiao.isModoMestra && Guardiao.isModoMestra()) return;
-
-    // Envio silencioso em segundo plano para tryvtuath.loja@gmail.com (compatível com iOS Safari/Chrome)
-    const [anoT, mesT, diaT] = data.split("-");
-    const dataFormatada = `${diaT}/${mesT}/${anoT}`;
-    const horarioEnvio = new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
-    const fdTeaser = new FormData();
-    fdTeaser.append("_subject", `✦ Amostra do Desbloqueio: ${nome} (${dataFormatada}) às ${horarioEnvio}`);
-    fdTeaser.append("_template", "table");
-    fdTeaser.append("_captcha", "false");
-    fdTeaser.append("nome_usuario", nome);
-    fdTeaser.append("data_nascimento", dataFormatada);
-    fdTeaser.append("arcano_centro", `${arcCentro.rom} - ${arcCentro.nome}`);
-    fdTeaser.append("cauda_carmica", `${cauda.codigo} (${cauda.nome})`);
-    fdTeaser.append("quiron", quiron.nome);
-    fdTeaser.append("nakshatra", nak.nome);
-
-    fetch("https://formsubmit.co/ajax/tryvtuath.loja@gmail.com", {
-      method: "POST",
-      headers: { "Accept": "application/json" },
-      body: fdTeaser
-    }).catch(() => {});
+    // Preserva temporariamente na sessão (com expiração por inatividade), sem retenção permanente em localStorage e sem envio externo
+    if (Guardiao && Guardiao.salvarRascunhoQuestionario) {
+      Guardiao.salvarRascunhoQuestionario({ nomeBatismo: nome, dataNascimento: data });
+    }
   });
 
   window.addEventListener("tryv:mestra-ativada", () => {
+    sincronizarModoMestraDesbloqueio();
     const t = Guardiao.lerTokenConfirmado();
     if (t && t.pago) liberarBotaoAnamnese(t);
+  });
+  window.addEventListener("tryv:mestra-desativada", () => {
+    sincronizarModoMestraDesbloqueio();
+    prepararLinksCheckoutInfinitePay();
   });
 
   // Céu Estrelado e Faíscas Mágicas

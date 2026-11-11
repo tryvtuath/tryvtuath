@@ -754,6 +754,7 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
       </div>
       <div style="display:flex;gap:.65rem;flex-wrap:wrap">
         <button type="button" class="botao botao--ouro" id="btn-baixar-pdf">⬇ Baixar Meu PDF Personalizado</button>
+        <button type="button" class="botao botao--vidro" id="btn-revisar-respostas">✏️ Revisar / Alterar Respostas</button>
         <button type="button" class="botao botao--vidro" id="btn-novo-mapa-tryv">🔄 Gerar Novo Mapa</button>
         <button type="button" class="botao botao--vidro" id="btn-imprimir-pdf">🖨 Imprimir / Salvar A4</button>
         <a class="botao botao--rosa" id="btn-whats-tryv" href="#" target="_blank" rel="noopener">💬 Enviar Código para a Tryv</a>
@@ -765,7 +766,7 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
 </main>
 
 <script src="motor-desbloqueio.js?v=3"></script>
-<script src="pagamento-guardiao.js?v=5"></script>
+<script src="pagamento-guardiao.js?v=8"></script>
 <script>
 (function() {
   "use strict";
@@ -773,23 +774,27 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
   const $$ = (s, el = document) => [...el.querySelectorAll(s)];
   const Guardiao = window.GuardiaoPagamentoInfinitePay;
 
-  // 1. Detectar Plano (URL ?plano=profunda ou ?plano=standard ou localStorage)
+  // 1. Detectar Plano (URL ?plano=profunda ou ?plano=standard ou sessão/localStorage)
   const params = new URLSearchParams(location.search);
-  let planoAtivo = params.get("plano") || localStorage.getItem("tryv_plano_desbloqueio") || "profunda";
+  const planoUrl = params.get("plano");
+  let planoAtivo =
+    (planoUrl === "standard" || planoUrl === "profunda" ? planoUrl : null) ||
+    (typeof sessionStorage !== "undefined" && sessionStorage.getItem("tryv_plano_desbloqueio")) ||
+    localStorage.getItem("tryv_plano_desbloqueio") ||
+    "profunda";
   if (planoAtivo !== "standard" && planoAtivo !== "profunda") planoAtivo = "profunda";
 
-  let configSite = { whatsapp: "5516991420112", webhookUrl: "" };
+  let configSite = { whatsapp: "5516991420112" };
   fetch("conteudo.json", { cache: "no-cache" })
     .then(r => r.ok ? r.json() : null)
     .then(C => {
       if (!C) return;
       if (C.contato && C.contato.whatsapp) configSite.whatsapp = String(C.contato.whatsapp).replace(/\D/g, "");
-      if (C.desbloqueio && C.desbloqueio.webhookUrl) configSite.webhookUrl = C.desbloqueio.webhookUrl;
       if (C.desbloqueio && C.desbloqueio.apiPagamentosUrl) Guardiao.configurarApiBase(C.desbloqueio.apiPagamentosUrl);
     })
     .catch(() => {});
 
-  // 1.1. Controle de Bloqueio e Liberação Automatizada (InfinitePay Polling / Webhook / Redirect API)
+  // 1.1. Controle de Bloqueio e Liberação Automatizada (InfinitePay Polling / Webhook / Redirect API / Modo Mestra)
   const secBloqueio = $("#sec-bloqueio-pagamento");
   const secFormulario = $("#sec-formulario");
   const btnLiberarAnamnese = $("#btn-liberar-anamnese");
@@ -802,11 +807,15 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
 
   function destravarAnamneseNaTela(dadosConfirmados) {
     if (pollingGate) pollingGate.parar();
-    if (dadosConfirmados && dadosConfirmados.plano) {
+    const isMestra = Boolean((dadosConfirmados && dadosConfirmados.modoMestra) || (Guardiao && Guardiao.isModoMestra && Guardiao.isModoMestra()));
+    if (!isMestra && dadosConfirmados && (dadosConfirmados.plano === "standard" || dadosConfirmados.plano === "profunda")) {
       planoAtivo = dadosConfirmados.plano;
-      atualizarUIPlano();
+    } else if (isMestra && (planoUrl === "standard" || planoUrl === "profunda")) {
+      planoAtivo = planoUrl;
     }
-    if (dadosConfirmados && dadosConfirmados.email && !$("#f-email").value) {
+    atualizarUIPlano();
+
+    if (!isMestra && dadosConfirmados && dadosConfirmados.email && !$("#f-email").value) {
       $("#f-email").value = dadosConfirmados.email;
     }
 
@@ -816,7 +825,9 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
     btnLiberarAnamnese.style.cursor = "pointer";
     btnLiberarAnamnese.style.pointerEvents = "auto";
     btnLiberarAnamnese.style.filter = "none";
-    btnLiberarAnamnese.textContent = "✦ Pagamento Confirmado! Preencher Anamnese / Gerar PDF →";
+    btnLiberarAnamnese.textContent = isMestra
+      ? "✦ Modo Mestra Ativo! Preencher Anamnese / Gerar PDF →"
+      : "✦ Pagamento Confirmado! Preencher Anamnese / Gerar PDF →";
 
     if (gateSpinner) gateSpinner.style.display = "none";
     if (gateStatusBox) {
@@ -825,9 +836,13 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
       gateStatusBox.style.color = "#a3f7bf";
     }
     if (gateStatusMsg) {
-      gateStatusMsg.innerHTML = "✅ <strong>Pagamento confirmado pela InfinitePay!</strong> Clique no botão abaixo para iniciar sua Anamnese.";
+      gateStatusMsg.innerHTML = isMestra
+        ? "✅ <strong>Modo Mestra reconhecido!</strong> Acesso administrativo ilimitado ao Standard e Completo."
+        : "✅ <strong>Pagamento confirmado pela InfinitePay!</strong> Clique no botão abaixo para iniciar sua Anamnese.";
     }
-    $("#gate-selo").textContent = "✅ Pagamento Validado · Acesso Liberado";
+    $("#gate-selo").textContent = isMestra
+      ? "✅ Modo Mestra Ativo · Acesso Ilimitado"
+      : "✅ Pagamento Validado · Acesso Liberado";
 
     btnLiberarAnamnese.onclick = () => {
       secBloqueio.hidden = true;
@@ -837,13 +852,22 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
   }
 
   async function inicializarVerificacaoPagamento() {
-    // a) Verifica se já existe token validado salvo ou retornado via URL da InfinitePay
+    // a) Verifica imediatamente se o Modo Mestra está ativo ou se já existe token validado salvo
+    if (Guardiao && Guardiao.isModoMestra && Guardiao.isModoMestra()) {
+      const tokenMestra = Guardiao.lerTokenConfirmado();
+      destravarAnamneseNaTela(tokenMestra);
+      secBloqueio.hidden = true;
+      secFormulario.hidden = false;
+      return;
+    }
+
     const tokenSalvo = Guardiao.lerTokenConfirmado();
     const urlTxNsu = params.get("transaction_nsu") || params.get("transaction_id") || "";
     const urlSlug = params.get("slug") || params.get("invoice_slug") || "";
     const urlOrderNsu = params.get("order_nsu") || "";
     const urlReceipt = params.get("receipt_url") || "";
-    const urlEmail = Guardiao.normalizarEmail(params.get("email") || (tokenSalvo && tokenSalvo.email) || "");
+    const rascunhoAtual = (Guardiao && Guardiao.lerRascunhoQuestionario && Guardiao.lerRascunhoQuestionario()) || {};
+    const urlEmail = Guardiao.normalizarEmail(params.get("email") || rascunhoAtual.email || "");
 
     if (tokenSalvo && tokenSalvo.pago && tokenSalvo.tokenAcesso) {
       destravarAnamneseNaTela(tokenSalvo);
@@ -871,9 +895,11 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
       }
     }
 
-    // c) Mantém o questionário bloqueado e inicia o polling periódico por e-mail/pedido
+    // c) Mantém o questionário bloqueado para clientes sem confirmação e inicia o polling periódico
+    secBloqueio.hidden = false;
+    secFormulario.hidden = true;
     const sessao = Guardiao.lerSessaoPedido();
-    const emailInicial = urlEmail || (sessao && sessao.email) || "";
+    const emailInicial = urlEmail || "";
     if (emailInicial && inpGateEmail) inpGateEmail.value = emailInicial;
 
     iniciarPollingGate(emailInicial, sessao ? sessao.orderId : urlOrderNsu);
@@ -881,6 +907,12 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
 
   async function iniciarPollingGate(email, orderIdExistente) {
     if (pollingGate) pollingGate.parar();
+    if (Guardiao && Guardiao.isModoMestra && Guardiao.isModoMestra()) {
+      destravarAnamneseNaTela(Guardiao.lerTokenConfirmado());
+      secBloqueio.hidden = true;
+      secFormulario.hidden = false;
+      return;
+    }
     const emailLimpo = Guardiao.normalizarEmail(email);
     let orderId = orderIdExistente || "";
 
@@ -934,12 +966,14 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
   $("#btn-gate-pagar-profunda").addEventListener("click", () => {
     planoAtivo = "profunda";
     atualizarUIPlano();
+    salvarEstadoFormularioNaSessao();
     iniciarPollingGate(inpGateEmail.value, "");
   });
 
   $("#btn-gate-pagar-standard").addEventListener("click", () => {
     planoAtivo = "standard";
     atualizarUIPlano();
+    salvarEstadoFormularioNaSessao();
     iniciarPollingGate(inpGateEmail.value, "");
   });
 
@@ -954,7 +988,7 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
   }
 
   // Gera dinamicamente os links de Checkout Integrado na nova API da InfinitePay (com redirect_url automático)
-  if (Guardiao && Guardiao.gerarLinkCheckoutIntegrado) {
+  if (Guardiao && Guardiao.gerarLinkCheckoutIntegrado && !(Guardiao.isModoMestra && Guardiao.isModoMestra())) {
     Promise.all([
       Guardiao.gerarLinkCheckoutIntegrado("profunda"),
       Guardiao.gerarLinkCheckoutIntegrado("standard")
@@ -971,8 +1005,7 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
     });
   }
   window.addEventListener("tryv:mestra-ativada", () => inicializarVerificacaoPagamento());
-
-  inicializarVerificacaoPagamento();
+  window.addEventListener("tryv:mestra-desativada", () => inicializarVerificacaoPagamento());
 
   function atualizarUIPlano() {
     const isProf = planoAtivo === "profunda";
@@ -987,13 +1020,16 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
         ? "✦ <strong>Questionário Robusto Ativo (Análise Profunda):</strong> Suas respostas sobre raízes familiares e ansiedade serão integralmente cruzadas no dossiê."
         : "💡 <strong>Nota:</strong> Na versão Standard estas perguntas calibram sua base emocional; por um pequeno acréscimo na <strong>Análise Profunda</strong>, você desbloqueia a leitura completa das dinâmicas familiares, Mapa Védico do momento atual e Dons Natos.";
     }
-    try { localStorage.setItem("tryv_plano_desbloqueio", planoAtivo); } catch {}
+    try {
+      sessionStorage.setItem("tryv_plano_desbloqueio", planoAtivo);
+      localStorage.setItem("tryv_plano_desbloqueio", planoAtivo);
+    } catch {}
   }
-  $("#btn-modo-standard").addEventListener("click", () => { planoAtivo = "standard"; atualizarUIPlano(); });
-  $("#btn-modo-profunda").addEventListener("click", () => { planoAtivo = "profunda"; atualizarUIPlano(); });
+  $("#btn-modo-standard").addEventListener("click", () => { planoAtivo = "standard"; atualizarUIPlano(); salvarEstadoFormularioNaSessao(); });
+  $("#btn-modo-profunda").addEventListener("click", () => { planoAtivo = "profunda"; atualizarUIPlano(); salvarEstadoFormularioNaSessao(); });
   const btnAltProf = $("#btn-alternar-para-profunda");
   if (btnAltProf) {
-    btnAltProf.addEventListener("click", () => { planoAtivo = "profunda"; atualizarUIPlano(); });
+    btnAltProf.addEventListener("click", () => { planoAtivo = "profunda"; atualizarUIPlano(); salvarEstadoFormularioNaSessao(); });
   }
   atualizarUIPlano();
 
@@ -1007,6 +1043,7 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
   selCidade.addEventListener("change", () => {
     const isCustom = selCidade.value === "custom";
     $("#bloco-cidade-custom").hidden = !isCustom;
+    salvarEstadoFormularioNaSessao();
   });
 
   $("#btn-buscar-coords").addEventListener("click", async () => {
@@ -1033,6 +1070,7 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
       status.textContent = "Cidade registrada: " + q;
       coordsCustom = { nome: q, lat: -23.55, lon: -46.63, fuso: -3 };
     }
+    salvarEstadoFormularioNaSessao();
   });
 
   // Checkbox sem hora
@@ -1041,21 +1079,123 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
     inpHora.disabled = chkSemHora.checked;
     if (chkSemHora.checked) inpHora.style.opacity = "0.45";
     else inpHora.style.opacity = "1";
+    salvarEstadoFormularioNaSessao();
   });
 
-  // Pré-preencher se veio do simulador da página de vendas
-  try {
-    const previa = JSON.parse(localStorage.getItem("tryv_lead_previa") || "null");
-    if (previa) {
-      if (previa.nome && !$("#f-nome").value) $("#f-nome").value = previa.nome;
-      if (previa.data && !$("#f-data").value) $("#f-data").value = previa.data;
-    }
-  } catch {}
-
-  // 3. Navegação entre as 4 Etapas do Wizard
+  // 3. Navegação entre as 4 Etapas do Wizard + Preservação Temporária em Sessão (ETAPA 2)
   let passoAtual = 1;
-  function irParaPasso(n) {
-    if (n > 1 && passoAtual === 1) {
+  let restaurandoSessao = false;
+
+  function coletarEstadoFormulario() {
+    const lerRadio = (nome) => {
+      const el = $(`input[name="${nome}"]:checked`);
+      return el ? el.value : "";
+    };
+    return {
+      planoAtivo,
+      passoAtual,
+      nomeBatismo: $("#f-nome").value,
+      email: $("#f-email").value,
+      whatsapp: $("#f-whats").value,
+      dataNascimento: $("#f-data").value,
+      horaNascimento: $("#f-hora").value,
+      semHora: chkSemHora.checked,
+      cidadeSelect: selCidade.value,
+      cidadeBusca: $("#f-cidade-busca").value,
+      coordsCustom,
+      emo_principal: lerRadio("emo_principal"),
+      emo_crise: lerRadio("emo_crise"),
+      emo_ferida: lerRadio("emo_ferida"),
+      emo_trauma_familiar: lerRadio("emo_trauma_familiar"),
+      emo_ansiedade: lerRadio("emo_ansiedade"),
+      emo_livre: $("#emo_livre").value,
+      rel_momento: lerRadio("rel_momento"),
+      rel_padrao: lerRadio("rel_padrao"),
+      prof_momento: lerRadio("prof_momento"),
+      prof_crenca: lerRadio("prof_crenca"),
+      prof_meta: $("#prof_meta").value,
+      eneagramaTipo: ($("#f-eneagrama-tipo") || {}).value || "0",
+      eneagramaMotivacao: ($("#f-eneagrama-motivacao") || {}).value || "ajudar",
+      chinesElemento: ($("#f-chines-elemento") || {}).value || "auto"
+    };
+  }
+
+  function salvarEstadoFormularioNaSessao() {
+    if (restaurandoSessao) return;
+    if (Guardiao && Guardiao.salvarRascunhoQuestionario) {
+      Guardiao.salvarRascunhoQuestionario(coletarEstadoFormulario());
+    }
+  }
+
+  function marcarRadioPorValor(nome, valor) {
+    if (!valor) return;
+    const radios = $$(`input[name="${nome}"]`);
+    for (const r of radios) {
+      if (r.value === valor) {
+        r.checked = true;
+        break;
+      }
+    }
+  }
+
+  function restaurarEstadoFormularioDaSessao() {
+    if (!Guardiao || !Guardiao.lerRascunhoQuestionario) return false;
+    const rascunho = Guardiao.lerRascunhoQuestionario();
+    if (!rascunho || typeof rascunho !== "object") return false;
+
+    restaurandoSessao = true;
+    try {
+      if (!planoUrl && (rascunho.planoAtivo === "standard" || rascunho.planoAtivo === "profunda")) {
+        planoAtivo = rascunho.planoAtivo;
+        atualizarUIPlano();
+      }
+      if (typeof rascunho.nomeBatismo === "string" && rascunho.nomeBatismo) $("#f-nome").value = rascunho.nomeBatismo;
+      if (typeof rascunho.email === "string" && rascunho.email) $("#f-email").value = rascunho.email;
+      if (typeof rascunho.whatsapp === "string" && rascunho.whatsapp) $("#f-whats").value = rascunho.whatsapp;
+      if (typeof rascunho.dataNascimento === "string" && rascunho.dataNascimento) $("#f-data").value = rascunho.dataNascimento;
+      if (typeof rascunho.horaNascimento === "string" && rascunho.horaNascimento) $("#f-hora").value = rascunho.horaNascimento;
+      if (typeof rascunho.semHora === "boolean") {
+        chkSemHora.checked = rascunho.semHora;
+        inpHora.disabled = chkSemHora.checked;
+        inpHora.style.opacity = chkSemHora.checked ? "0.45" : "1";
+      }
+      if (typeof rascunho.cidadeSelect === "string" && rascunho.cidadeSelect) {
+        selCidade.value = rascunho.cidadeSelect;
+        $("#bloco-cidade-custom").hidden = selCidade.value !== "custom";
+      }
+      if (typeof rascunho.cidadeBusca === "string") $("#f-cidade-busca").value = rascunho.cidadeBusca;
+      if (rascunho.coordsCustom) coordsCustom = rascunho.coordsCustom;
+
+      marcarRadioPorValor("emo_principal", rascunho.emo_principal);
+      marcarRadioPorValor("emo_crise", rascunho.emo_crise);
+      marcarRadioPorValor("emo_ferida", rascunho.emo_ferida);
+      marcarRadioPorValor("emo_trauma_familiar", rascunho.emo_trauma_familiar);
+      marcarRadioPorValor("emo_ansiedade", rascunho.emo_ansiedade);
+      if (typeof rascunho.emo_livre === "string") $("#emo_livre").value = rascunho.emo_livre;
+
+      marcarRadioPorValor("rel_momento", rascunho.rel_momento);
+      marcarRadioPorValor("rel_padrao", rascunho.rel_padrao);
+
+      marcarRadioPorValor("prof_momento", rascunho.prof_momento);
+      marcarRadioPorValor("prof_crenca", rascunho.prof_crenca);
+      if (typeof rascunho.prof_meta === "string" && rascunho.prof_meta) $("#prof_meta").value = rascunho.prof_meta;
+
+      if (rascunho.eneagramaTipo && $("#f-eneagrama-tipo")) $("#f-eneagrama-tipo").value = rascunho.eneagramaTipo;
+      if (rascunho.eneagramaMotivacao && $("#f-eneagrama-motivacao")) $("#f-eneagrama-motivacao").value = rascunho.eneagramaMotivacao;
+      if (rascunho.chinesElemento && $("#f-chines-elemento")) $("#f-chines-elemento").value = rascunho.chinesElemento;
+
+      const passoSalvo = Number(rascunho.passoAtual);
+      if (passoSalvo >= 1 && passoSalvo <= 4 && $("#f-nome").value.trim().length >= 3 && $("#f-data").value) {
+        irParaPasso(passoSalvo, true);
+      }
+      return true;
+    } finally {
+      restaurandoSessao = false;
+    }
+  }
+
+  function irParaPasso(n, silencioso = false) {
+    if (n > 1 && passoAtual === 1 && !silencioso) {
       const nome = $("#f-nome").value.trim();
       const data = $("#f-data").value;
       if (nome.length < 3) { $("#f-nome").focus(); alert("Por favor, informe seu Nome Completo de Batismo."); return; }
@@ -1068,17 +1208,65 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
       ind.classList.toggle("ativa", k === n);
       ind.classList.toggle("concluida", k < n);
     });
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    salvarEstadoFormularioNaSessao();
+    if (!silencioso) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
   }
 
   $$("[data-avancar]").forEach(b => b.addEventListener("click", () => irParaPasso(Number(b.dataset.avancar))));
   $$("[data-voltar]").forEach(b => b.addEventListener("click", () => irParaPasso(Number(b.dataset.voltar))));
+  $$(".etapa-item").forEach(ind => {
+    ind.style.cursor = "pointer";
+    ind.addEventListener("click", () => {
+      const destino = Number(ind.dataset.indicador);
+      if (destino >= 1 && destino <= 4) irParaPasso(destino);
+    });
+  });
 
-  // 4. Submissão, Processamento Oracular e Renderização do Dossiê + PDF
+  // Salva automaticamente em sessionStorage a cada digitação ou mudança de alternativa
+  const formDiag = $("#form-diagnostico");
+  formDiag.addEventListener("input", salvarEstadoFormularioNaSessao);
+  formDiag.addEventListener("change", salvarEstadoFormularioNaSessao);
+
+  // Monitora oscilação ou queda momentânea de internet durante o preenchimento
+  let bannerConexao = $("#aviso-conexao-sessao");
+  if (!bannerConexao && secFormulario) {
+    bannerConexao = document.createElement("div");
+    bannerConexao.id = "aviso-conexao-sessao";
+    bannerConexao.hidden = true;
+    bannerConexao.setAttribute("role", "status");
+    bannerConexao.style.cssText = "margin-bottom:1rem;padding:.75rem 1rem;border-radius:12px;background:rgba(242,193,78,.12);border:1px solid rgba(242,193,78,.45);color:var(--ouro-claro);font-size:.88rem;text-align:center;";
+    secFormulario.insertAdjacentElement("afterbegin", bannerConexao);
+  }
+
+  window.addEventListener("offline", () => {
+    salvarEstadoFormularioNaSessao();
+    if (bannerConexao) {
+      bannerConexao.hidden = false;
+      bannerConexao.textContent = "⚡ Conexão instável detectada: suas respostas estão preservadas nesta sessão. Você pode continuar preenchendo normalmente.";
+    }
+  });
+
+  window.addEventListener("online", () => {
+    salvarEstadoFormularioNaSessao();
+    if (bannerConexao) {
+      bannerConexao.hidden = false;
+      bannerConexao.textContent = "✅ Conexão restabelecida! Suas respostas foram mantidas de onde você parou.";
+      setTimeout(() => { if (bannerConexao) bannerConexao.hidden = true; }, 4500);
+    }
+  });
+
+  // Restaura eventual progresso salvo na sessão (após refresh, queda de rede ou retorno da InfinitePay)
+  restaurarEstadoFormularioDaSessao();
+  inicializarVerificacaoPagamento();
+
+  // 4. Submissão, Processamento Oracular e Renderização do Dossiê + PDF (100% local no navegador, sem envio externo)
   let ultimoResultado = null;
 
   $("#form-diagnostico").addEventListener("submit", async e => {
     e.preventDefault();
+    salvarEstadoFormularioNaSessao();
     let cidadeInfo = { nome: "São Paulo, SP", lat: -23.55, lon: -46.63, fuso: -3 };
     if (selCidade.value === "custom") {
       cidadeInfo = coordsCustom || { nome: $("#f-cidade-busca").value.trim() || "Brasil", lat: -23.55, lon: -46.63, fuso: -3 };
@@ -1151,42 +1339,6 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
 
     ultimoResultado = window.MotorDesbloqueio.processarAnaliseCompleta(dadosCliente);
 
-    // Envia notificação de Dossiê Gerado (Pós-Compra) para tryvtuath.loja@gmail.com somente se NÃO estiver no Modo Mestra Tryv
-    const isMestra = Guardiao && Guardiao.isModoMestra && Guardiao.isModoMestra();
-    if (!isMestra) {
-      const whatsDig = (dadosCliente.whatsapp || "").replace(/\D/g, "");
-      const linkZapCli = whatsDig.length >= 10
-        ? `https://wa.me/55${whatsDig.startsWith("55") && whatsDig.length > 11 ? whatsDig.slice(2) : whatsDig}?text=${encodeURIComponent(`Olá, ${dadosCliente.nomeBatismo.split(" ")[0]}! Aqui é a Tryv Tuath ✨ Vi que você acabou de gerar seu Dossiê do Desbloqueio Invisível e vim saber o que achou da sua leitura!`)}`
-        : "";
-      const tokenConf = (Guardiao && Guardiao.lerTokenConfirmado && Guardiao.lerTokenConfirmado()) || {};
-      fetch("https://formsubmit.co/ajax/tryvtuath.loja@gmail.com", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "Accept": "application/json" },
-        body: JSON.stringify({
-          _subject: `✦ Dossiê Gerado (${dadosCliente.plano.toUpperCase()}): ${dadosCliente.nomeBatismo}`,
-          _template: "table",
-          _captcha: "false",
-          plano: dadosCliente.plano === "profunda" ? "Análise Profunda (R$ 97)" : "Análise Standard (R$ 37)",
-          nome_batismo: dadosCliente.nomeBatismo,
-          email: dadosCliente.email,
-          whatsapp: dadosCliente.whatsapp,
-          chamar_no_whatsapp: linkZapCli,
-          data_hora_nascimento: `${dadosCliente.dataNascimento} às ${dadosCliente.semHora ? "Sem hora exata" : dadosCliente.horaNascimento}`,
-          cidade_nascimento: dadosCliente.cidadeNome,
-          comprovante_infinitepay: tokenConf.transactionNsu || tokenConf.receiptUrl || "Validado",
-          meta_90_dias: (dadosCliente.profissional && dadosCliente.profissional.meta90Dias) || ""
-        })
-      }).catch(() => {});
-
-      if (configSite.webhookUrl) {
-        fetch(configSite.webhookUrl, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(ultimoResultado)
-        }).catch(() => {});
-      }
-    }
-
     secLoad.hidden = true;
     renderizarDossieNaTela(ultimoResultado);
     $("#sec-resultado").hidden = false;
@@ -1227,6 +1379,17 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
       btn.textContent = txtOrig;
     }
   });
+
+  const btnRevisarRespostas = $("#btn-revisar-respostas");
+  if (btnRevisarRespostas) {
+    btnRevisarRespostas.addEventListener("click", () => {
+      $("#sec-resultado").hidden = true;
+      $("#sec-cabecalho").hidden = false;
+      $("#sec-formulario").hidden = false;
+      restaurarEstadoFormularioDaSessao();
+      irParaPasso(passoAtual || 1);
+    });
+  }
 
   const btnNovoMapaTryv = $("#btn-novo-mapa-tryv");
   if (btnNovoMapaTryv) {
