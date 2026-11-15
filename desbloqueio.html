@@ -412,8 +412,8 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
       <a class="topo__link" href="#planos">Escolher Análise</a>
       <a class="topo__link" href="index.html">← Voltar ao Site</a>
       <div class="seletor-idioma-tryv" role="group" aria-label="Idioma / Language" translate="no">
-        <button type="button" data-lang-btn="pt-BR" aria-pressed="true" class="ativo" title="Português (Brasil)">PT-BR</button>
-        <button type="button" data-lang-btn="en" aria-pressed="false" title="English">EN</button>
+        <button type="button" data-lang-btn="pt-BR" aria-pressed="true" class="ativo" title="Português (Brasil)" onclick="if(window.TryvI18n)window.TryvI18n.setIdioma('pt-BR')">PT-BR</button>
+        <button type="button" data-lang-btn="en" aria-pressed="false" title="English" onclick="if(window.TryvI18n)window.TryvI18n.setIdioma('en')">EN</button>
       </div>
     </nav>
   </div>
@@ -808,7 +808,7 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
 
 <script src="motor-desbloqueio.js?v=3"></script>
 <script src="pagamento-guardiao.js?v=8"></script>
-<script src="i18n-desbloqueio.js?v=1"></script>
+<script src="i18n-desbloqueio.js?v=2"></script>
 <script>
 (function() {
   "use strict";

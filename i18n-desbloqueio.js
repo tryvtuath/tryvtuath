@@ -8,12 +8,16 @@
   "use strict";
 
   const STORAGE_KEY = "tryv_idioma";
+  const MAIN_SITE_STORAGE_KEY = "bemdito-idioma";
+  const SYNC_KEY = "tryv_idioma_sync_bemdito";
   const DEFAULT_LANG = "pt-BR";
 
-  // Mapa reversível de nós de texto e atributos originais em PT-BR
+  // Mapa reversível de nós de texto ({ pt, en }) e atributos originais ({ attr: { pt, en } })
   const origTextMap = new WeakMap();
   const origAttrMap = new WeakMap();
   let aplicandoTraducao = false;
+  let idiomaAtual = null;
+  let observerIniciado = false;
 
   // Dicionário exato de frases e blocos (PT-BR -> EN)
   const EXACT_MAP = {
@@ -2452,18 +2456,74 @@
     return String(str || "").replace(/\s+/g, " ").trim();
   }
 
-  function getIdioma() {
+  function lerIdiomaPreferido() {
     try {
-      const salvo = localStorage.getItem(STORAGE_KEY);
-      if (salvo === "en" || salvo === "pt-BR") return salvo;
-      if (salvo === "pt") return "pt-BR";
+      if (typeof location !== "undefined" && location.search) {
+        if (/[?&](?:en|lang=en)\b/i.test(location.search)) {
+          salvarIdiomaNoStorage("en");
+          return "en";
+        }
+        if (/[?&](?:pt|lang=pt(?:-br)?)\b/i.test(location.search)) {
+          salvarIdiomaNoStorage("pt-BR");
+          return "pt-BR";
+        }
+      }
+
+      const salvoTryv = localStorage.getItem(STORAGE_KEY);
+      const salvoBemdito = localStorage.getItem(MAIN_SITE_STORAGE_KEY);
+      const ultimoSync = localStorage.getItem(SYNC_KEY);
+
+      // Se a pessoa alterou o idioma no site principal (index.html usa "bemdito-idioma": "en" | "pt"),
+      // sincroniza imediatamente com o Desbloqueio ("tryv_idioma": "en" | "pt-BR")
+      if (salvoBemdito === "en" || salvoBemdito === "pt") {
+        if (!salvoTryv || ultimoSync !== salvoBemdito) {
+          const langSincronizado = salvoBemdito === "en" ? "en" : "pt-BR";
+          try {
+            localStorage.setItem(STORAGE_KEY, langSincronizado);
+            localStorage.setItem(SYNC_KEY, salvoBemdito);
+          } catch {}
+          idiomaAtual = langSincronizado;
+          return langSincronizado;
+        }
+      }
+
+      if (salvoTryv === "en" || salvoTryv === "pt-BR" || salvoTryv === "pt") {
+        const langNormalizado = salvoTryv === "en" ? "en" : "pt-BR";
+        const equivBemdito = langNormalizado === "en" ? "en" : "pt";
+        try {
+          if (salvoTryv === "pt") localStorage.setItem(STORAGE_KEY, "pt-BR");
+          if (salvoBemdito !== equivBemdito) localStorage.setItem(MAIN_SITE_STORAGE_KEY, equivBemdito);
+          if (ultimoSync !== equivBemdito) localStorage.setItem(SYNC_KEY, equivBemdito);
+        } catch {}
+        idiomaAtual = langNormalizado;
+        return langNormalizado;
+      }
     } catch {}
+
+    if (idiomaAtual === "en" || idiomaAtual === "pt-BR") {
+      return idiomaAtual;
+    }
+    idiomaAtual = DEFAULT_LANG;
     return DEFAULT_LANG;
   }
 
-  function traduzirTexto(str) {
+  function salvarIdiomaNoStorage(langNormalizado) {
+    const isEn = langNormalizado === "en";
+    const equivBemdito = isEn ? "en" : "pt";
+    idiomaAtual = isEn ? "en" : "pt-BR";
+    try {
+      localStorage.setItem(STORAGE_KEY, idiomaAtual);
+      localStorage.setItem(MAIN_SITE_STORAGE_KEY, equivBemdito);
+      localStorage.setItem(SYNC_KEY, equivBemdito);
+    } catch {}
+  }
+
+  function getIdioma() {
+    return lerIdiomaPreferido();
+  }
+
+  function traduzirParaIngles(str) {
     if (!str || typeof str !== "string") return str;
-    if (getIdioma() !== "en") return str;
 
     const norm = normalizarEspacos(str);
     if (!norm) return str;
@@ -2492,42 +2552,55 @@
     return out;
   }
 
-  function processarNoTexto(node) {
+  function traduzirTexto(str, idiomaForcado) {
+    if (!str || typeof str !== "string") return str;
+    const lang = idiomaForcado || idiomaAtual || getIdioma();
+    if (lang !== "en") return str;
+    return traduzirParaIngles(str);
+  }
+
+  function processarNoTexto(node, idiomaForcado) {
     if (!node || node.nodeType !== Node.TEXT_NODE) return;
     const parent = node.parentElement;
     if (!parent) return;
     const tag = parent.tagName;
-    if (tag === "SCRIPT" || tag === "STYLE" || tag === "NOSCRIPT" || parent.hasAttribute("translate") && parent.getAttribute("translate") === "no") {
+    if (
+      tag === "SCRIPT" ||
+      tag === "STYLE" ||
+      tag === "NOSCRIPT" ||
+      (parent.hasAttribute("translate") && parent.getAttribute("translate") === "no")
+    ) {
       return;
     }
-    if (parent.closest(".seletor-idioma-tryv")) return;
+    if (parent.closest && parent.closest(".seletor-idioma-tryv")) return;
 
-    const idioma = getIdioma();
-    if (!origTextMap.has(node)) {
-      origTextMap.set(node, node.nodeValue);
-    } else if (idioma === "en") {
-      // Se o JS atualizou dinamicamente o texto em português enquanto estava em EN, atualiza o original se for diferente da tradução atual
-      const tradAtual = traduzirTexto(origTextMap.get(node));
-      if (node.nodeValue !== tradAtual && node.nodeValue !== origTextMap.get(node)) {
-        origTextMap.set(node, node.nodeValue);
-      }
-    } else {
-      // Em PT-BR, mantém o original sincronizado com alterações dinâmicas do JS
-      origTextMap.set(node, node.nodeValue);
+    const idioma = idiomaForcado || idiomaAtual || getIdioma();
+    const valAtual = node.nodeValue;
+    let reg = origTextMap.get(node);
+
+    if (!reg) {
+      reg = {
+        pt: valAtual,
+        en: traduzirParaIngles(valAtual)
+      };
+      origTextMap.set(node, reg);
+    } else if (valAtual !== reg.pt && valAtual !== reg.en) {
+      // O JS da página atualizou dinamicamente o conteúdo do nó de texto
+      reg.pt = valAtual;
+      reg.en = traduzirParaIngles(valAtual);
     }
 
-    const textoOriginalPt = origTextMap.get(node);
-    const novoValor = idioma === "en" ? traduzirTexto(textoOriginalPt) : textoOriginalPt;
+    const novoValor = idioma === "en" ? reg.en : reg.pt;
     if (node.nodeValue !== novoValor) {
       node.nodeValue = novoValor;
     }
   }
 
-  function processarAtributosElemento(el) {
+  function processarAtributosElemento(el, idiomaForcado) {
     if (!el || el.nodeType !== Node.ELEMENT_NODE) return;
     if (el.closest && el.closest(".seletor-idioma-tryv")) return;
 
-    const idioma = getIdioma();
+    const idioma = idiomaForcado || idiomaAtual || getIdioma();
     const attrs = ["placeholder", "aria-label", "title"];
     let mapEl = origAttrMap.get(el);
     if (!mapEl) {
@@ -2538,11 +2611,15 @@
     for (const attr of attrs) {
       if (!el.hasAttribute(attr)) continue;
       const valAtual = el.getAttribute(attr);
-      if (!(attr in mapEl)) {
-        mapEl[attr] = valAtual;
+      let reg = mapEl[attr];
+      if (!reg || (valAtual !== reg.pt && valAtual !== reg.en)) {
+        reg = {
+          pt: valAtual,
+          en: traduzirParaIngles(valAtual)
+        };
+        mapEl[attr] = reg;
       }
-      const origVal = mapEl[attr];
-      const novoVal = idioma === "en" ? traduzirTexto(origVal) : origVal;
+      const novoVal = idioma === "en" ? reg.en : reg.pt;
       if (valAtual !== novoVal) {
         el.setAttribute(attr, novoVal);
       }
@@ -2560,25 +2637,26 @@
     }
   }
 
-  function traduzirSubarvore(raiz) {
+  function traduzirSubarvore(raiz, idiomaForcado) {
     if (!raiz) return;
+    const idioma = idiomaForcado || idiomaAtual || getIdioma();
     if (raiz.nodeType === Node.TEXT_NODE) {
-      processarNoTexto(raiz);
+      processarNoTexto(raiz, idioma);
       return;
     }
     if (raiz.nodeType !== Node.ELEMENT_NODE && raiz.nodeType !== Node.DOCUMENT_FRAGMENT_NODE) return;
 
     if (raiz.nodeType === Node.ELEMENT_NODE) {
-      processarAtributosElemento(raiz);
+      processarAtributosElemento(raiz, idioma);
     }
 
     const walker = document.createTreeWalker(raiz, NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT);
     let atual = walker.nextNode();
     while (atual) {
       if (atual.nodeType === Node.TEXT_NODE) {
-        processarNoTexto(atual);
+        processarNoTexto(atual, idioma);
       } else if (atual.nodeType === Node.ELEMENT_NODE) {
-        processarAtributosElemento(atual);
+        processarAtributosElemento(atual, idioma);
       }
       atual = walker.nextNode();
     }
@@ -2588,27 +2666,36 @@
     const isEn = idioma === "en";
     document.documentElement.lang = isEn ? "en" : "pt-BR";
 
-    // Atualiza título da aba
+    // Atualiza título da aba de forma reversível
     if (!origAttrMap.has(document.documentElement)) {
-      origAttrMap.set(document.documentElement, { docTitle: document.title });
+      origAttrMap.set(document.documentElement, {
+        docTitle: {
+          pt: document.title,
+          en: traduzirParaIngles(document.title)
+        }
+      });
     }
-    const origTitle = origAttrMap.get(document.documentElement).docTitle;
-    document.title = isEn ? traduzirTexto(origTitle) : origTitle;
+    const regTitle = origAttrMap.get(document.documentElement).docTitle;
+    if (regTitle) {
+      document.title = isEn ? regTitle.en : regTitle.pt;
+    }
 
     document.querySelectorAll("[data-lang-btn]").forEach((btn) => {
-      const langBtn = btn.getAttribute("data-lang-btn");
-      const ativo = (isEn && langBtn === "en") || (!isEn && langBtn === "pt-BR");
+      const langBtn = String(btn.getAttribute("data-lang-btn") || "").toLowerCase();
+      const ativo = (isEn && langBtn.startsWith("en")) || (!isEn && langBtn.startsWith("pt"));
       btn.setAttribute("aria-pressed", String(ativo));
       btn.classList.toggle("ativo", ativo);
     });
   }
 
   function aplicarIdiomaNaPagina(idioma) {
+    const langNormalizado = String(idioma || "").toLowerCase().startsWith("en") ? "en" : "pt-BR";
+    idiomaAtual = langNormalizado;
     aplicandoTraducao = true;
     try {
-      atualizarEstadoSeletorUI(idioma);
+      atualizarEstadoSeletorUI(langNormalizado);
       if (document.body) {
-        traduzirSubarvore(document.body);
+        traduzirSubarvore(document.body, langNormalizado);
       }
     } finally {
       aplicandoTraducao = false;
@@ -2616,10 +2703,9 @@
   }
 
   function setIdioma(novoIdioma) {
-    const langNormalizado = novoIdioma === "en" ? "en" : "pt-BR";
-    try {
-      localStorage.setItem(STORAGE_KEY, langNormalizado);
-    } catch {}
+    const isEn = String(novoIdioma || "").toLowerCase().startsWith("en");
+    const langNormalizado = isEn ? "en" : "pt-BR";
+    salvarIdiomaNoStorage(langNormalizado);
     aplicarIdiomaNaPagina(langNormalizado);
     try {
       global.dispatchEvent(new CustomEvent("tryv:idioma-alterado", { detail: { idioma: langNormalizado } }));
@@ -2814,25 +2900,34 @@
     };
   }
 
+  function sincronizarSeNecessario() {
+    const idiomaPreferido = lerIdiomaPreferido();
+    aplicarIdiomaNaPagina(idiomaPreferido);
+  }
+
   function inicializarI18n() {
     integrarGeradorPDF();
-    // Garante que na primeira visita sem preferência salva o idioma padrão seja PT-BR
     const idiomaInicial = getIdioma();
     montarSeletorNoTopo();
     aplicarIdiomaNaPagina(idiomaInicial);
 
     // Observa mutações no DOM para traduzir instantaneamente modais, simulador, dossiê e atualizações assíncronas
-    if (typeof MutationObserver !== "undefined" && document.body) {
+    if (!observerIniciado && typeof MutationObserver !== "undefined" && document.body) {
+      observerIniciado = true;
       const obs = new MutationObserver((mutations) => {
         if (aplicandoTraducao) return;
-        if (getIdioma() !== "en") return;
+        const lang = idiomaAtual || getIdioma();
+        if (lang !== "en") return;
         aplicandoTraducao = true;
         try {
           for (const m of mutations) {
             if (m.type === "characterData" && m.target) {
-              processarNoTexto(m.target);
+              processarNoTexto(m.target, lang);
             } else if (m.type === "childList") {
-              m.addedNodes.forEach((n) => traduzirSubarvore(n));
+              m.addedNodes.forEach((n) => traduzirSubarvore(n, lang));
+              if (m.target && m.target.nodeType === Node.ELEMENT_NODE && m.addedNodes.length) {
+                traduzirSubarvore(m.target, lang);
+              }
             }
           }
         } finally {
@@ -2848,17 +2943,43 @@
   }
 
   if (typeof document !== "undefined") {
+    // Delegação global de clique para garantir resposta imediata de qualquer botão [data-lang-btn]
+    document.addEventListener("click", (e) => {
+      const btn = e.target && e.target.closest ? e.target.closest("[data-lang-btn]") : null;
+      if (!btn) return;
+      e.preventDefault();
+      setIdioma(btn.getAttribute("data-lang-btn"));
+    });
+
+    // Sincroniza quando o idioma muda no site principal (index.html) ou em outra aba
+    if (typeof global.addEventListener === "function") {
+      global.addEventListener("storage", (e) => {
+        if (!e || !e.key || e.key === STORAGE_KEY || e.key === MAIN_SITE_STORAGE_KEY) {
+          sincronizarSeNecessario();
+        }
+      });
+      global.addEventListener("pageshow", () => sincronizarSeNecessario());
+      global.addEventListener("focus", () => sincronizarSeNecessario());
+    }
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden) sincronizarSeNecessario();
+    });
+
+    // Executa imediatamente se o body já existir, e também garante após DOMContentLoaded
+    if (document.body) {
+      inicializarI18n();
+    }
     if (document.readyState === "loading") {
       document.addEventListener("DOMContentLoaded", inicializarI18n);
-    } else {
-      inicializarI18n();
     }
   }
 
   global.TryvI18n = {
     STORAGE_KEY,
+    MAIN_SITE_STORAGE_KEY,
     getIdioma,
     setIdioma,
+    traduzirParaIngles,
     traduzirTexto,
     traduzirObjetoProfundo,
     aplicarIdiomaNaPagina
