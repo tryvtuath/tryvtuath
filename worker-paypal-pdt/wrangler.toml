@@ -1,0 +1,19 @@
+name = "tryvtuath-paypal-pdt"
+main = "src/index.js"
+compatibility_date = "2025-11-01"
+
+[vars]
+PAYPAL_ENV = "live"
+PAYPAL_MERCHANT_EMAIL = "tryvtuathterapias@gmail.com"
+PAYPAL_MERCHANT_NAME = "54.492.316 Tryv Tuath"
+ALLOWED_ORIGINS = "https://www.tryvtuath.com.br,https://tryvtuath.com.br"
+
+# Segredos configurados exclusivamente via Cloudflare Dashboard ou `wrangler secret put` (NUNCA no GitHub):
+# - PAYPAL_PDT_TOKEN
+# - TOKEN_HMAC_SECRET
+#
+# Para impedir reutilizacao de transacoes entre todas as bordas (anti-replay persistente),
+# vincule um KV Namespace chamado PAYPAL_TX_KV no painel do Cloudflare Workers (Free Tier).
+# [[kv_namespaces]]
+# binding = "PAYPAL_TX_KV"
+# id = "PREENCHER_NO_CLOUDFLARE"
