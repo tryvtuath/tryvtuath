@@ -1248,6 +1248,153 @@ const server = http.createServer(async (req, res) => {
     }
   }
 
+  // 9. POST /api/paypal/verify-pdt -> Valida transação (?tx=...) de PayPal Payment Links / Buy Now Buttons via PDT oficial
+  if (req.method === "POST" && rota === "/api/paypal/verify-pdt") {
+    try {
+      const body = await lerBodyJson(req);
+      const tx = String(body.tx || "").trim();
+      const planoSolicitado = body.plano === "standard" ? "standard" : "profunda";
+      const pdtToken = String(process.env.PAYPAL_PDT_TOKEN || "").trim();
+      const cred = getPayPalCredenciais();
+
+      if (!pdtToken) {
+        return responderJson(res, 503, {
+          ok: false,
+          pago: false,
+          codigo: "PAYPAL_PDT_NOT_CONFIGURED",
+          erro: "PayPal checkout is not yet available. Please try again later."
+        });
+      }
+      if (!tx) {
+        return responderJson(res, 400, { ok: false, pago: false, erro: "Transaction ID (tx) is required." });
+      }
+
+      const pdtUrl = cred.ambiente === "sandbox"
+        ? "https://ipnpb.sandbox.paypal.com/cgi-bin/webscr"
+        : "https://ipnpb.paypal.com/cgi-bin/webscr";
+      const formBody = `cmd=_notify-synch&tx=${encodeURIComponent(tx)}&at=${encodeURIComponent(pdtToken)}`;
+
+      const rawPdt = await new Promise((resolve) => {
+        const u = new URL(pdtUrl);
+        const r = https.request(
+          u,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded",
+              "Content-Length": Buffer.byteLength(formBody),
+              "User-Agent": "TryvTuath-Backend/1.0"
+            },
+            timeout: 10000
+          },
+          (resp) => {
+            let txt = "";
+            resp.on("data", (c) => { txt += c; });
+            resp.on("end", () => resolve(txt));
+          }
+        );
+        r.on("error", () => resolve(""));
+        r.on("timeout", () => { r.destroy(); resolve(""); });
+        r.write(formBody);
+        r.end();
+      });
+
+      const linhas = String(rawPdt || "").split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
+      if (!linhas.length || linhas[0] !== "SUCCESS") {
+        return responderJson(res, 402, {
+          ok: false,
+          pago: false,
+          erro: "PayPal transaction could not be verified (PDT)."
+        });
+      }
+
+      const campos = {};
+      for (let i = 1; i < linhas.length; i++) {
+        const eq = linhas[i].indexOf("=");
+        if (eq > 0) {
+          const k = decodeURIComponent(linhas[i].slice(0, eq));
+          const v = decodeURIComponent(linhas[i].slice(eq + 1).replace(/\+/g, " "));
+          campos[k] = v;
+        }
+      }
+
+      const paymentStatus = String(campos.payment_status || "").toUpperCase();
+      const moeda = String(campos.mc_currency || "").toUpperCase();
+      const valorPago = Number(campos.mc_gross || 0);
+      const receiverEmail = normalizarEmail(campos.receiver_email || campos.business);
+      const payerEmail = normalizarEmail(campos.payer_email || body.email);
+      const tabela = await montarTabelaPrecosPayPal();
+      const minStd = tabela.planos.standard.precoFinalUsd;
+      const minProf = tabela.planos.profunda.precoFinalUsd;
+
+      if (
+        paymentStatus !== "COMPLETED" ||
+        moeda !== "USD" ||
+        valorPago + 0.009 < minStd ||
+        (cred.ambiente === "live" && cred.merchantEmail && receiverEmail && receiverEmail !== cred.merchantEmail)
+      ) {
+        return responderJson(res, 402, {
+          ok: false,
+          pago: false,
+          erro: "PayPal payment is not Completed in USD for the official merchant."
+        });
+      }
+
+      const planoConfirmado = valorPago + 0.009 >= minProf ? "profunda" : "standard";
+      if (planoSolicitado === "profunda" && planoConfirmado !== "profunda") {
+        return responderJson(res, 402, {
+          ok: false,
+          pago: false,
+          erro: "Paid amount corresponds only to Standard Analysis ($7.78 USD)."
+        });
+      }
+
+      const orderIdFinal = `PP-PDT-${tx}`;
+      const emailFinal = payerEmail || "paypal@tryvtuath";
+      const tokenAcesso = gerarTokenAcessoAssinado(emailFinal, orderIdFinal, planoConfirmado, "en");
+      const db = carregarBanco();
+      const registroConfirmado = {
+        orderId: orderIdFinal,
+        paypalCaptureId: tx,
+        email: emailFinal,
+        plano: planoConfirmado,
+        idioma: "en",
+        moeda: "USD",
+        valorUsd: valorPago,
+        valorUsdStr: valorPago.toFixed(2),
+        gateway: "paypal",
+        metodo: "PayPal Payment Link (USD)",
+        transactionNsu: tx,
+        status: "PAID",
+        pago: true,
+        tokenAcesso,
+        pagoEm: new Date().toISOString(),
+        atualizadoEm: new Date().toISOString()
+      };
+      db.pedidosPorOrderId[orderIdFinal] = registroConfirmado;
+      db.pedidosPorOrderId[tx] = registroConfirmado;
+      if (emailFinal) db.pedidosPorEmail[emailFinal] = registroConfirmado;
+      salvarBanco(db);
+
+      return responderJson(res, 200, {
+        ok: true,
+        pago: true,
+        status: "PAID",
+        orderId: orderIdFinal,
+        captureId: tx,
+        plano: planoConfirmado,
+        idioma: "en",
+        email: emailFinal,
+        moeda: "USD",
+        valorUsd: valorPago.toFixed(2),
+        metodo: "PayPal Payment Link (USD)",
+        tokenAcesso
+      });
+    } catch {
+      return responderJson(res, 500, { ok: false, pago: false, erro: "Internal error verifying PayPal PDT." });
+    }
+  }
+
   return responderJson(res, 404, { erro: "Rota não encontrada." });
 });
 

@@ -1204,7 +1204,12 @@
     adicionalInternacionalPct: 1.61,
     tarifaFixaUsd: 0.30,
     spreadConversaoCambialPct: 3.50,
-    margemSegurancaPct: 3.00
+    margemSegurancaPct: 3.00,
+    paymentLinks: {
+      ativo: true,
+      standardUrl: "",
+      profundaUrl: ""
+    }
   };
 
   function configurarPayPal(cfg = {}) {
@@ -1254,6 +1259,13 @@
     }
     if (Number.isFinite(Number(cfg.margemSegurancaPct))) {
       PAYPAL_STATE.margemSegurancaPct = Number(cfg.margemSegurancaPct);
+    }
+    if (cfg.paymentLinks && typeof cfg.paymentLinks === "object") {
+      PAYPAL_STATE.paymentLinks = {
+        ativo: cfg.paymentLinks.ativo !== false,
+        standardUrl: typeof cfg.paymentLinks.standardUrl === "string" ? cfg.paymentLinks.standardUrl.trim() : PAYPAL_STATE.paymentLinks.standardUrl,
+        profundaUrl: typeof cfg.paymentLinks.profundaUrl === "string" ? cfg.paymentLinks.profundaUrl.trim() : PAYPAL_STATE.paymentLinks.profundaUrl
+      };
     }
   }
 
@@ -1322,6 +1334,7 @@
       merchantName: PAYPAL_STATE.merchantName,
       merchantEmail: PAYPAL_STATE.merchantEmail,
       configuradoNoServidor: PAYPAL_STATE.configuradoNoServidor,
+      paymentLinks: PAYPAL_STATE.paymentLinks,
       moeda: "USD",
       parametrosFormacaoPreco: prof.parametros,
       planos: {
@@ -1624,6 +1637,77 @@
     return { valido: false, pago: false, erro: MSG_PAYPAL_INDISPONIVEL_EN };
   }
 
+  /**
+   * Verifica no servidor o token de transação (tx) retornado pelo PayPal Payment Links / Buy Now (PDT).
+   * Nunca libera acesso apenas porque a cliente retornou ao site via URL.
+   */
+  async function verificarPdtPayPalNoServidor({ tx, plano, email }) {
+    const txId = String(tx || "").trim();
+    const planoSolicitado = plano === "standard" ? "standard" : "profunda";
+    if (!txId) {
+      confirmacaoPayPalVerificadaNoServidor = null;
+      return { pago: false, erro: MSG_PAYPAL_INDISPONIVEL_EN };
+    }
+
+    try {
+      const resp = await fetch(`${API_BASE_URL}/paypal/verify-pdt`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Accept": "application/json" },
+        body: JSON.stringify({
+          tx: txId,
+          plano: planoSolicitado,
+          email: normalizarEmail(email)
+        })
+      });
+      const ct = resp.headers.get("content-type") || "";
+      if (ct.includes("application/json")) {
+        const data = await resp.json();
+        if (
+          resp.ok &&
+          data &&
+          data.ok === true &&
+          data.pago === true &&
+          data.status === "PAID" &&
+          data.moeda === "USD" &&
+          data.captureId &&
+          data.tokenAcesso
+        ) {
+          PAYPAL_STATE.configuradoNoServidor = true;
+          const payloadVerificado = {
+            pago: true,
+            orderId: data.orderId || txId,
+            captureId: data.captureId,
+            plano: data.plano === "standard" ? "standard" : "profunda",
+            idioma: "en",
+            moeda: "USD",
+            valorUsd: data.valorUsd,
+            status: "PAID",
+            tokenAcesso: data.tokenAcesso,
+            transactionNsu: data.captureId,
+            metodo: "PayPal Payment Link (USD)",
+            confirmadoEm: new Date().toISOString()
+          };
+          confirmacaoPayPalVerificadaNoServidor = payloadVerificado;
+          return { pago: true, dados: payloadVerificado };
+        }
+        return {
+          pago: false,
+          codigo: (data && data.codigo) || "PDT_NOT_VERIFIED",
+          erro: (data && data.codigo === "PAYPAL_PDT_NOT_CONFIGURED")
+            ? MSG_PAYPAL_INDISPONIVEL_EN
+            : MSG_ERRO_COMPRA_EN
+        };
+      }
+    } catch {}
+
+    confirmacaoPayPalVerificadaNoServidor = null;
+    return {
+      pago: false,
+      codigo: "PAYPAL_NOT_AVAILABLE",
+      erro: MSG_PAYPAL_INDISPONIVEL_EN
+    };
+  }
+
   let sdkPayPalPromise = null;
   let sdkClientIdCarregado = "";
   function carregarSdkPayPal(clientIdCustom) {
@@ -1685,6 +1769,7 @@
     criarOrdemPayPalNoServidor,
     capturarOrdemPayPalNoServidor,
     validarAcessoPayPalNoServidor,
+    verificarPdtPayPalNoServidor,
     carregarSdkPayPal,
     MSG_PAYPAL_INDISPONIVEL_EN,
     MSG_ERRO_COMPRA_PT,

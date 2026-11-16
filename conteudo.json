@@ -4451,7 +4451,12 @@
                             "adicionalInternacionalPct":  1.61,
                             "tarifaFixaUsd":  0.30,
                             "spreadConversaoCambialPct":  3.50,
-                            "margemSegurancaPct":  3.00
+                            "margemSegurancaPct":  3.00,
+                            "paymentLinks":  {
+                                                 "ativo":  true,
+                                                 "standardUrl":  "",
+                                                 "profundaUrl":  ""
+                                             }
                         }
                     }
 }

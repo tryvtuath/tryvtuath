@@ -1015,6 +1015,7 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
     const rascunhoAtual = (Guardiao && Guardiao.lerRascunhoQuestionario && Guardiao.lerRascunhoQuestionario()) || {};
     const urlEmail = Guardiao.normalizarEmail(params.get("email") || rascunhoAtual.email || "");
     const urlPayPalReturn = params.get("paypal_return") === "1";
+    const urlPayPalTx = params.get("tx") || "";
     const urlPayPalOrderId = params.get("paypal_order_id") || (urlPayPalReturn ? (params.get("token") || "") : "");
     const urlToken = (!urlPayPalReturn && params.get("token")) ? params.get("token") : "";
 
@@ -1025,6 +1026,25 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
         : (Guardiao && Guardiao.obterTabelaPrecosPayPal ? Guardiao.obterTabelaPrecosPayPal() : null);
 
       sincronizarGatePorIdioma();
+
+      // Retorno de Payment Links / Buy Now Buttons da PayPal com ID de transação (?tx=...) -> exige verificação PDT no servidor
+      if (urlPayPalTx && Guardiao.verificarPdtPayPalNoServidor) {
+        gateStatusMsg.textContent = "Verifying your PayPal transaction on the server…";
+        const resPdt = await Guardiao.verificarPdtPayPalNoServidor({
+          tx: urlPayPalTx,
+          plano: planoAtivo,
+          email: urlEmail
+        });
+        if (resPdt && resPdt.pago && resPdt.dados && resPdt.dados.captureId) {
+          destravarAnamneseNaTela(resPdt.dados);
+          secBloqueio.hidden = true;
+          secFormulario.hidden = false;
+          return;
+        }
+        if (gateSpinner) gateSpinner.style.display = "none";
+        gateStatusMsg.textContent = (resPdt && resPdt.erro) || "PayPal checkout is not yet available. Please try again later.";
+        return;
+      }
 
       if (!tabPP || !tabPP.configuradoNoServidor || !tabPP.clientId) {
         if (gateSpinner) gateSpinner.style.display = "none";

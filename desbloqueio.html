@@ -1128,13 +1128,27 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
     if (painelMestra) painelMestra.hidden = true;
 
     if (emIngles && tabPP) {
-      // No idioma EN, usa exclusivamente PayPal em USD (nunca abre links da InfinitePay e nunca libera sem PayPal)
-      btnStd.href = "#planos";
-      btnStd.removeAttribute("target");
+      // No idioma EN, usa exclusivamente PayPal em USD (Payment Links nativos quando configurados ou Checkout personalizado preservado)
+      const pl = tabPP.paymentLinks || {};
+      const linkStd = pl.ativo !== false && typeof pl.standardUrl === "string" && pl.standardUrl.startsWith("https://") ? pl.standardUrl : "";
+      const linkProf = pl.ativo !== false && typeof pl.profundaUrl === "string" && pl.profundaUrl.startsWith("https://") ? pl.profundaUrl : "";
+
+      btnStd.href = linkStd || "#planos";
+      if (linkStd) {
+        btnStd.setAttribute("target", "_blank");
+        btnStd.setAttribute("rel", "noopener");
+      } else {
+        btnStd.removeAttribute("target");
+      }
       btnStd.textContent = `Start My Standard Diagnosis ($${tabPP.planos.standard.precoFinalUsdStr} USD · PayPal)`;
 
-      btnProf.href = "#planos";
-      btnProf.removeAttribute("target");
+      btnProf.href = linkProf || "#planos";
+      if (linkProf) {
+        btnProf.setAttribute("target", "_blank");
+        btnProf.setAttribute("rel", "noopener");
+      } else {
+        btnProf.removeAttribute("target");
+      }
       btnProf.textContent = `✦ Unlock My Complete Deep Analysis ($${tabPP.planos.profunda.precoFinalUsdStr} USD · PayPal)`;
 
       if (modalChk && !modalChk.hidden) {
@@ -1414,6 +1428,15 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
   // Separação estrita: EN abre exclusivamente PayPal (USD); PT-BR abre InfinitePay (BRL) ou Modo Mestra
   $("#btn-comprar-standard").addEventListener("click", function(e) {
     if (isIdiomaIngles()) {
+      const tabPP = Guardiao && Guardiao.obterTabelaPrecosPayPal ? Guardiao.obterTabelaPrecosPayPal() : null;
+      const linkStd = tabPP && tabPP.paymentLinks && tabPP.paymentLinks.ativo !== false ? tabPP.paymentLinks.standardUrl : "";
+      if (linkStd && linkStd.startsWith("https://")) {
+        try {
+          sessionStorage.setItem("tryv_plano_desbloqueio", "standard");
+          localStorage.setItem("tryv_plano_desbloqueio", "standard");
+        } catch {}
+        return; // Abre diretamente o Payment Link oficial da PayPal
+      }
       e.preventDefault();
       abrirModalPayPalCheckout("standard");
       return;
@@ -1431,6 +1454,15 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
   });
   $("#btn-comprar-profunda").addEventListener("click", function(e) {
     if (isIdiomaIngles()) {
+      const tabPP = Guardiao && Guardiao.obterTabelaPrecosPayPal ? Guardiao.obterTabelaPrecosPayPal() : null;
+      const linkProf = tabPP && tabPP.paymentLinks && tabPP.paymentLinks.ativo !== false ? tabPP.paymentLinks.profundaUrl : "";
+      if (linkProf && linkProf.startsWith("https://")) {
+        try {
+          sessionStorage.setItem("tryv_plano_desbloqueio", "profunda");
+          localStorage.setItem("tryv_plano_desbloqueio", "profunda");
+        } catch {}
+        return; // Abre diretamente o Payment Link oficial da PayPal
+      }
       e.preventDefault();
       abrirModalPayPalCheckout("profunda");
       return;
