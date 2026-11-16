@@ -1313,7 +1313,7 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
           },
           onError: () => {
             if (ppSpinner) ppSpinner.style.display = "none";
-            ppStatusMsg.textContent = "PayPal checkout is not yet available. Please try again later.";
+            ppStatusMsg.textContent = Guardiao.MSG_ERRO_COMPRA_EN || "We couldn't complete your purchase at this time. No access has been granted. If the problem persists, please contact us at tryvtuathterapias@gmail.com. We'll be happy to help.";
           }
         }).render("#pp-sdk-buttons-wrap");
       }
@@ -1330,7 +1330,7 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
       });
       if (ppSpinner) ppSpinner.style.display = "none";
       if (!res.ok || !res.approveUrl) {
-        ppStatusMsg.textContent = res.erro || "PayPal checkout is not yet available. Please try again later.";
+        ppStatusMsg.textContent = res.erro || Guardiao.MSG_ERRO_COMPRA_EN || "We couldn't complete your purchase at this time. No access has been granted. If the problem persists, please contact us at tryvtuathterapias@gmail.com. We'll be happy to help.";
         return;
       }
       ppStatusMsg.textContent = `Redirecting to PayPal to complete your $${res.valorUsd} USD payment…`;

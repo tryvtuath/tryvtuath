@@ -1420,6 +1420,8 @@
   }
 
   const MSG_PAYPAL_INDISPONIVEL_EN = "PayPal checkout is not yet available. Please try again later.";
+  const MSG_ERRO_COMPRA_PT = "Não foi possível concluir sua compra neste momento. Nenhum acesso foi liberado. Se o problema persistir, entre em contato conosco pelo e-mail tryvtuathterapias@gmail.com. Teremos prazer em ajudar.";
+  const MSG_ERRO_COMPRA_EN = "We couldn't complete your purchase at this time. No access has been granted. If the problem persists, please contact us at tryvtuathterapias@gmail.com. We'll be happy to help.";
 
   /**
    * Cria uma ordem PayPal em USD no servidor (POST /api/paypal/create-order).
@@ -1477,7 +1479,7 @@
         return {
           ok: false,
           codigo: (json && json.codigo) || "PAYPAL_NOT_AVAILABLE",
-          erro: MSG_PAYPAL_INDISPONIVEL_EN
+          erro: (json && json.codigo === "PAYPAL_CREDENTIALS_MISSING") ? MSG_PAYPAL_INDISPONIVEL_EN : MSG_ERRO_COMPRA_EN
         };
       }
     } catch {}
@@ -1551,7 +1553,7 @@
           codigo: (data && data.codigo) || "CAPTURE_NOT_COMPLETED",
           erro: (data && data.codigo === "PAYPAL_CREDENTIALS_MISSING")
             ? MSG_PAYPAL_INDISPONIVEL_EN
-            : ((data && data.erro) || "PayPal payment has not been captured or confirmed by the server yet.")
+            : MSG_ERRO_COMPRA_EN
         };
       }
     } catch {}
@@ -1684,6 +1686,8 @@
     capturarOrdemPayPalNoServidor,
     validarAcessoPayPalNoServidor,
     carregarSdkPayPal,
-    MSG_PAYPAL_INDISPONIVEL_EN
+    MSG_PAYPAL_INDISPONIVEL_EN,
+    MSG_ERRO_COMPRA_PT,
+    MSG_ERRO_COMPRA_EN
   };
 })(typeof window !== "undefined" ? window : global);
