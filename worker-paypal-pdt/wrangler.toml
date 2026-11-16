@@ -14,6 +14,6 @@ ALLOWED_ORIGINS = "https://www.tryvtuath.com.br,https://tryvtuath.com.br"
 #
 # Para impedir reutilizacao de transacoes entre todas as bordas (anti-replay persistente),
 # vincule um KV Namespace chamado PAYPAL_TX_KV no painel do Cloudflare Workers (Free Tier).
-# [[kv_namespaces]]
-# binding = "PAYPAL_TX_KV"
-# id = "PREENCHER_NO_CLOUDFLARE"
+[[kv_namespaces]]
+binding = "PAYPAL_TX_KV"
+id = "72b7709b9c4f4bc9af26571a31b69107"
