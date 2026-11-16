@@ -49,7 +49,7 @@ const PORT = process.env.PORT || 3001;
 const SITE_PUBLIC_URL = (process.env.SITE_PUBLIC_URL || "https://www.tryvtuath.com.br").replace(/\/+$/, "");
 const WEBHOOK_SECRET = process.env.INFINITEPAY_WEBHOOK_SECRET || "tryv-tuath-secret-key-2026";
 const INFINITEPAY_HANDLE = process.env.INFINITEPAY_HANDLE || "tryvtuath";
-const DB_FILE = path.join(__dirname, "db-pagamentos.json");
+const DB_FILE = process.env.DB_PAGAMENTOS_FILE || path.join(__dirname, "db-pagamentos.json");
 const CONTEUDO_FILE = path.join(__dirname, "..", "conteudo.json");
 
 /* --------------------------------------------------------------------------
@@ -64,6 +64,10 @@ const CONTEUDO_FILE = path.join(__dirname, "..", "conteudo.json");
  * Preço USD = (valor líquido desejado em BRL / (cotação BRL/USD × 0,965) + 0,30) / 0,936
  * -------------------------------------------------------------------------- */
 const PAYPAL_DEFAULTS = {
+  merchantName: "54.492.316 Tryv Tuath",
+  merchantEmail: "tryvtuathterapias@gmail.com",
+  precoStandardUsd: 7.78,
+  precoProfundaUsd: 19.86,
   liquidoDesejadoStandardBrl: 37.00,
   liquidoDesejadoProfundaBrl: 97.00,
   liquidoAncoraStandardBrl: 97.00,
@@ -73,7 +77,7 @@ const PAYPAL_DEFAULTS = {
   tarifaFixaUsd: 0.30,
   spreadConversaoCambialPct: 3.50,
   margemSegurancaPct: 3.00,
-  cotacaoFallbackBrlUsd: 5.75
+  cotacaoFallbackBrlUsd: 5.6666
 };
 
 function lerConfigPayPalConteudoJson() {
@@ -90,21 +94,33 @@ function lerConfigPayPalConteudoJson() {
 
 function getPayPalCredenciais() {
   const cfgJson = lerConfigPayPalConteudoJson();
-  const ambienteRaw = String(process.env.PAYPAL_ENV || cfgJson.ambiente || "sandbox").trim().toLowerCase();
-  const ambiente = ambienteRaw === "live" || ambienteRaw === "production" ? "live" : "sandbox";
-  const clientId = String(process.env.PAYPAL_CLIENT_ID || cfgJson.clientId || "").trim();
-  const clientSecret = String(process.env.PAYPAL_CLIENT_SECRET || "").trim();
-  const simuladorSandbox = process.env.PAYPAL_SANDBOX_SIMULATOR === "1" && ambiente === "sandbox";
+  const ambienteRaw = String(process.env.PAYPAL_ENV || cfgJson.ambiente || "live").trim().toLowerCase();
+  const ambiente = ambienteRaw === "sandbox" ? "sandbox" : "live";
+  const merchantName = String(process.env.PAYPAL_MERCHANT_NAME || cfgJson.merchantName || PAYPAL_DEFAULTS.merchantName).trim();
+  const merchantEmail = normalizarEmail(process.env.PAYPAL_MERCHANT_EMAIL || cfgJson.merchantEmail || PAYPAL_DEFAULTS.merchantEmail);
+  const clientId = String(
+    (ambiente === "live" ? process.env.PAYPAL_CLIENT_ID_LIVE : process.env.PAYPAL_CLIENT_ID_SANDBOX) ||
+    process.env.PAYPAL_CLIENT_ID ||
+    cfgJson.clientId ||
+    ""
+  ).trim();
+  const clientSecret = String(
+    (ambiente === "live" ? process.env.PAYPAL_CLIENT_SECRET_LIVE : process.env.PAYPAL_CLIENT_SECRET_SANDBOX) ||
+    process.env.PAYPAL_CLIENT_SECRET ||
+    ""
+  ).trim();
   const apiBase = ambiente === "live"
     ? "https://api-m.paypal.com"
     : "https://api-m.sandbox.paypal.com";
 
   return {
     ambiente,
+    merchantName,
+    merchantEmail,
     clientId,
     clientSecret,
-    simuladorSandbox,
-    configurado: Boolean((clientId && clientSecret) || simuladorSandbox),
+    configurado: Boolean(clientId && clientSecret),
+    configuradoLive: Boolean(ambiente === "live" && clientId && clientSecret),
     apiBase
   };
 }
@@ -278,6 +294,7 @@ function calcularPrecoPayPalUSD(valorLiquidoDesejadoBrl, infoCotacao, opcoesCust
     precoBaseFormulaUsd: Number(precoBaseUsd.toFixed(4)),
     precoBaseUsd: precoBaseUsdArredondado,
     precoFinalUsd,
+    precoFinalUsdStr: precoFinalUsd.toFixed(2),
     precoFinalUsdFormatado: precoFinalUsd.toFixed(2),
     liquidoEstimadoBrl,
     parametros: {
@@ -300,6 +317,7 @@ function calcularPrecoPayPalUSD(valorLiquidoDesejadoBrl, infoCotacao, opcoesCust
 
 async function montarTabelaPrecosPayPal() {
   const cfgJson = lerConfigPayPalConteudoJson();
+  const cred = getPayPalCredenciais();
   const infoCotacao = await obterCotacaoBrlUsdAtualizada();
   const calcStandard = calcularPrecoPayPalUSD(
     cfgJson.liquidoDesejadoStandardBrl || PAYPAL_DEFAULTS.liquidoDesejadoStandardBrl,
@@ -318,7 +336,16 @@ async function montarTabelaPrecosPayPal() {
     infoCotacao
   );
 
+  // Garante os preços oficiais em USD (Standard: US$ 7.78 | Complete Deep Analysis: US$ 19.86)
+  // ou o valor calculado se a cotação exigir valor superior para preservar o líquido
+  const precoStdFixado = Number(process.env.PAYPAL_PRECO_STANDARD_USD || cfgJson.precoStandardUsd || PAYPAL_DEFAULTS.precoStandardUsd);
+  const precoProfFixado = Number(process.env.PAYPAL_PRECO_PROFUNDA_USD || cfgJson.precoProfundaUsd || PAYPAL_DEFAULTS.precoProfundaUsd);
+  const finalStdUsd = Number(Math.max(precoStdFixado, calcStandard.precoFinalUsd).toFixed(2));
+  const finalProfUsd = Number(Math.max(precoProfFixado, calcProfunda.precoFinalUsd).toFixed(2));
+
   return {
+    merchantName: cred.merchantName,
+    merchantEmail: cred.merchantEmail,
     infoCotacao,
     parametrosFormacaoPreco: calcProfunda.parametros,
     planos: {
@@ -327,8 +354,8 @@ async function montarTabelaPrecosPayPal() {
         tituloEn: "The Invisible Unlocking — Standard Analysis",
         liquidoDesejadoBrl: calcStandard.liquidoDesejadoBrl,
         precoBaseUsd: calcStandard.precoBaseUsd,
-        precoFinalUsd: calcStandard.precoFinalUsd,
-        precoFinalUsdStr: calcStandard.precoFinalUsdFormatado,
+        precoFinalUsd: finalStdUsd,
+        precoFinalUsdStr: finalStdUsd.toFixed(2),
         precoAncoraUsd: calcAncoraStandard.precoFinalUsd,
         precoAncoraUsdStr: calcAncoraStandard.precoFinalUsdFormatado,
         liquidoEstimadoBrl: calcStandard.liquidoEstimadoBrl
@@ -338,8 +365,8 @@ async function montarTabelaPrecosPayPal() {
         tituloEn: "The Invisible Unlocking — Complete Deep Analysis",
         liquidoDesejadoBrl: calcProfunda.liquidoDesejadoBrl,
         precoBaseUsd: calcProfunda.precoBaseUsd,
-        precoFinalUsd: calcProfunda.precoFinalUsd,
-        precoFinalUsdStr: calcProfunda.precoFinalUsdFormatado,
+        precoFinalUsd: finalProfUsd,
+        precoFinalUsdStr: finalProfUsd.toFixed(2),
         precoAncoraUsd: calcAncoraProfunda.precoFinalUsd,
         precoAncoraUsdStr: calcAncoraProfunda.precoFinalUsdFormatado,
         liquidoEstimadoBrl: calcProfunda.liquidoEstimadoBrl
@@ -752,12 +779,38 @@ const server = http.createServer(async (req, res) => {
     try {
       const body = await lerBodyJson(req);
       const resultado = verificarTokenAcessoAssinado(body.tokenAcesso);
-      if (resultado && resultado.valido) {
-        return responderJson(res, 200, { valido: true, ...resultado });
+      if (!resultado || !resultado.valido) {
+        return responderJson(res, 401, { valido: false, pago: false, erro: "Token de pagamento inválido ou expirado." });
       }
-      return responderJson(res, 401, { valido: false, erro: "Token de pagamento inválido ou expirado." });
+
+      const db = carregarBanco();
+      const registro = db.pedidosPorOrderId[resultado.orderId] || null;
+      if (!registro || registro.pago !== true || registro.status !== "PAID" || registro.tokenAcesso !== body.tokenAcesso) {
+        return responderJson(res, 401, { valido: false, pago: false, erro: "Pedido não encontrado ou pagamento não confirmado no servidor." });
+      }
+
+      if (resultado.idioma === "en" || registro.gateway === "paypal") {
+        const cred = getPayPalCredenciais();
+        if (!cred.configurado || !registro.paypalCaptureId || registro.moeda !== "USD") {
+          return responderJson(res, 401, {
+            valido: false,
+            pago: false,
+            erro: "PayPal checkout is not yet available. Please try again later."
+          });
+        }
+      }
+
+      return responderJson(res, 200, {
+        valido: true,
+        pago: true,
+        ...resultado,
+        plano: registro.plano || resultado.plano,
+        gateway: registro.gateway || "infinitepay",
+        moeda: registro.moeda || "BRL",
+        captureId: registro.paypalCaptureId || ""
+      });
     } catch {
-      return responderJson(res, 400, { valido: false });
+      return responderJson(res, 400, { valido: false, pago: false });
     }
   }
 
@@ -769,8 +822,11 @@ const server = http.createServer(async (req, res) => {
       return responderJson(res, 200, {
         ok: true,
         ambiente: cred.ambiente,
-        clientId: cred.clientId || "",
+        merchantName: cred.merchantName,
+        merchantEmail: cred.merchantEmail,
+        clientId: cred.configurado ? (cred.clientId || "") : "",
         configurado: cred.configurado,
+        configuradoLive: cred.configuradoLive,
         moeda: "USD",
         parametrosFormacaoPreco: tabela.parametrosFormacaoPreco,
         planos: tabela.planos
@@ -796,80 +852,74 @@ const server = http.createServer(async (req, res) => {
         return responderJson(res, 503, {
           ok: false,
           codigo: "PAYPAL_CREDENTIALS_MISSING",
-          erro: "Credenciais do PayPal (PAYPAL_CLIENT_ID e PAYPAL_CLIENT_SECRET) ainda não configuradas no servidor.",
+          erro: "PayPal checkout is not yet available. Please try again later.",
           plano,
           valorUsd: dadosPlano.precoFinalUsdStr,
           parametrosFormacaoPreco: tabela.parametrosFormacaoPreco
         });
       }
 
-      let paypalOrderId = "";
-      let approveUrl = "";
-
-      if (cred.simuladorSandbox) {
-        // Modo de simulação Sandbox local controlado para testes automatizados ponta a ponta
-        paypalOrderId = `SANDBOX-PP-${Date.now()}-${Math.random().toString(36).slice(2, 7).toUpperCase()}`;
-        approveUrl = `${SITE_PUBLIC_URL}/diagnostico.html?plano=${plano}&lang=en&paypal_return=1&token=${encodeURIComponent(paypalOrderId)}`;
-      } else {
-        const authInfo = await obterAccessTokenPayPal();
-        if (!authInfo || !authInfo.token) {
-          return responderJson(res, 502, {
-            ok: false,
-            codigo: "PAYPAL_AUTH_FAILED",
-            erro: "Não foi possível autenticar na API do PayPal. Verifique PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET e PAYPAL_ENV."
-          });
-        }
-
-        const returnUrl = String(body.returnUrl || `${SITE_PUBLIC_URL}/diagnostico.html?plano=${plano}&lang=en&paypal_return=1`);
-        const cancelUrl = String(body.cancelUrl || `${SITE_PUBLIC_URL}/desbloqueio.html?lang=en&paypal_cancel=1#planos`);
-
-        const orderPayload = JSON.stringify({
-          intent: "CAPTURE",
-          purchase_units: [
-            {
-              reference_id: internalOrderId,
-              custom_id: internalOrderId,
-              description: dadosPlano.tituloEn,
-              amount: {
-                currency_code: "USD",
-                value: dadosPlano.precoFinalUsdStr
-              }
-            }
-          ],
-          application_context: {
-            brand_name: "Tryv Tuath",
-            landing_page: "NO_PREFERENCE",
-            user_action: "PAY_NOW",
-            return_url: returnUrl,
-            cancel_url: cancelUrl
-          }
+      const authInfo = await obterAccessTokenPayPal();
+      if (!authInfo || !authInfo.token) {
+        return responderJson(res, 502, {
+          ok: false,
+          codigo: "PAYPAL_AUTH_FAILED",
+          erro: "PayPal checkout is not yet available. Please try again later."
         });
-
-        const respCreate = await requisicaoHttpsJson(`${authInfo.apiBase}/v2/checkout/orders`, {
-          method: "POST",
-          headers: {
-            "Authorization": `Bearer ${authInfo.token}`,
-            "Content-Type": "application/json",
-            "Accept": "application/json",
-            "Content-Length": Buffer.byteLength(orderPayload)
-          },
-          body: orderPayload,
-          timeout: 10000
-        });
-
-        if (respCreate.status < 200 || respCreate.status >= 300 || !respCreate.data || !respCreate.data.id) {
-          return responderJson(res, 502, {
-            ok: false,
-            codigo: "PAYPAL_CREATE_ORDER_FAILED",
-            erro: "Erro ao criar ordem no PayPal."
-          });
-        }
-
-        paypalOrderId = String(respCreate.data.id);
-        const links = Array.isArray(respCreate.data.links) ? respCreate.data.links : [];
-        const linkApprove = links.find((l) => l.rel === "approve" || l.rel === "payer-action");
-        approveUrl = linkApprove ? linkApprove.href : "";
       }
+
+      const returnUrl = String(body.returnUrl || `${SITE_PUBLIC_URL}/diagnostico.html?plano=${plano}&lang=en&paypal_return=1`);
+      const cancelUrl = String(body.cancelUrl || `${SITE_PUBLIC_URL}/desbloqueio.html?lang=en&paypal_cancel=1#planos`);
+
+      const purchaseUnit = {
+        reference_id: internalOrderId,
+        custom_id: internalOrderId,
+        description: dadosPlano.tituloEn,
+        amount: {
+          currency_code: "USD",
+          value: dadosPlano.precoFinalUsdStr
+        }
+      };
+      if (cred.ambiente === "live" && cred.merchantEmail) {
+        purchaseUnit.payee = { email_address: cred.merchantEmail };
+      }
+
+      const orderPayload = JSON.stringify({
+        intent: "CAPTURE",
+        purchase_units: [purchaseUnit],
+        application_context: {
+          brand_name: cred.merchantName || "54.492.316 Tryv Tuath",
+          landing_page: "NO_PREFERENCE",
+          user_action: "PAY_NOW",
+          return_url: returnUrl,
+          cancel_url: cancelUrl
+        }
+      });
+
+      const respCreate = await requisicaoHttpsJson(`${authInfo.apiBase}/v2/checkout/orders`, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${authInfo.token}`,
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+          "Content-Length": Buffer.byteLength(orderPayload)
+        },
+        body: orderPayload,
+        timeout: 10000
+      });
+
+      if (respCreate.status < 200 || respCreate.status >= 300 || !respCreate.data || !respCreate.data.id) {
+        return responderJson(res, 502, {
+          ok: false,
+          codigo: "PAYPAL_CREATE_ORDER_FAILED",
+          erro: "Could not create the PayPal order on the server."
+        });
+      }
+
+      const paypalOrderId = String(respCreate.data.id);
+      const links = Array.isArray(respCreate.data.links) ? respCreate.data.links : [];
+      const linkApprove = links.find((l) => l.rel === "approve" || l.rel === "payer-action");
+      const approveUrl = linkApprove ? linkApprove.href : "";
 
       const db = carregarBanco();
       const registro = {
@@ -952,96 +1002,118 @@ const server = http.createServer(async (req, res) => {
           ok: false,
           pago: false,
           codigo: "PAYPAL_CREDENTIALS_MISSING",
-          erro: "Credenciais do PayPal não configuradas no servidor."
+          erro: "PayPal checkout is not yet available. Please try again later."
+        });
+      }
+
+      // Exige que o pedido tenha sido criado previamente pelo servidor (integridade do pedido)
+      if (!pedidoExistente || pedidoExistente.gateway !== "paypal") {
+        return responderJson(res, 404, {
+          ok: false,
+          pago: false,
+          codigo: "ORDER_NOT_FOUND_ON_SERVER",
+          erro: "Order not found on server. A manual Order ID cannot be accepted without an active server order."
         });
       }
 
       const tabela = await montarTabelaPrecosPayPal();
-      const planoEsperado = (pedidoExistente && pedidoExistente.plano) || (body.plano === "standard" ? "standard" : "profunda");
-      let captureStatus = "";
-      let captureId = "";
-      let moedaCapturada = "";
-      let valorCapturadoNum = 0;
-      let emailPayerPayPal = "";
-      let customIdRetornado = "";
+      const planoEsperado = pedidoExistente.plano === "standard" ? "standard" : "profunda";
 
-      if (cred.simuladorSandbox && paypalOrderId.startsWith("SANDBOX-PP-")) {
-        if (!pedidoExistente) {
-          return responderJson(res, 404, { ok: false, pago: false, erro: "Ordem Sandbox não encontrada no servidor." });
-        }
-        captureStatus = "COMPLETED";
-        captureId = `CAP-${paypalOrderId}`;
-        moedaCapturada = "USD";
-        valorCapturadoNum = Number(pedidoExistente.valorUsd);
-        emailPayerPayPal = pedidoExistente.email || emailReq || "buyer.sandbox@paypal.com";
-        customIdRetornado = pedidoExistente.orderId;
-      } else {
-        const authInfo = await obterAccessTokenPayPal();
-        if (!authInfo || !authInfo.token) {
-          return responderJson(res, 502, { ok: false, pago: false, erro: "Falha ao autenticar na API do PayPal para capturar a ordem." });
-        }
-
-        // Tenta realizar a captura da ordem aprovada no PayPal
-        let respCap = await requisicaoHttpsJson(`${authInfo.apiBase}/v2/checkout/orders/${encodeURIComponent(paypalOrderId)}/capture`, {
-          method: "POST",
-          headers: {
-            "Authorization": `Bearer ${authInfo.token}`,
-            "Content-Type": "application/json",
-            "Accept": "application/json",
-            "Content-Length": 2
-          },
-          body: "{}",
-          timeout: 10000
+      const authInfo = await obterAccessTokenPayPal();
+      if (!authInfo || !authInfo.token) {
+        return responderJson(res, 502, {
+          ok: false,
+          pago: false,
+          erro: "PayPal checkout is not yet available. Please try again later."
         });
-
-        // Se a ordem já havia sido capturada no PayPal (422 ORDER_ALREADY_CAPTURED), consulta os detalhes diretamente no servidor PayPal
-        if (respCap.status === 422 || !respCap.data || !respCap.data.status) {
-          respCap = await requisicaoHttpsJson(`${authInfo.apiBase}/v2/checkout/orders/${encodeURIComponent(paypalOrderId)}`, {
-            method: "GET",
-            headers: {
-              "Authorization": `Bearer ${authInfo.token}`,
-              "Accept": "application/json"
-            },
-            timeout: 8000
-          });
-        }
-
-        const dadosOrdem = respCap.data || {};
-        const pu = Array.isArray(dadosOrdem.purchase_units) && dadosOrdem.purchase_units[0] ? dadosOrdem.purchase_units[0] : {};
-        const captures = pu.payments && Array.isArray(pu.payments.captures) ? pu.payments.captures : [];
-        const cap0 = captures[0] || {};
-
-        captureStatus = String(cap0.status || dadosOrdem.status || "").toUpperCase();
-        captureId = String(cap0.id || "");
-        moedaCapturada = String((cap0.amount && cap0.amount.currency_code) || (pu.amount && pu.amount.currency_code) || "").toUpperCase();
-        valorCapturadoNum = Number((cap0.amount && cap0.amount.value) || (pu.amount && pu.amount.value) || 0);
-        emailPayerPayPal = normalizarEmail(dadosOrdem.payer && dadosOrdem.payer.email_address);
-        customIdRetornado = String(pu.custom_id || pu.reference_id || "");
       }
 
-      if (captureStatus !== "COMPLETED" || moedaCapturada !== "USD" || !(valorCapturadoNum > 0)) {
+      // Realiza a captura da ordem aprovada diretamente na API oficial do PayPal
+      let respCap = await requisicaoHttpsJson(`${authInfo.apiBase}/v2/checkout/orders/${encodeURIComponent(paypalOrderId)}/capture`, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${authInfo.token}`,
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+          "Content-Length": 2
+        },
+        body: "{}",
+        timeout: 10000
+      });
+
+      // Se a ordem já havia sido capturada no PayPal (422 ORDER_ALREADY_CAPTURED), consulta os detalhes diretamente no servidor PayPal
+      if (respCap.status === 422 || !respCap.data || !respCap.data.status) {
+        respCap = await requisicaoHttpsJson(`${authInfo.apiBase}/v2/checkout/orders/${encodeURIComponent(paypalOrderId)}`, {
+          method: "GET",
+          headers: {
+            "Authorization": `Bearer ${authInfo.token}`,
+            "Accept": "application/json"
+          },
+          timeout: 8000
+        });
+      }
+
+      const dadosOrdem = respCap.data || {};
+      const orderIdPayPalRetornado = String(dadosOrdem.id || "");
+      const pu = Array.isArray(dadosOrdem.purchase_units) && dadosOrdem.purchase_units[0] ? dadosOrdem.purchase_units[0] : {};
+      const captures = pu.payments && Array.isArray(pu.payments.captures) ? pu.payments.captures : [];
+      const cap0 = captures[0] || {};
+
+      const captureStatus = String(cap0.status || "").toUpperCase();
+      const captureId = String(cap0.id || "").trim();
+      const moedaCapturada = String((cap0.amount && cap0.amount.currency_code) || "").toUpperCase();
+      const valorCapturadoNum = Number((cap0.amount && cap0.amount.value) || 0);
+      const emailPayerPayPal = normalizarEmail(dadosOrdem.payer && dadosOrdem.payer.email_address);
+      const customIdRetornado = String(pu.custom_id || pu.reference_id || "").trim();
+      const payeeEmailRetornado = normalizarEmail(pu.payee && pu.payee.email_address);
+
+      // Conferência estrita:
+      // 1) Status COMPLETED da captura e ID de captura real emitido pelo PayPal
+      // 2) Moeda USD
+      // 3) Correspondência do ID da ordem e do custom_id/reference_id com o pedido criado no servidor
+      // 4) E-mail recebedor (payee) correspondente à conta oficial em ambiente Live
+      if (
+        captureStatus !== "COMPLETED" ||
+        !captureId ||
+        moedaCapturada !== "USD" ||
+        !(valorCapturadoNum > 0) ||
+        orderIdPayPalRetornado !== paypalOrderId ||
+        (customIdRetornado && customIdRetornado !== pedidoExistente.orderId) ||
+        (cred.ambiente === "live" && payeeEmailRetornado && cred.merchantEmail && payeeEmailRetornado !== cred.merchantEmail)
+      ) {
         return responderJson(res, 402, {
           ok: false,
           pago: false,
           status: captureStatus || "NOT_COMPLETED",
-          erro: "O pagamento no PayPal ainda não consta como capturado e concluído (COMPLETED em USD)."
+          erro: "PayPal payment has not been completed and verified in USD by the server."
         });
       }
 
-      // Verifica se o valor pago em USD corresponde ao plano (impede pagar Standard e liberar Profunda)
-      const precoMinProfunda = tabela.planos.profunda.precoBaseUsd * 0.9;
-      const planoConfirmado =
-        pedidoExistente && pedidoExistente.plano
-          ? pedidoExistente.plano
-          : valorCapturadoNum >= precoMinProfunda
-          ? "profunda"
-          : "standard";
-
-      if (planoEsperado === "profunda" && planoConfirmado === "standard" && (!pedidoExistente || valorCapturadoNum < precoMinProfunda)) {
+      // Verifica rigorosamente se o valor pago em USD corresponde ao preço oficial do plano no servidor
+      const precoMinStandard = tabela.planos.standard.precoFinalUsd;
+      const precoMinProfunda = tabela.planos.profunda.precoFinalUsd;
+      if (valorCapturadoNum + 0.009 < precoMinStandard) {
         return responderJson(res, 402, {
           ok: false,
           pago: false,
-          erro: "Valor capturado corresponde ao plano Standard e não à Análise Profunda."
+          erro: "Valor capturado inferior ao preço oficial em USD do produto."
+        });
+      }
+      const planoConfirmado =
+        pedidoExistente && pedidoExistente.plano
+          ? pedidoExistente.plano
+          : valorCapturadoNum + 0.009 >= precoMinProfunda
+          ? "profunda"
+          : "standard";
+
+      if (
+        (planoEsperado === "profunda" && valorCapturadoNum + 0.009 < precoMinProfunda) ||
+        (planoConfirmado === "profunda" && valorCapturadoNum + 0.009 < precoMinProfunda)
+      ) {
+        return responderJson(res, 402, {
+          ok: false,
+          pago: false,
+          erro: "Valor capturado corresponde ao plano Standard ($7.78 USD) e não à Análise Profunda ($19.86 USD)."
         });
       }
 

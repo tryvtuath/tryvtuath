@@ -2593,8 +2593,8 @@
 
   function aplicarPrecosUsdEmIngles(strEn) {
     if (!strEn || typeof strEn !== "string") return strEn;
-    let stdUsd = "7.67";
-    let profUsd = "19.57";
+    let stdUsd = "7.78";
+    let profUsd = "19.86";
     try {
       if (global.GuardiaoPagamentoInfinitePay && typeof global.GuardiaoPagamentoInfinitePay.obterTabelaPrecosPayPal === "function") {
         const tab = global.GuardiaoPagamentoInfinitePay.obterTabelaPrecosPayPal();
@@ -2817,6 +2817,9 @@
     } catch {}
   }
 
+  const SVG_BANDEIRA_BR = `<svg class="bandeira-idioma" viewBox="0 0 60 40" aria-hidden="true"><rect width="60" height="40" fill="#009c3b"/><path d="M30 4 56 20 30 36 4 20z" fill="#ffdf00"/><circle cx="30" cy="20" r="8.5" fill="#002776"/><path d="M21.8 18.2c5.5-.9 11.5.3 16.2 3.4" stroke="#fff" stroke-width="1.6" fill="none"/></svg>`;
+  const SVG_BANDEIRA_US = `<svg class="bandeira-idioma" viewBox="0 0 60 40" aria-hidden="true"><rect width="60" height="40" fill="#b22234"/><path d="M0 4.6h60M0 10.8h60M0 16.9h60M0 23.1h60M0 29.2h60M0 35.4h60" stroke="#fff" stroke-width="3.1"/><rect width="26" height="21.5" fill="#3c3b6e"/><g fill="#fff"><circle cx="4" cy="4" r="1.2"/><circle cx="10" cy="4" r="1.2"/><circle cx="16" cy="4" r="1.2"/><circle cx="22" cy="4" r="1.2"/><circle cx="7" cy="8.5" r="1.2"/><circle cx="13" cy="8.5" r="1.2"/><circle cx="19" cy="8.5" r="1.2"/><circle cx="4" cy="13" r="1.2"/><circle cx="10" cy="13" r="1.2"/><circle cx="16" cy="13" r="1.2"/><circle cx="22" cy="13" r="1.2"/><circle cx="7" cy="17.5" r="1.2"/><circle cx="13" cy="17.5" r="1.2"/><circle cx="19" cy="17.5" r="1.2"/></g></svg>`;
+
   function injetarEstilosSeletor() {
     if (document.getElementById("tryv-i18n-styles")) return;
     const st = document.createElement("style");
@@ -2825,8 +2828,8 @@
       .seletor-idioma-tryv {
         display: inline-flex;
         align-items: center;
-        gap: .2rem;
-        padding: .2rem;
+        gap: .22rem;
+        padding: .22rem;
         border-radius: 999px;
         background: rgba(20, 14, 48, .85);
         border: 1px solid rgba(242, 193, 78, .42);
@@ -2846,6 +2849,17 @@
         cursor: pointer;
         transition: all .2s ease;
         line-height: 1;
+        display: inline-flex;
+        align-items: center;
+        gap: .36rem;
+      }
+      .seletor-idioma-tryv button .bandeira-idioma {
+        width: 18px;
+        height: 12px;
+        border-radius: 2px;
+        box-shadow: 0 0 0 1px rgba(255, 255, 255, .25);
+        flex-shrink: 0;
+        display: block;
       }
       .seletor-idioma-tryv button:hover {
         color: #fff;
@@ -2856,10 +2870,19 @@
         color: #1b0f02;
         box-shadow: 0 2px 10px rgba(242, 193, 78, .4);
       }
+      .seletor-idioma-tryv button[aria-pressed="true"] .bandeira-idioma,
+      .seletor-idioma-tryv button.ativo .bandeira-idioma {
+        box-shadow: 0 0 0 1px rgba(27, 15, 2, .35);
+      }
       @media (max-width: 640px) {
         .seletor-idioma-tryv button {
           font-size: .72rem;
           padding: .28rem .52rem;
+          gap: .3rem;
+        }
+        .seletor-idioma-tryv button .bandeira-idioma {
+          width: 16px;
+          height: 11px;
         }
       }
     `;
@@ -2876,8 +2899,8 @@
       seletor.setAttribute("aria-label", "Idioma / Language");
       seletor.setAttribute("translate", "no");
       seletor.innerHTML = `
-        <button type="button" data-lang-btn="pt-BR" aria-pressed="true" title="Português (Brasil)">PT-BR</button>
-        <button type="button" data-lang-btn="en" aria-pressed="false" title="English">EN</button>
+        <button type="button" data-lang-btn="pt-BR" aria-pressed="true" title="Português brasileiro (PT-BR)">${SVG_BANDEIRA_BR}<span>PT</span></button>
+        <button type="button" data-lang-btn="en" aria-pressed="false" title="English (EN)">${SVG_BANDEIRA_US}<span>EN</span></button>
       `;
 
       // Insere no cabeçalho de desbloqueio.html ou diagnostico.html
@@ -2893,6 +2916,14 @@
     }
 
     document.querySelectorAll("[data-lang-btn]").forEach((btn) => {
+      const langAttr = String(btn.getAttribute("data-lang-btn") || "").toLowerCase();
+      if (!btn.querySelector("svg.bandeira-idioma")) {
+        if (langAttr.startsWith("pt")) {
+          btn.innerHTML = `${SVG_BANDEIRA_BR}<span>PT</span>`;
+        } else if (langAttr.startsWith("en")) {
+          btn.innerHTML = `${SVG_BANDEIRA_US}<span>EN</span>`;
+        }
+      }
       if (btn.dataset.i18nBound === "1") return;
       btn.dataset.i18nBound = "1";
       btn.addEventListener("click", () => {

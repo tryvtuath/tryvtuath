@@ -412,8 +412,8 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
       <a class="topo__link" href="#planos">Escolher Análise</a>
       <a class="topo__link" href="index.html">← Voltar ao Site</a>
       <div class="seletor-idioma-tryv" role="group" aria-label="Idioma / Language" translate="no">
-        <button type="button" data-lang-btn="pt-BR" aria-pressed="true" class="ativo" title="Português (Brasil)" onclick="if(window.TryvI18n)window.TryvI18n.setIdioma('pt-BR')">PT-BR</button>
-        <button type="button" data-lang-btn="en" aria-pressed="false" title="English" onclick="if(window.TryvI18n)window.TryvI18n.setIdioma('en')">EN</button>
+        <button type="button" data-lang-btn="pt-BR" aria-pressed="true" class="ativo" title="Português brasileiro (PT-BR)" onclick="if(window.TryvI18n)window.TryvI18n.setIdioma('pt-BR')"><svg class="bandeira-idioma" viewBox="0 0 60 40" aria-hidden="true"><rect width="60" height="40" fill="#009c3b"/><path d="M30 4 56 20 30 36 4 20z" fill="#ffdf00"/><circle cx="30" cy="20" r="8.5" fill="#002776"/><path d="M21.8 18.2c5.5-.9 11.5.3 16.2 3.4" stroke="#fff" stroke-width="1.6" fill="none"/></svg><span>PT</span></button>
+        <button type="button" data-lang-btn="en" aria-pressed="false" title="English (EN)" onclick="if(window.TryvI18n)window.TryvI18n.setIdioma('en')"><svg class="bandeira-idioma" viewBox="0 0 60 40" aria-hidden="true"><rect width="60" height="40" fill="#b22234"/><path d="M0 4.6h60M0 10.8h60M0 16.9h60M0 23.1h60M0 29.2h60M0 35.4h60" stroke="#fff" stroke-width="3.1"/><rect width="26" height="21.5" fill="#3c3b6e"/><g fill="#fff"><circle cx="4" cy="4" r="1.2"/><circle cx="10" cy="4" r="1.2"/><circle cx="16" cy="4" r="1.2"/><circle cx="22" cy="4" r="1.2"/><circle cx="7" cy="8.5" r="1.2"/><circle cx="13" cy="8.5" r="1.2"/><circle cx="19" cy="8.5" r="1.2"/><circle cx="4" cy="13" r="1.2"/><circle cx="10" cy="13" r="1.2"/><circle cx="16" cy="13" r="1.2"/><circle cx="22" cy="13" r="1.2"/><circle cx="7" cy="17.5" r="1.2"/><circle cx="13" cy="17.5" r="1.2"/><circle cx="19" cy="17.5" r="1.2"/></g></svg><span>EN</span></button>
       </div>
     </nav>
   </div>
@@ -835,27 +835,15 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
 
       <div id="pp-sdk-buttons-wrap" style="margin-bottom:.75rem"></div>
 
-      <button type="button" class="botao botao--ouro" id="btn-pp-criar-ordem" style="width:100%;padding:.85rem 1.2rem;font-size:.96rem;margin-bottom:.75rem">
-        ✦ Pay Now with PayPal (<span id="btn-pp-valor-label">$19.57 USD</span>)
+      <button type="button" class="botao botao--ouro" id="btn-pp-criar-ordem" style="width:100%;padding:.85rem 1.2rem;font-size:.96rem;margin-bottom:.25rem">
+        ✦ Pay Now with PayPal (<span id="btn-pp-valor-label">$19.86 USD</span>)
       </button>
-
-      <div style="padding-top:.75rem;border-top:1px dashed rgba(242,193,78,.28)">
-        <label for="pp-order-id-input" style="display:block;font-size:.79rem;font-weight:600;color:var(--rosa-claro);margin-bottom:.3rem">
-          2. Already approved on PayPal? Confirm your PayPal Order ID on the server:
-        </label>
-        <div style="display:flex;gap:.5rem;flex-wrap:wrap">
-          <input type="text" id="pp-order-id-input" placeholder="PayPal Order ID (filled automatically on approval)…" style="flex:1;min-width:190px;padding:.6rem .85rem;border-radius:10px;border:1px solid rgba(255,95,162,.38);background:rgba(10,7,28,.8);color:#fff;font-size:.85rem">
-          <button type="button" class="botao botao--vidro" id="btn-pp-capturar-ordem" style="padding:.6rem 1rem;font-size:.83rem;white-space:nowrap">
-            Verify &amp; Capture
-          </button>
-        </div>
-      </div>
       <small id="pp-parametros-resumo" style="display:block;margin-top:.55rem;font-size:.74rem;color:var(--texto-2);opacity:.88;line-height:1.4"></small>
     </div>
 
     <div id="pp-status-box" style="display:flex;align-items:center;justify-content:center;gap:.65rem;padding:.8rem 1rem;border-radius:12px;background:rgba(242,193,78,.08);border:1px dashed rgba(242,193,78,.42);margin-bottom:1.1rem;font-size:.86rem;color:var(--ouro-claro)">
       <span id="pp-spinner" style="display:none;width:14px;height:14px;border:2px solid var(--ouro-claro);border-top-color:transparent;border-radius:50%;animation:giroPolling 1s linear infinite"></span>
-      <span id="pp-status-msg">Click "Pay Now with PayPal" above to initiate your USD payment.</span>
+      <span id="pp-status-msg">PayPal checkout is not yet available. Please try again later.</span>
     </div>
 
     <div style="display:grid;gap:.75rem">
@@ -870,8 +858,8 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
 </div>
 
 <script src="motor-desbloqueio.js?v=3"></script>
-<script src="pagamento-guardiao.js?v=10"></script>
-<script src="i18n-desbloqueio.js?v=4"></script>
+<script src="pagamento-guardiao.js?v=12"></script>
+<script src="i18n-desbloqueio.js?v=6"></script>
 <script>
 (function() {
   "use strict";
@@ -1073,7 +1061,8 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
     }
     if (det) {
       det.innerHTML =
-        `Target net values for the author: <strong>R$ ${tab.planos.standard.liquidoDesejadoBrl.toFixed(2)} BRL</strong> (Standard → <strong>$${tab.planos.standard.precoFinalUsdStr} USD</strong>, base formula $${tab.planos.standard.precoBaseUsd.toFixed(2)} USD) and ` +
+        `Official PayPal Business Account: <strong>${tab.merchantName || "54.492.316 Tryv Tuath"}</strong> (<code>${tab.merchantEmail || "tryvtuathterapias@gmail.com"}</code>) · Currency: <strong>USD</strong>. ` +
+        `Target net values for the author: <strong>R$ ${tab.planos.standard.liquidoDesejadoBrl.toFixed(2)} BRL</strong> (Standard Analysis → <strong>$${tab.planos.standard.precoFinalUsdStr} USD</strong>, base formula $${tab.planos.standard.precoBaseUsd.toFixed(2)} USD) and ` +
         `<strong>R$ ${tab.planos.profunda.liquidoDesejadoBrl.toFixed(2)} BRL</strong> (Complete Deep Analysis → <strong>$${tab.planos.profunda.precoFinalUsdStr} USD</strong>, base formula $${tab.planos.profunda.precoBaseUsd.toFixed(2)} USD). ` +
         `Parameters applied: PayPal Brazil commercial fee <strong>${p.tarifaComercialPct}%</strong> + international fee <strong>${p.adicionalInternacionalPct}%</strong> (factor <code>${p.fatorRetencaoTarifas}</code>), fixed fee <strong>$${Number(p.tarifaFixaUsd).toFixed(2)} USD</strong>, currency conversion spread <strong>${p.spreadConversaoCambialPct}%</strong> (factor <code>${p.fatorConversaoCambial}</code>). Source: <em>${p.fonteCotacao}</em>.`;
     }
@@ -1117,18 +1106,14 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
 
     atualizarBoxTransparenciaPayPal();
 
-    if (Guardiao && Guardiao.isModoMestra && Guardiao.isModoMestra()) {
+    if (!emIngles && Guardiao && Guardiao.isModoMestra && Guardiao.isModoMestra()) {
       btnStd.href = "diagnostico.html?plano=standard";
       btnStd.removeAttribute("target");
-      btnStd.textContent = emIngles
-        ? "✦ STANDARD — Access Without Payment (Master Mode) →"
-        : "✦ STANDARD — Acessar sem Pagamento (Modo Mestra) →";
+      btnStd.textContent = "✦ STANDARD — Acessar sem Pagamento (Modo Mestra) →";
 
       btnProf.href = "diagnostico.html?plano=profunda";
       btnProf.removeAttribute("target");
-      btnProf.textContent = emIngles
-        ? "✦ COMPLETE — Access Without Payment (Master Mode) →"
-        : "✦ COMPLETO — Acessar sem Pagamento (Modo Mestra) →";
+      btnProf.textContent = "✦ COMPLETO — Acessar sem Pagamento (Modo Mestra) →";
 
       if (painelMestra) painelMestra.hidden = false;
 
@@ -1143,7 +1128,7 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
     if (painelMestra) painelMestra.hidden = true;
 
     if (emIngles && tabPP) {
-      // No idioma EN, usa exclusivamente PayPal em USD (nunca abre links da InfinitePay)
+      // No idioma EN, usa exclusivamente PayPal em USD (nunca abre links da InfinitePay e nunca libera sem PayPal)
       btnStd.href = "#planos";
       btnStd.removeAttribute("target");
       btnStd.textContent = `Start My Standard Diagnosis ($${tabPP.planos.standard.precoFinalUsdStr} USD · PayPal)`;
@@ -1179,10 +1164,8 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
   // Modal e fluxo de Checkout Internacional PayPal (USD) para o idioma EN
   const modalPayPal = $("#modal-paypal-checkout");
   const btnPpCriarOrdem = $("#btn-pp-criar-ordem");
-  const btnPpCapturarOrdem = $("#btn-pp-capturar-ordem");
   const btnPpIrDiag = $("#btn-pp-ir-diagnostico");
   const inpPpEmail = $("#pp-email-cliente");
-  const inpPpOrderId = $("#pp-order-id-input");
   const ppStatusMsg = $("#pp-status-msg");
   const ppStatusBox = $("#pp-status-box");
   const ppSpinner = $("#pp-spinner");
@@ -1196,11 +1179,24 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
     btnPpIrDiag.style.cursor = "not-allowed";
     btnPpIrDiag.style.pointerEvents = "none";
     btnPpIrDiag.style.filter = "grayscale(.35)";
+    btnPpIrDiag.onclick = null;
     btnPpIrDiag.textContent = "🔒 Proceed to Intake / Generate PDF (Awaiting Server Capture…)";
+
+    if (ppSpinner) ppSpinner.style.display = "none";
+    if (ppStatusBox) {
+      ppStatusBox.style.background = "rgba(242,193,78,.08)";
+      ppStatusBox.style.borderColor = "rgba(242,193,78,.42)";
+      ppStatusBox.style.color = "var(--ouro-claro)";
+    }
+    const seloPP = $("#modal-pp-selo");
+    if (seloPP) seloPP.textContent = "🔒 Official PayPal International Checkout (USD)";
   }
 
   function liberarBotaoPayPal(dadosConfirmados) {
-    if (!btnPpIrDiag) return;
+    if (!btnPpIrDiag || !dadosConfirmados || !dadosConfirmados.pago || !dadosConfirmados.captureId || !dadosConfirmados.tokenAcesso) {
+      travarBotaoPayPal();
+      return;
+    }
     btnPpIrDiag.disabled = false;
     btnPpIrDiag.setAttribute("aria-disabled", "false");
     btnPpIrDiag.style.opacity = "1";
@@ -1238,14 +1234,12 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
       localStorage.setItem("tryv_plano_desbloqueio", planoPayPalAtual);
     } catch {}
 
-    const tokenExistente = Guardiao.lerTokenConfirmado();
-    if (tokenExistente && tokenExistente.pago) {
-      liberarBotaoPayPal(tokenExistente);
-    } else {
-      travarBotaoPayPal();
-    }
+    // NUNCA libera por padrão nem confia em localStorage/sessão ao abrir o modal: sempre inicia bloqueado
+    travarBotaoPayPal();
 
-    const tab = Guardiao.obterTabelaPrecosPayPal();
+    const tab = (Guardiao && Guardiao.sincronizarCotacaoPayPal)
+      ? await Guardiao.sincronizarCotacaoPayPal()
+      : Guardiao.obterTabelaPrecosPayPal();
     const infoPlano = tab.planos[planoPayPalAtual];
     const p = tab.parametrosFormacaoPreco;
 
@@ -1254,15 +1248,37 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
       : `Standard Analysis ($${infoPlano.precoFinalUsdStr} USD)`;
     $("#btn-pp-valor-label").textContent = `$${infoPlano.precoFinalUsdStr} USD`;
     $("#pp-parametros-resumo").textContent =
-      `Target net: R$ ${infoPlano.liquidoDesejadoBrl.toFixed(2)} BRL · Exchange rate: 1 USD = R$ ${Number(p.cotacaoBrlUsd).toFixed(4)} (${p.fonteCotacao}) · PayPal fees: ${p.tarifaPercentualTotalPct}% + $${Number(p.tarifaFixaUsd).toFixed(2)} USD + ${p.spreadConversaoCambialPct}% FX spread + ${p.margemSegurancaPct}% margin.`;
+      `Merchant: ${tab.merchantName || "54.492.316 Tryv Tuath"} (${tab.merchantEmail || "tryvtuathterapias@gmail.com"}) · Target net: R$ ${infoPlano.liquidoDesejadoBrl.toFixed(2)} BRL · Exchange rate: 1 USD = R$ ${Number(p.cotacaoBrlUsd).toFixed(4)} (${p.fonteCotacao}) · PayPal fees: ${p.tarifaPercentualTotalPct}% + $${Number(p.tarifaFixaUsd).toFixed(2)} USD + ${p.spreadConversaoCambialPct}% FX spread + ${p.margemSegurancaPct}% margin.`;
+
+    const wrapSdk = $("#pp-sdk-buttons-wrap");
+    if (wrapSdk) wrapSdk.innerHTML = "";
 
     modalPayPal.hidden = false;
     modalPayPal.style.display = "grid";
 
-    // Se houver Client ID público configurado, renderiza os botões oficiais do SDK do PayPal conectados ao backend
-    const wrapSdk = $("#pp-sdk-buttons-wrap");
+    if (!tab.configuradoNoServidor || !tab.clientId) {
+      if (btnPpCriarOrdem) {
+        btnPpCriarOrdem.disabled = true;
+        btnPpCriarOrdem.style.opacity = "0.5";
+        btnPpCriarOrdem.style.cursor = "not-allowed";
+      }
+      if (ppStatusMsg) {
+        ppStatusMsg.textContent = "PayPal checkout is not yet available. Please try again later.";
+      }
+      return;
+    }
+
+    if (btnPpCriarOrdem) {
+      btnPpCriarOrdem.disabled = false;
+      btnPpCriarOrdem.style.opacity = "1";
+      btnPpCriarOrdem.style.cursor = "pointer";
+    }
+    if (ppStatusMsg) {
+      ppStatusMsg.textContent = "Click \"Pay Now with PayPal\" above to initiate your USD payment.";
+    }
+
+    // Se o PayPal estiver conectado e configurado no servidor, renderiza os botões oficiais do SDK do PayPal
     if (wrapSdk && tab.clientId) {
-      wrapSdk.innerHTML = "";
       const paypalSdk = await Guardiao.carregarSdkPayPal(tab.clientId);
       if (paypalSdk && paypalSdk.Buttons) {
         paypalSdk.Buttons({
@@ -1275,10 +1291,9 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
             });
             if (!res.ok || !res.paypalOrderId) {
               if (ppSpinner) ppSpinner.style.display = "none";
-              ppStatusMsg.textContent = "⚠ " + (res.erro || "Could not create order.");
+              ppStatusMsg.textContent = res.erro || "PayPal checkout is not yet available. Please try again later.";
               throw new Error(res.erro || "PayPal createOrder error");
             }
-            if (inpPpOrderId) inpPpOrderId.value = res.paypalOrderId;
             return res.paypalOrderId;
           },
           onApprove: async (data) => {
@@ -1289,16 +1304,16 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
               email: inpPpEmail ? inpPpEmail.value : "",
               plano: planoPayPalAtual
             });
-            if (cap && cap.pago && cap.dados) {
+            if (cap && cap.pago && cap.dados && cap.dados.captureId) {
               liberarBotaoPayPal(cap.dados);
             } else {
               if (ppSpinner) ppSpinner.style.display = "none";
-              ppStatusMsg.textContent = "⚠ " + ((cap && cap.erro) || "Capture could not be verified.");
+              ppStatusMsg.textContent = (cap && cap.erro) || "PayPal checkout is not yet available. Please try again later.";
             }
           },
           onError: () => {
             if (ppSpinner) ppSpinner.style.display = "none";
-            ppStatusMsg.textContent = "⚠ Error communicating with PayPal Checkout.";
+            ppStatusMsg.textContent = "PayPal checkout is not yet available. Please try again later.";
           }
         }).render("#pp-sdk-buttons-wrap");
       }
@@ -1308,45 +1323,18 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
   if (btnPpCriarOrdem) {
     btnPpCriarOrdem.addEventListener("click", async () => {
       if (ppSpinner) ppSpinner.style.display = "inline-block";
-      ppStatusMsg.textContent = "Creating PayPal order (USD) on the server…";
+      ppStatusMsg.textContent = "Connecting to PayPal…";
       const res = await Guardiao.criarOrdemPayPalNoServidor({
         plano: planoPayPalAtual,
         email: inpPpEmail ? inpPpEmail.value : ""
       });
       if (ppSpinner) ppSpinner.style.display = "none";
-      if (!res.ok) {
-        ppStatusMsg.textContent = "⚠ " + (res.erro || "Unable to create PayPal order.");
+      if (!res.ok || !res.approveUrl) {
+        ppStatusMsg.textContent = res.erro || "PayPal checkout is not yet available. Please try again later.";
         return;
       }
-      if (inpPpOrderId) inpPpOrderId.value = res.paypalOrderId;
-      ppStatusMsg.textContent = `Order ${res.paypalOrderId} created ($${res.valorUsd} USD). Complete approval on PayPal and click "Verify & Capture".`;
-      if (res.approveUrl) {
-        window.open(res.approveUrl, "_blank", "noopener");
-      }
-    });
-  }
-
-  if (btnPpCapturarOrdem) {
-    btnPpCapturarOrdem.addEventListener("click", async () => {
-      const ppId = inpPpOrderId ? inpPpOrderId.value.trim() : "";
-      if (!ppId) {
-        if (inpPpOrderId) inpPpOrderId.focus();
-        ppStatusMsg.textContent = "⚠ Please enter or create your PayPal Order ID first.";
-        return;
-      }
-      if (ppSpinner) ppSpinner.style.display = "inline-block";
-      ppStatusMsg.textContent = "Verifying and capturing order on the PayPal server…";
-      const cap = await Guardiao.capturarOrdemPayPalNoServidor({
-        paypalOrderId: ppId,
-        email: inpPpEmail ? inpPpEmail.value : "",
-        plano: planoPayPalAtual
-      });
-      if (ppSpinner) ppSpinner.style.display = "none";
-      if (cap && cap.pago && cap.dados) {
-        liberarBotaoPayPal(cap.dados);
-      } else {
-        ppStatusMsg.textContent = "⚠ " + ((cap && cap.erro) || "Payment not yet captured on PayPal.");
-      }
+      ppStatusMsg.textContent = `Redirecting to PayPal to complete your $${res.valorUsd} USD payment…`;
+      window.location.href = res.approveUrl;
     });
   }
 
@@ -1423,8 +1411,13 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
     } catch {}
   }
 
-  // Separação estrita: PT-BR abre InfinitePay (BRL); EN abre PayPal (USD); Modo Mestra abre direto
+  // Separação estrita: EN abre exclusivamente PayPal (USD); PT-BR abre InfinitePay (BRL) ou Modo Mestra
   $("#btn-comprar-standard").addEventListener("click", function(e) {
+    if (isIdiomaIngles()) {
+      e.preventDefault();
+      abrirModalPayPalCheckout("standard");
+      return;
+    }
     if (Guardiao && Guardiao.isModoMestra && Guardiao.isModoMestra()) {
       e.preventDefault();
       try {
@@ -1434,14 +1427,14 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
       window.location.href = "diagnostico.html?plano=standard";
       return;
     }
-    if (isIdiomaIngles()) {
-      e.preventDefault();
-      abrirModalPayPalCheckout("standard");
-      return;
-    }
     abrirModalPosCheckout("standard", this.href || urlInfinitePayStdCache);
   });
   $("#btn-comprar-profunda").addEventListener("click", function(e) {
+    if (isIdiomaIngles()) {
+      e.preventDefault();
+      abrirModalPayPalCheckout("profunda");
+      return;
+    }
     if (Guardiao && Guardiao.isModoMestra && Guardiao.isModoMestra()) {
       e.preventDefault();
       try {
@@ -1449,11 +1442,6 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
         localStorage.setItem("tryv_plano_desbloqueio", "profunda");
       } catch {}
       window.location.href = "diagnostico.html?plano=profunda";
-      return;
-    }
-    if (isIdiomaIngles()) {
-      e.preventDefault();
-      abrirModalPayPalCheckout("profunda");
       return;
     }
     abrirModalPosCheckout("profunda", this.href || urlInfinitePayProfCache);

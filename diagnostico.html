@@ -335,8 +335,8 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
       <span class="badge-plano" id="badge-plano-topo">✦ Análise Profunda Ativa</span>
       <a class="botao botao--vidro" href="desbloqueio.html" style="padding:.45rem 1rem;font-size:.85rem">← Página do Desbloqueio</a>
       <div class="seletor-idioma-tryv" role="group" aria-label="Idioma / Language" translate="no">
-        <button type="button" data-lang-btn="pt-BR" aria-pressed="true" class="ativo" title="Português (Brasil)" onclick="if(window.TryvI18n)window.TryvI18n.setIdioma('pt-BR')">PT-BR</button>
-        <button type="button" data-lang-btn="en" aria-pressed="false" title="English" onclick="if(window.TryvI18n)window.TryvI18n.setIdioma('en')">EN</button>
+        <button type="button" data-lang-btn="pt-BR" aria-pressed="true" class="ativo" title="Português brasileiro (PT-BR)" onclick="if(window.TryvI18n)window.TryvI18n.setIdioma('pt-BR')"><svg class="bandeira-idioma" viewBox="0 0 60 40" aria-hidden="true"><rect width="60" height="40" fill="#009c3b"/><path d="M30 4 56 20 30 36 4 20z" fill="#ffdf00"/><circle cx="30" cy="20" r="8.5" fill="#002776"/><path d="M21.8 18.2c5.5-.9 11.5.3 16.2 3.4" stroke="#fff" stroke-width="1.6" fill="none"/></svg><span>PT</span></button>
+        <button type="button" data-lang-btn="en" aria-pressed="false" title="English (EN)" onclick="if(window.TryvI18n)window.TryvI18n.setIdioma('en')"><svg class="bandeira-idioma" viewBox="0 0 60 40" aria-hidden="true"><rect width="60" height="40" fill="#b22234"/><path d="M0 4.6h60M0 10.8h60M0 16.9h60M0 23.1h60M0 29.2h60M0 35.4h60" stroke="#fff" stroke-width="3.1"/><rect width="26" height="21.5" fill="#3c3b6e"/><g fill="#fff"><circle cx="4" cy="4" r="1.2"/><circle cx="10" cy="4" r="1.2"/><circle cx="16" cy="4" r="1.2"/><circle cx="22" cy="4" r="1.2"/><circle cx="7" cy="8.5" r="1.2"/><circle cx="13" cy="8.5" r="1.2"/><circle cx="19" cy="8.5" r="1.2"/><circle cx="4" cy="13" r="1.2"/><circle cx="10" cy="13" r="1.2"/><circle cx="16" cy="13" r="1.2"/><circle cx="22" cy="13" r="1.2"/><circle cx="7" cy="17.5" r="1.2"/><circle cx="13" cy="17.5" r="1.2"/><circle cx="19" cy="17.5" r="1.2"/></g></svg><span>EN</span></button>
       </div>
     </div>
   </div>
@@ -446,22 +446,12 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
         2. Select Your Plan &amp; Pay Securely via PayPal (USD):
       </label>
       <div id="gate-pp-sdk-wrap" style="margin-bottom:.65rem"></div>
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:.75rem;margin-bottom:.95rem">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:.75rem;margin-bottom:.45rem">
         <button type="button" class="botao botao--ouro" id="btn-gate-pp-profunda" style="font-size:.9rem;padding:.85rem 1rem">
-          ✦ Pay Complete Deep Analysis (<span id="lbl-gate-pp-prof">$19.57 USD</span>)
+          ✦ Pay Complete Deep Analysis (<span id="lbl-gate-pp-prof">$19.86 USD</span>)
         </button>
         <button type="button" class="botao botao--vidro" id="btn-gate-pp-standard" style="font-size:.88rem;padding:.85rem 1rem">
-          Pay Standard Analysis (<span id="lbl-gate-pp-std">$7.67 USD</span>)
-        </button>
-      </div>
-
-      <label for="gate-pp-order-id" style="display:block;font-size:.82rem;font-weight:600;color:var(--rosa-claro);margin-bottom:.35rem">
-        3. Already approved on PayPal? Confirm your PayPal Order ID on the server *
-      </label>
-      <div style="display:flex;gap:.6rem;flex-wrap:wrap">
-        <input type="text" id="gate-pp-order-id" placeholder="PayPal Order ID (filled automatically on approval)…" style="flex:1;min-width:210px">
-        <button type="button" class="botao botao--vidro" id="btn-gate-pp-capturar" style="padding:.65rem 1.1rem;font-size:.86rem;white-space:nowrap">
-          Verify &amp; Capture
+          Pay Standard Analysis (<span id="lbl-gate-pp-std">$7.78 USD</span>)
         </button>
       </div>
       <small id="gate-pp-parametros-info" style="display:block;margin-top:.65rem;color:var(--texto-2);font-size:.76rem;line-height:1.45;opacity:.9"></small>
@@ -804,8 +794,8 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
 </main>
 
 <script src="motor-desbloqueio.js?v=3"></script>
-<script src="pagamento-guardiao.js?v=10"></script>
-<script src="i18n-desbloqueio.js?v=4"></script>
+<script src="pagamento-guardiao.js?v=12"></script>
+<script src="i18n-desbloqueio.js?v=6"></script>
 <script>
 (function() {
   "use strict";
@@ -895,8 +885,18 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
       if (lblStd) lblStd.textContent = `$${tabPP.planos.standard.precoFinalUsdStr} USD`;
       if (infoParam) {
         infoParam.innerHTML =
-          `<strong>Price Formation Parameters (USD):</strong> Target net BRL R$ ${tabPP.planos.standard.liquidoDesejadoBrl.toFixed(2)} (Standard → $${tabPP.planos.standard.precoFinalUsdStr} USD) / R$ ${tabPP.planos.profunda.liquidoDesejadoBrl.toFixed(2)} (Deep Analysis → $${tabPP.planos.profunda.precoFinalUsdStr} USD) · Exchange rate: 1 USD = R$ ${Number(p.cotacaoBrlUsd).toFixed(4)} (${p.fonteCotacao}) · PayPal fees: ${p.tarifaComercialPct}% + ${p.adicionalInternacionalPct}% + $${Number(p.tarifaFixaUsd).toFixed(2)} USD + ${p.spreadConversaoCambialPct}% FX spread + ${p.margemSegurancaPct}% margin. <em>Net BRL is an estimate and is not guaranteed if exchange rates or fees change.</em>`;
+          `<strong>Official PayPal Business Account:</strong> ${tabPP.merchantName || "54.492.316 Tryv Tuath"} (<code>${tabPP.merchantEmail || "tryvtuathterapias@gmail.com"}</code>) · <strong>Price Formation Parameters (USD):</strong> Target net BRL R$ ${tabPP.planos.standard.liquidoDesejadoBrl.toFixed(2)} (Standard → $${tabPP.planos.standard.precoFinalUsdStr} USD) / R$ ${tabPP.planos.profunda.liquidoDesejadoBrl.toFixed(2)} (Deep Analysis → $${tabPP.planos.profunda.precoFinalUsdStr} USD) · Exchange rate: 1 USD = R$ ${Number(p.cotacaoBrlUsd).toFixed(4)} (${p.fonteCotacao}) · PayPal fees: ${p.tarifaComercialPct}% + ${p.adicionalInternacionalPct}% + $${Number(p.tarifaFixaUsd).toFixed(2)} USD + ${p.spreadConversaoCambialPct}% FX spread + ${p.margemSegurancaPct}% margin. <em>Net BRL is an estimate and is not guaranteed if exchange rates or fees change.</em>`;
       }
+
+      const btnProfGate = $("#btn-gate-pp-profunda");
+      const btnStdGate = $("#btn-gate-pp-standard");
+      const disponivelNoServidor = Boolean(tabPP.configuradoNoServidor && tabPP.clientId);
+      [btnProfGate, btnStdGate].forEach((b) => {
+        if (!b) return;
+        b.disabled = !disponivelNoServidor;
+        b.style.opacity = disponivelNoServidor ? "1" : "0.5";
+        b.style.cursor = disponivelNoServidor ? "pointer" : "not-allowed";
+      });
 
       const tokenConf = Guardiao.lerTokenConfirmado();
       if (!tokenConf || !tokenConf.pago) {
@@ -905,7 +905,13 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
         if (subDesc) {
           subDesc.innerHTML = "To protect the exclusivity of the method, the intake questionnaire and your personalized PDF generation are unlocked <strong>automatically</strong> as soon as our server confirms and captures your <strong>PayPal payment in USD</strong>.";
         }
-        gateStatusMsg.textContent = "Awaiting PayPal USD payment approval and server capture confirmation…";
+        if (!disponivelNoServidor) {
+          if (gateSpinner) gateSpinner.style.display = "none";
+          gateStatusMsg.textContent = "PayPal checkout is not yet available. Please try again later.";
+        } else {
+          if (gateSpinner) gateSpinner.style.display = "inline-block";
+          gateStatusMsg.textContent = "Awaiting PayPal USD payment approval and server capture confirmation…";
+        }
       }
     } else {
       const tokenConf = Guardiao.lerTokenConfirmado();
@@ -917,6 +923,32 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
         }
       }
     }
+  }
+
+  function travarAnamneseNaTela() {
+    const emIngles = isIdiomaIngles();
+    btnLiberarAnamnese.disabled = true;
+    btnLiberarAnamnese.setAttribute("aria-disabled", "true");
+    btnLiberarAnamnese.style.opacity = "0.42";
+    btnLiberarAnamnese.style.cursor = "not-allowed";
+    btnLiberarAnamnese.style.pointerEvents = "none";
+    btnLiberarAnamnese.style.filter = "grayscale(.35)";
+    btnLiberarAnamnese.onclick = null;
+    btnLiberarAnamnese.textContent = emIngles
+      ? "🔒 Fill Intake / Generate PDF (Awaiting Payment Confirmation…)"
+      : "🔒 Preencher Anamnese / Gerar PDF (Aguardando Confirmação de Pagamento…)";
+
+    if (gateSpinner) gateSpinner.style.display = "inline-block";
+    if (gateStatusBox) {
+      gateStatusBox.style.background = "rgba(242,193,78,.08)";
+      gateStatusBox.style.borderColor = "rgba(242,193,78,.42)";
+      gateStatusBox.style.color = "var(--ouro-claro)";
+    }
+    secBloqueio.hidden = false;
+    secFormulario.hidden = true;
+    const secRes = $("#sec-resultado");
+    if (secRes) secRes.hidden = true;
+    sincronizarGatePorIdioma();
   }
 
   function destravarAnamneseNaTela(dadosConfirmados) {
@@ -977,9 +1009,74 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
   }
 
   async function inicializarVerificacaoPagamento() {
-    sincronizarGatePorIdioma();
+    if (pollingGate) pollingGate.parar();
+    travarAnamneseNaTela();
 
-    // a) Verifica imediatamente se o Modo Mestra está ativo ou se já existe token validado salvo
+    const rascunhoAtual = (Guardiao && Guardiao.lerRascunhoQuestionario && Guardiao.lerRascunhoQuestionario()) || {};
+    const urlEmail = Guardiao.normalizarEmail(params.get("email") || rascunhoAtual.email || "");
+    const urlPayPalReturn = params.get("paypal_return") === "1";
+    const urlPayPalOrderId = params.get("paypal_order_id") || (urlPayPalReturn ? (params.get("token") || "") : "");
+    const urlToken = (!urlPayPalReturn && params.get("token")) ? params.get("token") : "";
+
+    // Fluxo estrito para o idioma Inglês (EN): nunca desbloqueia por localStorage, sessão antiga ou URL sem validação real no servidor PayPal
+    if (isIdiomaIngles()) {
+      const tabPP = (Guardiao && Guardiao.sincronizarCotacaoPayPal)
+        ? await Guardiao.sincronizarCotacaoPayPal()
+        : (Guardiao && Guardiao.obterTabelaPrecosPayPal ? Guardiao.obterTabelaPrecosPayPal() : null);
+
+      sincronizarGatePorIdioma();
+
+      if (!tabPP || !tabPP.configuradoNoServidor || !tabPP.clientId) {
+        if (gateSpinner) gateSpinner.style.display = "none";
+        gateStatusMsg.textContent = "PayPal checkout is not yet available. Please try again later.";
+        return;
+      }
+
+      if (urlPayPalOrderId && Guardiao.capturarOrdemPayPalNoServidor) {
+        gateStatusMsg.textContent = "Verifying and capturing your PayPal order on the server…";
+        const resPP = await Guardiao.capturarOrdemPayPalNoServidor({
+          paypalOrderId: urlPayPalOrderId,
+          email: urlEmail,
+          plano: planoAtivo
+        });
+        if (resPP && resPP.pago && resPP.dados && resPP.dados.captureId) {
+          destravarAnamneseNaTela(resPP.dados);
+          secBloqueio.hidden = true;
+          secFormulario.hidden = false;
+          return;
+        }
+        if (gateSpinner) gateSpinner.style.display = "none";
+        gateStatusMsg.textContent = (resPP && resPP.erro) || "PayPal checkout is not yet available. Please try again later.";
+        return;
+      }
+
+      if (urlToken && Guardiao.validarAcessoPayPalNoServidor) {
+        const valPP = await Guardiao.validarAcessoPayPalNoServidor({
+          tokenAcesso: urlToken,
+          plano: planoAtivo
+        });
+        if (valPP && valPP.valido && valPP.pago && valPP.dados && valPP.dados.captureId) {
+          destravarAnamneseNaTela(valPP.dados);
+          secBloqueio.hidden = true;
+          secFormulario.hidden = false;
+          return;
+        }
+      }
+
+      const tokenMemoria = Guardiao.lerTokenConfirmado();
+      if (tokenMemoria && tokenMemoria.pago && tokenMemoria.captureId && Guardiao.temAcessoLiberadoParaPlano(planoAtivo)) {
+        destravarAnamneseNaTela(tokenMemoria);
+        secBloqueio.hidden = true;
+        secFormulario.hidden = false;
+        return;
+      }
+
+      if (gateSpinner) gateSpinner.style.display = "none";
+      gateStatusMsg.textContent = "Awaiting PayPal USD payment approval and server capture confirmation…";
+      return;
+    }
+
+    // Fluxo Brasileiro (PT-BR: InfinitePay / Modo Mestra) preservado integralmente
     if (Guardiao && Guardiao.isModoMestra && Guardiao.isModoMestra()) {
       const tokenMestra = Guardiao.lerTokenConfirmado();
       destravarAnamneseNaTela(tokenMestra);
@@ -993,39 +1090,21 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
     const urlSlug = params.get("slug") || params.get("invoice_slug") || "";
     const urlOrderNsu = params.get("order_nsu") || "";
     const urlReceipt = params.get("receipt_url") || "";
-    const urlPayPalReturn = params.get("paypal_return") === "1";
-    const urlPayPalOrderId = params.get("paypal_order_id") || (urlPayPalReturn ? (params.get("token") || "") : "");
-    const rascunhoAtual = (Guardiao && Guardiao.lerRascunhoQuestionario && Guardiao.lerRascunhoQuestionario()) || {};
-    const urlEmail = Guardiao.normalizarEmail(params.get("email") || rascunhoAtual.email || "");
 
-    if (tokenSalvo && tokenSalvo.pago && tokenSalvo.tokenAcesso) {
+    if (tokenSalvo && tokenSalvo.pago && tokenSalvo.tokenAcesso && Guardiao.temAcessoLiberadoParaPlano(planoAtivo)) {
+      destravarAnamneseNaTela(tokenSalvo);
+      secBloqueio.hidden = true;
+      secFormulario.hidden = false;
+      return;
+    } else if (tokenSalvo && tokenSalvo.pago && tokenSalvo.tokenAcesso && !planoUrl) {
+      planoAtivo = tokenSalvo.plano === "standard" ? "standard" : "profunda";
       destravarAnamneseNaTela(tokenSalvo);
       secBloqueio.hidden = true;
       secFormulario.hidden = false;
       return;
     }
 
-    // b1) Se retornou da aprovação do PayPal com token da ordem, captura e valida obrigatoriamente no servidor antes de liberar
-    if (urlPayPalOrderId && Guardiao.capturarOrdemPayPalNoServidor) {
-      secBloqueio.hidden = false;
-      secFormulario.hidden = true;
-      if (inpGatePpOrderId) inpGatePpOrderId.value = urlPayPalOrderId;
-      gateStatusMsg.textContent = "Verifying and capturing your PayPal order on the server…";
-      const resPP = await Guardiao.capturarOrdemPayPalNoServidor({
-        paypalOrderId: urlPayPalOrderId,
-        email: urlEmail,
-        plano: planoAtivo
-      });
-      if (resPP && resPP.pago && resPP.dados) {
-        destravarAnamneseNaTela(resPP.dados);
-        secBloqueio.hidden = true;
-        secFormulario.hidden = false;
-        return;
-      }
-      gateStatusMsg.textContent = "⚠ " + ((resPP && resPP.erro) || "PayPal capture could not be confirmed on the server yet.");
-    }
-
-    // b2) Se retornou da InfinitePay com transaction_nsu + slug ou receipt_url na URL, valida na hora
+    // Se retornou da InfinitePay com transaction_nsu + slug ou receipt_url na URL, valida na hora
     if ((urlTxNsu && urlSlug) || urlReceipt) {
       gateStatusMsg.textContent = "Validando comprovante de retorno da InfinitePay…";
       const resUrl = await Guardiao.verificarStatusPagamento({
@@ -1044,7 +1123,7 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
       }
     }
 
-    // c) Mantém o questionário bloqueado para clientes sem confirmação e inicia o polling periódico
+    // Mantém o questionário bloqueado para clientes sem confirmação e inicia o polling periódico
     secBloqueio.hidden = false;
     secFormulario.hidden = true;
     const sessao = Guardiao.lerSessaoPedido();
@@ -1057,6 +1136,7 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
 
   async function iniciarPollingGate(email, orderIdExistente) {
     if (pollingGate) pollingGate.parar();
+    if (isIdiomaIngles()) return;
     if (Guardiao && Guardiao.isModoMestra && Guardiao.isModoMestra()) {
       destravarAnamneseNaTela(Guardiao.lerTokenConfirmado());
       secBloqueio.hidden = true;
@@ -1102,20 +1182,18 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
     planoAtivo = planoEscolhido === "standard" ? "standard" : "profunda";
     atualizarUIPlano();
     salvarEstadoFormularioNaSessao();
-    gateStatusMsg.textContent = "Creating PayPal USD order on the server…";
+    gateStatusMsg.textContent = "Connecting to PayPal…";
     const res = await Guardiao.criarOrdemPayPalNoServidor({
       plano: planoAtivo,
       email: inpGatePpEmail ? inpGatePpEmail.value : ""
     });
-    if (!res.ok) {
-      gateStatusMsg.textContent = "⚠ " + (res.erro || "Could not create PayPal order on the server.");
+    if (!res.ok || !res.approveUrl) {
+      if (gateSpinner) gateSpinner.style.display = "none";
+      gateStatusMsg.textContent = res.erro || "PayPal checkout is not yet available. Please try again later.";
       return;
     }
-    if (inpGatePpOrderId) inpGatePpOrderId.value = res.paypalOrderId;
-    gateStatusMsg.textContent = `PayPal Order ${res.paypalOrderId} ($${res.valorUsd} USD) created. Approve on PayPal and click "Verify & Capture".`;
-    if (res.approveUrl) {
-      window.open(res.approveUrl, "_blank", "noopener");
-    }
+    gateStatusMsg.textContent = `Redirecting to PayPal to complete your $${res.valorUsd} USD payment…`;
+    window.location.href = res.approveUrl;
   }
 
   const btnGatePpProf = $("#btn-gate-pp-profunda");
@@ -1125,28 +1203,6 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
   const btnGatePpStd = $("#btn-gate-pp-standard");
   if (btnGatePpStd) {
     btnGatePpStd.addEventListener("click", () => acionarCriacaoOrdemPayPalGate("standard"));
-  }
-  const btnGatePpCap = $("#btn-gate-pp-capturar");
-  if (btnGatePpCap) {
-    btnGatePpCap.addEventListener("click", async () => {
-      const ppId = inpGatePpOrderId ? inpGatePpOrderId.value.trim() : "";
-      if (!ppId) {
-        if (inpGatePpOrderId) inpGatePpOrderId.focus();
-        gateStatusMsg.textContent = "⚠ Please enter or create your PayPal Order ID first.";
-        return;
-      }
-      gateStatusMsg.textContent = "Verifying and capturing your PayPal order on the server…";
-      const cap = await Guardiao.capturarOrdemPayPalNoServidor({
-        paypalOrderId: ppId,
-        email: inpGatePpEmail ? inpGatePpEmail.value : "",
-        plano: planoAtivo
-      });
-      if (cap && cap.pago && cap.dados) {
-        destravarAnamneseNaTela(cap.dados);
-      } else {
-        gateStatusMsg.textContent = "⚠ " + ((cap && cap.erro) || "PayPal payment has not been captured on the server yet.");
-      }
-    });
   }
 
   $("#btn-gate-monitorar").addEventListener("click", async () => {
@@ -1211,15 +1267,15 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
   window.addEventListener("tryv:mestra-desativada", () => inicializarVerificacaoPagamento());
   window.addEventListener("tryv:idioma-alterado", () => {
     atualizarUIPlano();
-    sincronizarGatePorIdioma();
+    inicializarVerificacaoPagamento();
   });
 
   function atualizarUIPlano() {
     const isProf = planoAtivo === "profunda";
     const emIngles = isIdiomaIngles();
     const tabPP = Guardiao && Guardiao.obterTabelaPrecosPayPal ? Guardiao.obterTabelaPrecosPayPal() : null;
-    const stdUsd = tabPP ? `$${tabPP.planos.standard.precoFinalUsdStr} USD` : "$7.67 USD";
-    const profUsd = tabPP ? `$${tabPP.planos.profunda.precoFinalUsdStr} USD` : "$19.57 USD";
+    const stdUsd = tabPP ? `$${tabPP.planos.standard.precoFinalUsdStr} USD` : "$7.78 USD";
+    const profUsd = tabPP ? `$${tabPP.planos.profunda.precoFinalUsdStr} USD` : "$19.86 USD";
 
     const btnModoStd = $("#btn-modo-standard");
     const btnModoProf = $("#btn-modo-profunda");
@@ -1257,11 +1313,25 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
       localStorage.setItem("tryv_plano_desbloqueio", planoAtivo);
     } catch {}
   }
-  $("#btn-modo-standard").addEventListener("click", () => { planoAtivo = "standard"; atualizarUIPlano(); salvarEstadoFormularioNaSessao(); });
-  $("#btn-modo-profunda").addEventListener("click", () => { planoAtivo = "profunda"; atualizarUIPlano(); salvarEstadoFormularioNaSessao(); });
+  function alternarPlanoComVerificacao(novoPlano) {
+    planoAtivo = novoPlano === "standard" ? "standard" : "profunda";
+    atualizarUIPlano();
+    salvarEstadoFormularioNaSessao();
+    if (Guardiao && Guardiao.temAcessoLiberadoParaPlano && Guardiao.temAcessoLiberadoParaPlano(planoAtivo)) {
+      destravarAnamneseNaTela(Guardiao.lerTokenConfirmado());
+      secBloqueio.hidden = true;
+      secFormulario.hidden = false;
+    } else {
+      travarAnamneseNaTela();
+      const sessao = Guardiao ? Guardiao.lerSessaoPedido() : null;
+      iniciarPollingGate((inpGateEmail && inpGateEmail.value) || "", sessao ? sessao.orderId : "");
+    }
+  }
+  $("#btn-modo-standard").addEventListener("click", () => alternarPlanoComVerificacao("standard"));
+  $("#btn-modo-profunda").addEventListener("click", () => alternarPlanoComVerificacao("profunda"));
   const btnAltProf = $("#btn-alternar-para-profunda");
   if (btnAltProf) {
-    btnAltProf.addEventListener("click", () => { planoAtivo = "profunda"; atualizarUIPlano(); salvarEstadoFormularioNaSessao(); });
+    btnAltProf.addEventListener("click", () => alternarPlanoComVerificacao("profunda"));
   }
   const linkUpsellTopoEl = $("#link-upsell-standard-topo");
   if (linkUpsellTopoEl) {
@@ -1437,6 +1507,10 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
   }
 
   function irParaPasso(n, silencioso = false) {
+    if (!silencioso && Guardiao && Guardiao.temAcessoLiberadoParaPlano && !Guardiao.temAcessoLiberadoParaPlano(planoAtivo)) {
+      travarAnamneseNaTela();
+      return;
+    }
     if (n > 1 && passoAtual === 1 && !silencioso) {
       const nome = $("#f-nome").value.trim();
       const data = $("#f-data").value;
@@ -1519,6 +1593,10 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
 
   $("#form-diagnostico").addEventListener("submit", async e => {
     e.preventDefault();
+    if (Guardiao && Guardiao.temAcessoLiberadoParaPlano && !Guardiao.temAcessoLiberadoParaPlano(planoAtivo)) {
+      travarAnamneseNaTela();
+      return;
+    }
     salvarEstadoFormularioNaSessao();
     let cidadeInfo = { nome: "São Paulo, SP", lat: -23.55, lon: -46.63, fuso: -3 };
     if (selCidade.value === "custom") {

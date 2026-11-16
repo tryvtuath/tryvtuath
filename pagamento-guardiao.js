@@ -412,7 +412,25 @@
     }
   }
 
+  // Confirmação PayPal mantida exclusivamente em memória após validação ativa no servidor (nunca lida de localStorage/URL)
+  let confirmacaoPayPalVerificadaNoServidor = null;
+
   function lerTokenConfirmado(agoraMs = Date.now()) {
+    // Na experiência internacional em Inglês (EN), nunca confia em localStorage, sessionStorage, URL ou sessão antiga:
+    // exige validação ativa no servidor com PayPal conectado e captura real COMPLETED em USD.
+    if (obterIdiomaAtivoSessao() === "en") {
+      if (
+        PAYPAL_STATE.configuradoNoServidor === true &&
+        confirmacaoPayPalVerificadaNoServidor &&
+        confirmacaoPayPalVerificadaNoServidor.pago === true &&
+        confirmacaoPayPalVerificadaNoServidor.tokenAcesso &&
+        confirmacaoPayPalVerificadaNoServidor.captureId
+      ) {
+        return confirmacaoPayPalVerificadaNoServidor;
+      }
+      return null;
+    }
+
     if (isModoMestra()) {
       const planoSalvo = obterPlanoPreferidoAtual();
       return {
@@ -420,7 +438,7 @@
         modoMestra: true,
         orderId: "MESTRA-TRYV-LIVRE",
         plano: planoSalvo,
-        idioma: obterIdiomaAtivoSessao(),
+        idioma: "pt-BR",
         status: "PAID",
         tokenAcesso: "MESTRA_TRYV_ILIMITADO",
         metodo: "Modo Mestra Tryv"
@@ -433,6 +451,17 @@
       if (!raw) return null;
       const obj = JSON.parse(raw);
       if (!obj || !obj.pago || !obj.tokenAcesso) return null;
+      const tokStr = String(obj.tokenAcesso || "");
+      // Rejeita tokens antigos não verificados no servidor/API ou de Modo Mestra encerrado
+      if (
+        tokStr === "MESTRA_TRYV_ILIMITADO" ||
+        tokStr.startsWith("INFPAY_RECIBO_") ||
+        tokStr.startsWith("INFPAY_REDIRECT_")
+      ) {
+        if (typeof sessionStorage !== "undefined") removerStorageSeguro(sessionStorage, STORAGE_KEYS.TOKEN_VALIDADO);
+        if (typeof localStorage !== "undefined") removerStorageSeguro(localStorage, STORAGE_KEYS.TOKEN_VALIDADO);
+        return null;
+      }
       if (obj.expiraEm && agoraMs > Number(obj.expiraEm)) {
         if (typeof sessionStorage !== "undefined") removerStorageSeguro(sessionStorage, STORAGE_KEYS.TOKEN_VALIDADO);
         if (typeof localStorage !== "undefined") removerStorageSeguro(localStorage, STORAGE_KEYS.TOKEN_VALIDADO);
@@ -442,6 +471,29 @@
     } catch {
       return null;
     }
+  }
+
+  function temAcessoLiberadoParaPlano(planoDesejado) {
+    const pDesejado = planoDesejado === "standard" ? "standard" : "profunda";
+    if (obterIdiomaAtivoSessao() === "en") {
+      if (
+        PAYPAL_STATE.configuradoNoServidor !== true ||
+        !confirmacaoPayPalVerificadaNoServidor ||
+        confirmacaoPayPalVerificadaNoServidor.pago !== true ||
+        !confirmacaoPayPalVerificadaNoServidor.tokenAcesso ||
+        !confirmacaoPayPalVerificadaNoServidor.captureId
+      ) {
+        return false;
+      }
+      if (confirmacaoPayPalVerificadaNoServidor.plano === "profunda") return true;
+      return confirmacaoPayPalVerificadaNoServidor.plano === pDesejado;
+    }
+    if (isModoMestra()) return true;
+    const tok = lerTokenConfirmado();
+    if (!tok || !tok.pago || !tok.tokenAcesso) return false;
+    // Pagamento do plano "profunda" cobre ambos; pagamento de "standard" libera exclusivamente "standard"
+    if (tok.plano === "profunda") return true;
+    return tok.plano === pDesejado;
   }
 
   function salvarTokenConfirmado(dadosConfirmacao, ttlMs = TTL_TOKEN_PAGAMENTO_MS, agoraMs = Date.now()) {
@@ -669,25 +721,43 @@
 
   /**
    * Consulta o status do pagamento no Back-End (/api/pagamento/status),
-   * verifica o armazenamento compartilhado entre abas e valida parâmetros de retorno da InfinitePay.
+   * verifica o armazenamento compartilhado entre abas e valida parâmetros de retorno na API oficial da InfinitePay.
+   * Nunca libera acesso sem confirmação real de pagamento (status PAID/paid=true) ou Modo Mestra.
    */
   async function verificarStatusPagamento({ email, orderId, transactionNsu, slug, receiptUrl, plano, comprovanteInput }) {
     const emailLimpo = normalizarEmail(email);
+    const planoSolicitado = plano === "standard" ? "standard" : "profunda";
 
-    // 0. Verifica se o Modo Mestra ou token já confirmado está ativo
+    // 0. Verifica se o Modo Mestra ou token já confirmado para o plano solicitado está ativo
     const jaConfirmado = lerTokenConfirmado();
-    if (jaConfirmado && jaConfirmado.pago) {
+    if (jaConfirmado && jaConfirmado.pago && temAcessoLiberadoParaPlano(planoSolicitado)) {
       return { pago: true, dados: jaConfirmado };
     }
 
-    // 1. Consulta nosso Back-End (alimentado pelo Webhook da InfinitePay)
+    // Extrai transactionNsu/slug caso o cliente tenha colado o link de retorno/comprovante da InfinitePay
+    let txNsuFinal = String(transactionNsu || "").trim();
+    let slugFinal = String(slug || "").trim();
+    let orderIdFinal = String(orderId || "").trim();
+    let receiptUrlFinal = String(receiptUrl || "").trim();
+
+    if (comprovanteInput) {
+      const extraido = extrairParametrosComprovanteInfinitePay(comprovanteInput);
+      if (extraido && extraido.validoFormato) {
+        if (!txNsuFinal && extraido.transactionNsu) txNsuFinal = extraido.transactionNsu;
+        if (!slugFinal && extraido.slug) slugFinal = extraido.slug;
+        if (!orderIdFinal && extraido.orderNsu) orderIdFinal = extraido.orderNsu;
+        if (!receiptUrlFinal && extraido.receiptUrl) receiptUrlFinal = extraido.receiptUrl;
+      }
+    }
+
+    // 1. Consulta nosso Back-End (alimentado pelo Webhook da InfinitePay e PayPal)
     try {
       const qs = new URLSearchParams({
         email: emailLimpo,
-        order_id: orderId || "",
-        transaction_nsu: transactionNsu || "",
-        slug: slug || "",
-        plano: plano || "profunda",
+        order_id: orderIdFinal,
+        transaction_nsu: txNsuFinal,
+        slug: slugFinal,
+        plano: planoSolicitado,
         _t: String(Date.now())
       });
       const resp = await fetch(`${API_BASE_URL}/pagamento/status?${qs.toString()}`, {
@@ -701,24 +771,27 @@
         if (contentType.includes("application/json")) {
           const data = await resp.json();
           if (data && data.pago === true && data.tokenAcesso) {
-            const confirmado = salvarTokenConfirmado({
-              orderId: data.orderId || orderId,
-              plano: data.plano || plano || "profunda",
-              tokenAcesso: data.tokenAcesso,
-              transactionNsu: data.transactionNsu || transactionNsu,
-              metodo: data.metodo || "InfinitePay Webhook",
-              confirmadoEm: data.pagoEm || new Date().toISOString()
-            });
-            return { pago: true, dados: confirmado };
+            const planoRetornado = data.plano === "standard" ? "standard" : "profunda";
+            if (planoRetornado === "profunda" || planoRetornado === planoSolicitado) {
+              const confirmado = salvarTokenConfirmado({
+                orderId: data.orderId || orderIdFinal,
+                plano: planoRetornado,
+                tokenAcesso: data.tokenAcesso,
+                transactionNsu: data.transactionNsu || txNsuFinal,
+                metodo: data.metodo || "InfinitePay Webhook",
+                confirmadoEm: data.pagoEm || new Date().toISOString()
+              });
+              return { pago: true, dados: confirmado };
+            }
           }
         }
       }
     } catch {
-      // Continua para validação de retorno direto / payment_check da InfinitePay
+      // Continua para validação direta na API payment_check da InfinitePay
     }
 
-    // 2. Se veio do redirecionamento oficial da InfinitePay com transaction_nsu + slug (ou receipt_url)
-    if ((transactionNsu && slug) || receiptUrl) {
+    // 2. Valida diretamente no endpoint oficial payment_check da InfinitePay (somente libera se paid === true)
+    if (txNsuFinal && slugFinal) {
       try {
         const respInf = await fetch(
           "https://api.checkout.infinitepay.io/payment_check",
@@ -727,61 +800,29 @@
             headers: { "Content-Type": "application/json", "Accept": "application/json" },
             body: JSON.stringify({
               handle: INFINITEPAY_HANDLE,
-              order_nsu: orderId || transactionNsu,
-              transaction_nsu: transactionNsu,
-              slug: slug
+              order_nsu: orderIdFinal || txNsuFinal,
+              transaction_nsu: txNsuFinal,
+              slug: slugFinal
             })
           }
         );
         if (respInf.ok) {
           const jsonInf = await respInf.json();
           if (jsonInf && (jsonInf.paid === true || jsonInf.success === true)) {
-            const tokenAssinado = `INFPAY_${transactionNsu}_${slug}`;
+            const tokenAssinado = `INFPAY_${txNsuFinal}_${slugFinal}`;
             const confirmado = salvarTokenConfirmado({
-              orderId: orderId || transactionNsu,
-              plano: plano || "profunda",
+              orderId: orderIdFinal || txNsuFinal,
+              plano: planoSolicitado,
               tokenAcesso: tokenAssinado,
-              transactionNsu: transactionNsu,
-              receiptUrl: receiptUrl || "",
+              transactionNsu: txNsuFinal,
+              receiptUrl: receiptUrlFinal || "",
               metodo: jsonInf.capture_method || "InfinitePay",
               confirmadoEm: new Date().toISOString()
             });
             return { pago: true, dados: confirmado };
           }
         }
-      } catch {
-        if (transactionNsu && slug && (receiptUrl || transactionNsu.length >= 6)) {
-          const tokenAssinado = `INFPAY_REDIRECT_${transactionNsu}_${slug}`;
-          const confirmado = salvarTokenConfirmado({
-            orderId: orderId || transactionNsu,
-            plano: plano || "profunda",
-            tokenAcesso: tokenAssinado,
-            transactionNsu,
-            receiptUrl: receiptUrl || "",
-            metodo: "InfinitePay Redirect",
-            confirmadoEm: new Date().toISOString()
-          });
-          return { pago: true, dados: confirmado };
-        }
-      }
-    }
-
-    // 3. Se o cliente informou o link do recibo ou código NSU da transação InfinitePay
-    if (comprovanteInput) {
-      const extraido = extrairParametrosComprovanteInfinitePay(comprovanteInput);
-      if (extraido && extraido.validoFormato) {
-        const tokenAssinado = `INFPAY_RECIBO_${extraido.transactionNsu}`;
-        const confirmado = salvarTokenConfirmado({
-          orderId: orderId || extraido.orderNsu || extraido.transactionNsu,
-          plano: plano || "profunda",
-          tokenAcesso: tokenAssinado,
-          transactionNsu: extraido.transactionNsu,
-          receiptUrl: extraido.receiptUrl,
-          metodo: extraido.captureMethod,
-          confirmadoEm: new Date().toISOString()
-        });
-        return { pago: true, dados: confirmado };
-      }
+      } catch {}
     }
 
     return { pago: false, dados: null };
@@ -1072,6 +1113,11 @@
       : "calc(14px + env(safe-area-inset-bottom, 0px))";
     const pref = obterPrefixoRaiz();
 
+    if (obterIdiomaAtivoSessao() === "en") {
+      container.innerHTML = "";
+      return;
+    }
+
     if (isModoMestra()) {
       container.innerHTML = `
         <div style="position:fixed;bottom:${posBottom};left:12px;right:auto;max-width:calc(100vw - 24px);z-index:9998;display:inline-flex;flex-wrap:wrap;align-items:center;gap:.35rem;padding:.4rem .65rem;border-radius:999px;background:rgba(16,10,38,.94);border:1px solid rgba(242,193,78,.6);box-shadow:0 8px 22px rgba(0,0,0,.7);backdrop-filter:blur(8px);font-family:system-ui,-apple-system,sans-serif;font-size:.74rem;color:#ffe299;">
@@ -1118,6 +1164,9 @@
     } else {
       renderizarBarraMestraTryv();
     }
+    if (typeof global.addEventListener === "function") {
+      global.addEventListener("tryv:idioma-alterado", renderizarBarraMestraTryv);
+    }
   }
 
   /**
@@ -1138,11 +1187,15 @@
   const PAYPAL_STATE = {
     ambiente: "sandbox",
     clientId: "",
+    merchantName: "54.492.316 Tryv Tuath",
+    merchantEmail: "tryvtuathterapias@gmail.com",
     configuradoNoServidor: false,
-    cotacaoBrlUsd: 5.75,
-    fonteCotacao: "Cotação de referência configurada (conteudo.json), atualizada automaticamente via API USD/BRL",
+    precoStandardUsd: 7.78,
+    precoProfundaUsd: 19.86,
+    cotacaoBrlUsd: 5.6666,
+    fonteCotacao: "AwesomeAPI · Commercial USD/BRL Exchange Rate (1 USD = R$ 5.6666)",
     dataReferenciaCotacao: "2026-11-15",
-    atualizarCotacaoAutomaticamente: true,
+    atualizarCotacaoAutomaticamente: false,
     liquidoDesejadoStandardBrl: 37.00,
     liquidoDesejadoProfundaBrl: 97.00,
     liquidoAncoraStandardBrl: 97.00,
@@ -1158,7 +1211,15 @@
     if (!cfg || typeof cfg !== "object") return;
     if (cfg.ambiente) PAYPAL_STATE.ambiente = cfg.ambiente === "live" ? "live" : "sandbox";
     if (typeof cfg.clientId === "string" && cfg.clientId.trim()) PAYPAL_STATE.clientId = cfg.clientId.trim();
+    if (typeof cfg.merchantName === "string" && cfg.merchantName.trim()) PAYPAL_STATE.merchantName = cfg.merchantName.trim();
+    if (typeof cfg.merchantEmail === "string" && cfg.merchantEmail.trim()) PAYPAL_STATE.merchantEmail = cfg.merchantEmail.trim();
     if (typeof cfg.configurado === "boolean") PAYPAL_STATE.configuradoNoServidor = cfg.configurado;
+    if (Number.isFinite(Number(cfg.precoStandardUsd)) && Number(cfg.precoStandardUsd) > 0) {
+      PAYPAL_STATE.precoStandardUsd = Number(Number(cfg.precoStandardUsd).toFixed(2));
+    }
+    if (Number.isFinite(Number(cfg.precoProfundaUsd)) && Number(cfg.precoProfundaUsd) > 0) {
+      PAYPAL_STATE.precoProfundaUsd = Number(Number(cfg.precoProfundaUsd).toFixed(2));
+    }
     if (Number.isFinite(Number(cfg.cotacaoBrlUsd)) && Number(cfg.cotacaoBrlUsd) > 1) {
       PAYPAL_STATE.cotacaoBrlUsd = Number(Number(cfg.cotacaoBrlUsd).toFixed(4));
     } else if (Number.isFinite(Number(cfg.cotacaoReferenciaBrlUsd)) && Number(cfg.cotacaoReferenciaBrlUsd) > 1) {
@@ -1198,7 +1259,7 @@
 
   function calcularPrecoPayPalUSD(valorLiquidoDesejadoBrl, opcoesCustom = {}) {
     const liquidoBrl = Number(valorLiquidoDesejadoBrl);
-    const cotacaoBrlUsd = Number(opcoesCustom.cotacaoBrlUsd || PAYPAL_STATE.cotacaoBrlUsd || 5.75);
+    const cotacaoBrlUsd = Number(opcoesCustom.cotacaoBrlUsd || PAYPAL_STATE.cotacaoBrlUsd || 5.6666);
     const tarifaComercialPct = Number(opcoesCustom.tarifaComercialPct ?? PAYPAL_STATE.tarifaComercialPct);
     const adicionalInternacionalPct = Number(opcoesCustom.adicionalInternacionalPct ?? PAYPAL_STATE.adicionalInternacionalPct);
     const tarifaFixaUsd = Number(opcoesCustom.tarifaFixaUsd ?? PAYPAL_STATE.tarifaFixaUsd);
@@ -1212,7 +1273,9 @@
     // Preço USD = (valor líquido desejado em BRL / (cotação BRL/USD × 0,965) + 0,30) / 0,936
     const precoBaseUsd = ((liquidoBrl / (cotacaoBrlUsd * fatorConversaoCambial)) + tarifaFixaUsd) / fatorRetencaoTarifas;
     const precoComMargemBruto = precoBaseUsd * (1 + Math.max(0, margemSegurancaPct) / 100);
-    const precoFinalUsd = Number((Math.ceil(precoComMargemBruto * 100) / 100).toFixed(2));
+    const precoFinalUsd = Number.isFinite(Number(opcoesCustom.precoFixoUsd)) && Number(opcoesCustom.precoFixoUsd) > 0
+      ? Number(Number(opcoesCustom.precoFixoUsd).toFixed(2))
+      : Number((Math.ceil(precoComMargemBruto * 100) / 100).toFixed(2));
     const precoBaseUsdArredondado = Number((Math.ceil(precoBaseUsd * 100) / 100).toFixed(2));
 
     const usdLiquidoAposTarifas = (precoFinalUsd * fatorRetencaoTarifas) - tarifaFixaUsd;
@@ -1244,14 +1307,20 @@
   }
 
   function obterTabelaPrecosPayPal() {
-    const std = calcularPrecoPayPalUSD(PAYPAL_STATE.liquidoDesejadoStandardBrl);
-    const prof = calcularPrecoPayPalUSD(PAYPAL_STATE.liquidoDesejadoProfundaBrl);
+    const std = calcularPrecoPayPalUSD(PAYPAL_STATE.liquidoDesejadoStandardBrl, {
+      precoFixoUsd: PAYPAL_STATE.precoStandardUsd || 7.78
+    });
+    const prof = calcularPrecoPayPalUSD(PAYPAL_STATE.liquidoDesejadoProfundaBrl, {
+      precoFixoUsd: PAYPAL_STATE.precoProfundaUsd || 19.86
+    });
     const ancStd = calcularPrecoPayPalUSD(PAYPAL_STATE.liquidoAncoraStandardBrl);
     const ancProf = calcularPrecoPayPalUSD(PAYPAL_STATE.liquidoAncoraProfundaBrl);
 
     return {
       ambiente: PAYPAL_STATE.ambiente,
       clientId: PAYPAL_STATE.clientId,
+      merchantName: PAYPAL_STATE.merchantName,
+      merchantEmail: PAYPAL_STATE.merchantEmail,
       configuradoNoServidor: PAYPAL_STATE.configuradoNoServidor,
       moeda: "USD",
       parametrosFormacaoPreco: prof.parametros,
@@ -1296,7 +1365,11 @@
             configurarPayPal({
               ambiente: json.ambiente,
               clientId: json.clientId,
+              merchantName: json.merchantName,
+              merchantEmail: json.merchantEmail,
               configurado: json.configurado,
+              precoStandardUsd: json.planos && json.planos.standard ? json.planos.standard.precoFinalUsd : undefined,
+              precoProfundaUsd: json.planos && json.planos.profunda ? json.planos.profunda.precoFinalUsd : undefined,
               cotacaoBrlUsd: json.parametrosFormacaoPreco.cotacaoBrlUsd,
               fonteCotacao: json.parametrosFormacaoPreco.fonteCotacao,
               dataReferenciaCotacao: json.parametrosFormacaoPreco.dataReferenciaCotacao,
@@ -1346,6 +1419,8 @@
     return obterTabelaPrecosPayPal();
   }
 
+  const MSG_PAYPAL_INDISPONIVEL_EN = "PayPal checkout is not yet available. Please try again later.";
+
   /**
    * Cria uma ordem PayPal em USD no servidor (POST /api/paypal/create-order).
    * Não expõe segredos no cliente e não libera acesso antes da captura validada no servidor.
@@ -1381,6 +1456,7 @@
       if (ct.includes("application/json")) {
         const json = await resp.json();
         if (resp.ok && json && json.ok && json.paypalOrderId) {
+          PAYPAL_STATE.configuradoNoServidor = true;
           salvarSessaoPedido({
             orderId: json.orderId || sessao.orderId,
             plano: planoNorm,
@@ -1400,27 +1476,29 @@
         }
         return {
           ok: false,
-          codigo: (json && json.codigo) || "PAYPAL_ORDER_ERROR",
-          erro: (json && json.erro) || "Could not create the PayPal order on the server."
+          codigo: (json && json.codigo) || "PAYPAL_NOT_AVAILABLE",
+          erro: MSG_PAYPAL_INDISPONIVEL_EN
         };
       }
     } catch {}
 
+    PAYPAL_STATE.configuradoNoServidor = false;
     return {
       ok: false,
-      codigo: "BACKEND_UNREACHABLE",
-      erro: "The payment validation server (/api/paypal/create-order) is currently unreachable or awaiting PayPal credentials configuration."
+      codigo: "PAYPAL_NOT_AVAILABLE",
+      erro: MSG_PAYPAL_INDISPONIVEL_EN
     };
   }
 
   /**
    * Solicita ao servidor a captura e validação da ordem PayPal (POST /api/paypal/capture-order).
-   * Somente libera o produto se o servidor confirmar status COMPLETED em USD e retornar tokenAcesso assinado.
+   * Somente libera o produto se o servidor confirmar diretamente com o PayPal o status COMPLETED em USD,
+   * valor correto, produto/plano correspondente e ID de captura real.
    */
   async function capturarOrdemPayPalNoServidor({ paypalOrderId, orderId, email, plano }) {
     const ppId = String(paypalOrderId || "").trim();
     if (!ppId) {
-      return { pago: false, erro: "PayPal Order ID is required for server verification." };
+      return { pago: false, erro: MSG_PAYPAL_INDISPONIVEL_EN };
     }
 
     try {
@@ -1439,31 +1517,109 @@
       const ct = resp.headers.get("content-type") || "";
       if (ct.includes("application/json")) {
         const data = await resp.json();
-        if (resp.ok && data && data.ok === true && data.pago === true && data.tokenAcesso) {
-          const confirmado = salvarTokenConfirmado({
+        if (
+          resp.ok &&
+          data &&
+          data.ok === true &&
+          data.pago === true &&
+          data.status === "PAID" &&
+          data.moeda === "USD" &&
+          data.captureId &&
+          data.tokenAcesso
+        ) {
+          PAYPAL_STATE.configuradoNoServidor = true;
+          const payloadVerificado = {
+            pago: true,
             orderId: data.orderId || ppId,
-            plano: data.plano || plano || "profunda",
+            paypalOrderId: data.paypalOrderId || ppId,
+            captureId: data.captureId,
+            plano: data.plano === "standard" ? "standard" : "profunda",
             idioma: "en",
+            moeda: "USD",
+            valorUsd: data.valorUsd,
+            status: "PAID",
             tokenAcesso: data.tokenAcesso,
-            transactionNsu: data.captureId || data.paypalOrderId || ppId,
-            metodo: data.metodo || "PayPal International (USD)",
+            transactionNsu: data.captureId,
+            metodo: "PayPal International (USD)",
             confirmadoEm: new Date().toISOString()
-          });
-          return { pago: true, dados: confirmado };
+          };
+          confirmacaoPayPalVerificadaNoServidor = payloadVerificado;
+          return { pago: true, dados: payloadVerificado };
         }
         return {
           pago: false,
           codigo: (data && data.codigo) || "CAPTURE_NOT_COMPLETED",
-          erro: (data && data.erro) || "PayPal payment has not been captured or confirmed by the server yet."
+          erro: (data && data.codigo === "PAYPAL_CREDENTIALS_MISSING")
+            ? MSG_PAYPAL_INDISPONIVEL_EN
+            : ((data && data.erro) || "PayPal payment has not been captured or confirmed by the server yet.")
         };
       }
     } catch {}
 
+    confirmacaoPayPalVerificadaNoServidor = null;
     return {
       pago: false,
-      codigo: "BACKEND_UNREACHABLE",
-      erro: "Could not reach the backend server (/api/paypal/capture-order) to verify the PayPal capture."
+      codigo: "PAYPAL_NOT_AVAILABLE",
+      erro: MSG_PAYPAL_INDISPONIVEL_EN
     };
+  }
+
+  /**
+   * Valida um token de acesso PayPal diretamente no servidor (POST /api/pagamento/validar-token).
+   * Não confia em localStorage, sessionStorage ou parâmetros de URL sem confirmação ativa do backend.
+   */
+  async function validarAcessoPayPalNoServidor({ tokenAcesso, plano }) {
+    const tok = String(tokenAcesso || "").trim();
+    const planoSolicitado = plano === "standard" ? "standard" : "profunda";
+    if (!tok) {
+      confirmacaoPayPalVerificadaNoServidor = null;
+      return { valido: false, pago: false, erro: MSG_PAYPAL_INDISPONIVEL_EN };
+    }
+
+    try {
+      const resp = await fetch(`${API_BASE_URL}/pagamento/validar-token`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Accept": "application/json" },
+        body: JSON.stringify({ tokenAcesso: tok })
+      });
+      const ct = resp.headers.get("content-type") || "";
+      if (resp.ok && ct.includes("application/json")) {
+        const data = await resp.json();
+        if (
+          data &&
+          data.valido === true &&
+          data.pago === true &&
+          data.gateway === "paypal" &&
+          data.moeda === "USD" &&
+          data.captureId
+        ) {
+          const planoConfirmado = data.plano === "standard" ? "standard" : "profunda";
+          if (planoConfirmado !== "profunda" && planoConfirmado !== planoSolicitado) {
+            return {
+              valido: false,
+              pago: false,
+              erro: "This payment token is valid only for the Standard Analysis plan."
+            };
+          }
+          PAYPAL_STATE.configuradoNoServidor = true;
+          confirmacaoPayPalVerificadaNoServidor = {
+            pago: true,
+            orderId: data.orderId || "",
+            captureId: data.captureId,
+            plano: planoConfirmado,
+            idioma: "en",
+            moeda: "USD",
+            status: "PAID",
+            tokenAcesso: tok,
+            metodo: "PayPal International (USD)"
+          };
+          return { valido: true, pago: true, dados: confirmacaoPayPalVerificadaNoServidor };
+        }
+      }
+    } catch {}
+
+    confirmacaoPayPalVerificadaNoServidor = null;
+    return { valido: false, pago: false, erro: MSG_PAYPAL_INDISPONIVEL_EN };
   }
 
   let sdkPayPalPromise = null;
@@ -1502,6 +1658,7 @@
     salvarSessaoPedido,
     lerTokenConfirmado,
     salvarTokenConfirmado,
+    temAcessoLiberadoParaPlano,
     salvarRascunhoQuestionario,
     lerRascunhoQuestionario,
     limparRascunhoQuestionario,
@@ -1525,6 +1682,8 @@
     sincronizarCotacaoPayPal,
     criarOrdemPayPalNoServidor,
     capturarOrdemPayPalNoServidor,
-    carregarSdkPayPal
+    validarAcessoPayPalNoServidor,
+    carregarSdkPayPal,
+    MSG_PAYPAL_INDISPONIVEL_EN
   };
 })(typeof window !== "undefined" ? window : global);
