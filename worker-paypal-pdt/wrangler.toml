@@ -1,4 +1,4 @@
-name = "tryvtuath-paypal-pdt"
+name = "tryvtuath"
 main = "src/index.js"
 compatibility_date = "2025-11-01"
 
