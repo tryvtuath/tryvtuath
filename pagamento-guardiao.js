@@ -1092,6 +1092,370 @@
     }
   }
 
+  /**
+   * ============================================================================
+   * CHECKOUT INTERNACIONAL PAYPAL (USD) & PROTEÇÃO DO VALOR LÍQUIDO EM BRL
+   * ============================================================================
+   * - Usado exclusivamente quando o idioma ativo é Inglês (EN).
+   * - A versão em Português (PT-BR) continua usando exclusivamente InfinitePay (BRL).
+   * - Tarifas publicadas pelo PayPal Brasil para recebimentos comerciais internacionais:
+   *   * 4,79% de tarifa comercial
+   *   * 1,61% adicional internacional (total percentual = 6,40% -> fator 0,936)
+   *   * US$ 0,30 de tarifa fixa por transação em USD
+   *   * 3,50% de adicional na conversão cambial (-> fator 0,965)
+   * - Fórmula de referência:
+   *   Preço USD = (valor líquido desejado em BRL / (cotação BRL/USD × 0,965) + 0,30) / 0,936
+   * ============================================================================
+   */
+  const PAYPAL_STATE = {
+    ambiente: "sandbox",
+    clientId: "",
+    configuradoNoServidor: false,
+    cotacaoBrlUsd: 5.75,
+    fonteCotacao: "Cotação de referência configurada (conteudo.json), atualizada automaticamente via API USD/BRL",
+    dataReferenciaCotacao: "2026-11-15",
+    atualizarCotacaoAutomaticamente: true,
+    liquidoDesejadoStandardBrl: 37.00,
+    liquidoDesejadoProfundaBrl: 97.00,
+    liquidoAncoraStandardBrl: 97.00,
+    liquidoAncoraProfundaBrl: 247.00,
+    tarifaComercialPct: 4.79,
+    adicionalInternacionalPct: 1.61,
+    tarifaFixaUsd: 0.30,
+    spreadConversaoCambialPct: 3.50,
+    margemSegurancaPct: 3.00
+  };
+
+  function configurarPayPal(cfg = {}) {
+    if (!cfg || typeof cfg !== "object") return;
+    if (cfg.ambiente) PAYPAL_STATE.ambiente = cfg.ambiente === "live" ? "live" : "sandbox";
+    if (typeof cfg.clientId === "string" && cfg.clientId.trim()) PAYPAL_STATE.clientId = cfg.clientId.trim();
+    if (typeof cfg.configurado === "boolean") PAYPAL_STATE.configuradoNoServidor = cfg.configurado;
+    if (Number.isFinite(Number(cfg.cotacaoBrlUsd)) && Number(cfg.cotacaoBrlUsd) > 1) {
+      PAYPAL_STATE.cotacaoBrlUsd = Number(Number(cfg.cotacaoBrlUsd).toFixed(4));
+    } else if (Number.isFinite(Number(cfg.cotacaoReferenciaBrlUsd)) && Number(cfg.cotacaoReferenciaBrlUsd) > 1) {
+      PAYPAL_STATE.cotacaoBrlUsd = Number(Number(cfg.cotacaoReferenciaBrlUsd).toFixed(4));
+    }
+    if (cfg.fonteCotacao || cfg.fonteCotacaoReferencia) {
+      PAYPAL_STATE.fonteCotacao = cfg.fonteCotacao || cfg.fonteCotacaoReferencia;
+    }
+    if (cfg.dataReferenciaCotacao || cfg.dataCotacaoReferencia) {
+      PAYPAL_STATE.dataReferenciaCotacao = cfg.dataReferenciaCotacao || cfg.dataCotacaoReferencia;
+    }
+    if (typeof cfg.atualizarCotacaoAutomaticamente === "boolean") {
+      PAYPAL_STATE.atualizarCotacaoAutomaticamente = cfg.atualizarCotacaoAutomaticamente;
+    }
+    if (Number.isFinite(Number(cfg.liquidoDesejadoStandardBrl))) {
+      PAYPAL_STATE.liquidoDesejadoStandardBrl = Number(cfg.liquidoDesejadoStandardBrl);
+    }
+    if (Number.isFinite(Number(cfg.liquidoDesejadoProfundaBrl))) {
+      PAYPAL_STATE.liquidoDesejadoProfundaBrl = Number(cfg.liquidoDesejadoProfundaBrl);
+    }
+    if (Number.isFinite(Number(cfg.tarifaComercialPct))) {
+      PAYPAL_STATE.tarifaComercialPct = Number(cfg.tarifaComercialPct);
+    }
+    if (Number.isFinite(Number(cfg.adicionalInternacionalPct))) {
+      PAYPAL_STATE.adicionalInternacionalPct = Number(cfg.adicionalInternacionalPct);
+    }
+    if (Number.isFinite(Number(cfg.tarifaFixaUsd))) {
+      PAYPAL_STATE.tarifaFixaUsd = Number(cfg.tarifaFixaUsd);
+    }
+    if (Number.isFinite(Number(cfg.spreadConversaoCambialPct))) {
+      PAYPAL_STATE.spreadConversaoCambialPct = Number(cfg.spreadConversaoCambialPct);
+    }
+    if (Number.isFinite(Number(cfg.margemSegurancaPct))) {
+      PAYPAL_STATE.margemSegurancaPct = Number(cfg.margemSegurancaPct);
+    }
+  }
+
+  function calcularPrecoPayPalUSD(valorLiquidoDesejadoBrl, opcoesCustom = {}) {
+    const liquidoBrl = Number(valorLiquidoDesejadoBrl);
+    const cotacaoBrlUsd = Number(opcoesCustom.cotacaoBrlUsd || PAYPAL_STATE.cotacaoBrlUsd || 5.75);
+    const tarifaComercialPct = Number(opcoesCustom.tarifaComercialPct ?? PAYPAL_STATE.tarifaComercialPct);
+    const adicionalInternacionalPct = Number(opcoesCustom.adicionalInternacionalPct ?? PAYPAL_STATE.adicionalInternacionalPct);
+    const tarifaFixaUsd = Number(opcoesCustom.tarifaFixaUsd ?? PAYPAL_STATE.tarifaFixaUsd);
+    const spreadConversaoCambialPct = Number(opcoesCustom.spreadConversaoCambialPct ?? PAYPAL_STATE.spreadConversaoCambialPct);
+    const margemSegurancaPct = Number(opcoesCustom.margemSegurancaPct ?? PAYPAL_STATE.margemSegurancaPct);
+
+    const fatorConversaoCambial = Number((1 - spreadConversaoCambialPct / 100).toFixed(6)); // 0.965
+    const fatorRetencaoTarifas = Number((1 - (tarifaComercialPct + adicionalInternacionalPct) / 100).toFixed(6)); // 0.936
+
+    // Fórmula de referência:
+    // Preço USD = (valor líquido desejado em BRL / (cotação BRL/USD × 0,965) + 0,30) / 0,936
+    const precoBaseUsd = ((liquidoBrl / (cotacaoBrlUsd * fatorConversaoCambial)) + tarifaFixaUsd) / fatorRetencaoTarifas;
+    const precoComMargemBruto = precoBaseUsd * (1 + Math.max(0, margemSegurancaPct) / 100);
+    const precoFinalUsd = Number((Math.ceil(precoComMargemBruto * 100) / 100).toFixed(2));
+    const precoBaseUsdArredondado = Number((Math.ceil(precoBaseUsd * 100) / 100).toFixed(2));
+
+    const usdLiquidoAposTarifas = (precoFinalUsd * fatorRetencaoTarifas) - tarifaFixaUsd;
+    const liquidoEstimadoBrl = Number((usdLiquidoAposTarifas * (cotacaoBrlUsd * fatorConversaoCambial)).toFixed(2));
+
+    return {
+      moeda: "USD",
+      liquidoDesejadoBrl: Number(liquidoBrl.toFixed(2)),
+      precoBaseFormulaUsd: Number(precoBaseUsd.toFixed(4)),
+      precoBaseUsd: precoBaseUsdArredondado,
+      precoFinalUsd,
+      precoFinalUsdStr: precoFinalUsd.toFixed(2),
+      liquidoEstimadoBrl,
+      parametros: {
+        cotacaoBrlUsd,
+        fonteCotacao: PAYPAL_STATE.fonteCotacao,
+        dataReferenciaCotacao: PAYPAL_STATE.dataReferenciaCotacao,
+        tarifaComercialPct,
+        adicionalInternacionalPct,
+        tarifaPercentualTotalPct: Number((tarifaComercialPct + adicionalInternacionalPct).toFixed(2)),
+        fatorRetencaoTarifas,
+        tarifaFixaUsd,
+        spreadConversaoCambialPct,
+        fatorConversaoCambial,
+        margemSegurancaPct,
+        formulaReferencia: "USD Price = ((Target Net BRL / (BRL/USD Rate × 0.965)) + 0.30) / 0.936"
+      }
+    };
+  }
+
+  function obterTabelaPrecosPayPal() {
+    const std = calcularPrecoPayPalUSD(PAYPAL_STATE.liquidoDesejadoStandardBrl);
+    const prof = calcularPrecoPayPalUSD(PAYPAL_STATE.liquidoDesejadoProfundaBrl);
+    const ancStd = calcularPrecoPayPalUSD(PAYPAL_STATE.liquidoAncoraStandardBrl);
+    const ancProf = calcularPrecoPayPalUSD(PAYPAL_STATE.liquidoAncoraProfundaBrl);
+
+    return {
+      ambiente: PAYPAL_STATE.ambiente,
+      clientId: PAYPAL_STATE.clientId,
+      configuradoNoServidor: PAYPAL_STATE.configuradoNoServidor,
+      moeda: "USD",
+      parametrosFormacaoPreco: prof.parametros,
+      planos: {
+        standard: {
+          plano: "standard",
+          liquidoDesejadoBrl: std.liquidoDesejadoBrl,
+          precoBaseUsd: std.precoBaseUsd,
+          precoFinalUsd: std.precoFinalUsd,
+          precoFinalUsdStr: std.precoFinalUsdStr,
+          precoAncoraUsd: ancStd.precoFinalUsd,
+          precoAncoraUsdStr: ancStd.precoFinalUsdStr,
+          liquidoEstimadoBrl: std.liquidoEstimadoBrl
+        },
+        profunda: {
+          plano: "profunda",
+          liquidoDesejadoBrl: prof.liquidoDesejadoBrl,
+          precoBaseUsd: prof.precoBaseUsd,
+          precoFinalUsd: prof.precoFinalUsd,
+          precoFinalUsdStr: prof.precoFinalUsdStr,
+          precoAncoraUsd: ancProf.precoFinalUsd,
+          precoAncoraUsdStr: ancProf.precoFinalUsdStr,
+          liquidoEstimadoBrl: prof.liquidoEstimadoBrl
+        }
+      }
+    };
+  }
+
+  async function sincronizarCotacaoPayPal() {
+    // 1. Tenta obter a configuração e cotação diretamente do Back-End oficial (/api/paypal/config)
+    try {
+      const resp = await fetch(`${API_BASE_URL}/paypal/config?_t=${Date.now()}`, {
+        method: "GET",
+        headers: { "Accept": "application/json" },
+        cache: "no-store"
+      });
+      if (resp.ok) {
+        const ct = resp.headers.get("content-type") || "";
+        if (ct.includes("application/json")) {
+          const json = await resp.json();
+          if (json && json.ok && json.parametrosFormacaoPreco) {
+            configurarPayPal({
+              ambiente: json.ambiente,
+              clientId: json.clientId,
+              configurado: json.configurado,
+              cotacaoBrlUsd: json.parametrosFormacaoPreco.cotacaoBrlUsd,
+              fonteCotacao: json.parametrosFormacaoPreco.fonteCotacao,
+              dataReferenciaCotacao: json.parametrosFormacaoPreco.dataReferenciaCotacao,
+              margemSegurancaPct: json.parametrosFormacaoPreco.margemSegurancaPct
+            });
+            return obterTabelaPrecosPayPal();
+          }
+        }
+      }
+    } catch {}
+
+    // 2. Se a atualização automática estiver ativa, consulta cotação comercial USD/BRL em tempo real
+    if (PAYPAL_STATE.atualizarCotacaoAutomaticamente) {
+      try {
+        const r = await fetch("https://economia.awesomeapi.com.br/json/last/USD-BRL");
+        if (r.ok) {
+          const j = await r.json();
+          const bid = j && j.USDBRL ? Number(j.USDBRL.bid) : 0;
+          if (Number.isFinite(bid) && bid > 1) {
+            configurarPayPal({
+              cotacaoBrlUsd: bid,
+              fonteCotacao: "AwesomeAPI · Commercial USD/BRL Exchange Rate (live)",
+              dataReferenciaCotacao: j.USDBRL.create_date || new Date().toISOString()
+            });
+            return obterTabelaPrecosPayPal();
+          }
+        }
+      } catch {}
+
+      try {
+        const r2 = await fetch("https://open.er-api.com/v6/latest/USD");
+        if (r2.ok) {
+          const j2 = await r2.json();
+          const rate = j2 && j2.rates ? Number(j2.rates.BRL) : 0;
+          if (Number.isFinite(rate) && rate > 1) {
+            configurarPayPal({
+              cotacaoBrlUsd: rate,
+              fonteCotacao: "Open Exchange Rates API · USD/BRL",
+              dataReferenciaCotacao: j2.time_last_update_utc || new Date().toISOString()
+            });
+            return obterTabelaPrecosPayPal();
+          }
+        }
+      } catch {}
+    }
+
+    return obterTabelaPrecosPayPal();
+  }
+
+  /**
+   * Cria uma ordem PayPal em USD no servidor (POST /api/paypal/create-order).
+   * Não expõe segredos no cliente e não libera acesso antes da captura validada no servidor.
+   */
+  async function criarOrdemPayPalNoServidor({ plano, email, returnUrl, cancelUrl }) {
+    const planoNorm = plano === "standard" ? "standard" : "profunda";
+    const emailLimpo = normalizarEmail(email);
+    const sessao = salvarSessaoPedido({
+      orderId: gerarOrderId(emailLimpo || "pp", planoNorm),
+      plano: planoNorm,
+      status: "PENDING"
+    });
+    if (emailLimpo) {
+      salvarRascunhoQuestionario({ email: emailLimpo });
+    }
+
+    try {
+      const resp = await fetch(`${API_BASE_URL}/paypal/create-order`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Accept": "application/json" },
+        body: JSON.stringify({
+          plano: planoNorm,
+          email: emailLimpo,
+          orderId: sessao.orderId,
+          returnUrl: returnUrl || (typeof location !== "undefined" ? `${location.origin}${obterPrefixoRaiz() ? "/" : "/"}diagnostico.html?plano=${planoNorm}&paypal_return=1` : undefined),
+          cancelUrl: cancelUrl || (typeof location !== "undefined" ? `${location.origin}${obterPrefixoRaiz() ? "/" : "/"}desbloqueio.html?paypal_cancel=1#planos` : undefined)
+        })
+      });
+
+      const ct = resp.headers.get("content-type") || "";
+      if (ct.includes("application/json")) {
+        const json = await resp.json();
+        if (resp.ok && json && json.ok && json.paypalOrderId) {
+          salvarSessaoPedido({
+            orderId: json.orderId || sessao.orderId,
+            plano: planoNorm,
+            status: "PENDING"
+          });
+          return {
+            ok: true,
+            orderId: json.orderId || sessao.orderId,
+            paypalOrderId: json.paypalOrderId,
+            approveUrl: json.approveUrl || "",
+            valorUsd: json.valorUsd,
+            moeda: "USD",
+            plano: planoNorm
+          };
+        }
+        return {
+          ok: false,
+          codigo: (json && json.codigo) || "PAYPAL_ORDER_ERROR",
+          erro: (json && json.erro) || "Could not create the PayPal order on the server."
+        };
+      }
+    } catch {}
+
+    return {
+      ok: false,
+      codigo: "BACKEND_UNREACHABLE",
+      erro: "The payment validation server (/api/paypal/create-order) is currently unreachable or awaiting PayPal credentials configuration."
+    };
+  }
+
+  /**
+   * Solicita ao servidor a captura e validação da ordem PayPal (POST /api/paypal/capture-order).
+   * Somente libera o produto se o servidor confirmar status COMPLETED em USD e retornar tokenAcesso assinado.
+   */
+  async function capturarOrdemPayPalNoServidor({ paypalOrderId, orderId, email, plano }) {
+    const ppId = String(paypalOrderId || "").trim();
+    if (!ppId) {
+      return { pago: false, erro: "PayPal Order ID is required for server verification." };
+    }
+
+    try {
+      const resp = await fetch(`${API_BASE_URL}/paypal/capture-order`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Accept": "application/json" },
+        body: JSON.stringify({
+          paypalOrderId: ppId,
+          orderId: orderId || "",
+          email: normalizarEmail(email),
+          plano: plano === "standard" ? "standard" : "profunda"
+        })
+      });
+
+      const ct = resp.headers.get("content-type") || "";
+      if (ct.includes("application/json")) {
+        const data = await resp.json();
+        if (resp.ok && data && data.ok === true && data.pago === true && data.tokenAcesso) {
+          const confirmado = salvarTokenConfirmado({
+            orderId: data.orderId || ppId,
+            plano: data.plano || plano || "profunda",
+            tokenAcesso: data.tokenAcesso,
+            transactionNsu: data.captureId || data.paypalOrderId || ppId,
+            metodo: data.metodo || "PayPal International (USD)",
+            confirmadoEm: new Date().toISOString()
+          });
+          return { pago: true, dados: confirmado };
+        }
+        return {
+          pago: false,
+          codigo: (data && data.codigo) || "CAPTURE_NOT_COMPLETED",
+          erro: (data && data.erro) || "PayPal payment has not been captured or confirmed by the server yet."
+        };
+      }
+    } catch {}
+
+    return {
+      pago: false,
+      codigo: "BACKEND_UNREACHABLE",
+      erro: "Could not reach the backend server (/api/paypal/capture-order) to verify the PayPal capture."
+    };
+  }
+
+  let sdkPayPalPromise = null;
+  let sdkClientIdCarregado = "";
+  function carregarSdkPayPal(clientIdCustom) {
+    if (typeof document === "undefined") return Promise.resolve(null);
+    const cid = String(clientIdCustom || PAYPAL_STATE.clientId || "").trim();
+    if (!cid) return Promise.resolve(null);
+    if (global.paypal && global.paypal.Buttons && sdkClientIdCarregado === cid) {
+      return Promise.resolve(global.paypal);
+    }
+    if (sdkPayPalPromise && sdkClientIdCarregado === cid) {
+      return sdkPayPalPromise;
+    }
+    sdkClientIdCarregado = cid;
+    sdkPayPalPromise = new Promise((resolve) => {
+      const sc = document.createElement("script");
+      sc.src = `https://www.paypal.com/sdk/js?client-id=${encodeURIComponent(cid)}&currency=USD&intent=capture`;
+      sc.async = true;
+      sc.onload = () => resolve(global.paypal || null);
+      sc.onerror = () => resolve(null);
+      document.head.appendChild(sc);
+    });
+    return sdkPayPalPromise;
+  }
+
   global.GuardiaoPagamentoInfinitePay = {
     LINKS_CHECKOUT,
     TTL_INATIVIDADE_RESPOSTAS_MS,
@@ -1119,6 +1483,14 @@
     ativarModoMestra,
     desativarModoMestra,
     abrirModalLoginMestra,
-    renderizarBarraMestraTryv
+    renderizarBarraMestraTryv,
+    // Métodos Internacionais PayPal (USD)
+    configurarPayPal,
+    calcularPrecoPayPalUSD,
+    obterTabelaPrecosPayPal,
+    sincronizarCotacaoPayPal,
+    criarOrdemPayPalNoServidor,
+    capturarOrdemPayPalNoServidor,
+    carregarSdkPayPal
   };
 })(typeof window !== "undefined" ? window : global);

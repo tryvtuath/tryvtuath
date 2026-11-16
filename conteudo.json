@@ -4430,6 +4430,23 @@
                         "checkoutStandard":  "https://loja.infinitepay.io/tryvtuath/nuw5653-mapa-do-desbloqueio---analise-standard",
                         "precoProfunda":  "R$ 97",
                         "checkoutProfunda":  "https://loja.infinitepay.io/tryvtuath/kka1436-mapa-do-desbloqueio---analise-profunda",
-                        "webhookUrl":  ""
+                        "webhookUrl":  "",
+                        "paypal":  {
+                            "ambiente":  "sandbox",
+                            "clientId":  "",
+                            "cotacaoReferenciaBrlUsd":  5.75,
+                            "fonteCotacaoReferencia":  "Cotação de referência configurável (conteudo.json), atualizada automaticamente via API pública USD/BRL",
+                            "dataCotacaoReferencia":  "2026-11-15",
+                            "atualizarCotacaoAutomaticamente":  true,
+                            "liquidoDesejadoStandardBrl":  37.00,
+                            "liquidoDesejadoProfundaBrl":  97.00,
+                            "liquidoAncoraStandardBrl":  97.00,
+                            "liquidoAncoraProfundaBrl":  247.00,
+                            "tarifaComercialPct":  4.79,
+                            "adicionalInternacionalPct":  1.61,
+                            "tarifaFixaUsd":  0.30,
+                            "spreadConversaoCambialPct":  3.50,
+                            "margemSegurancaPct":  3.00
+                        }
                     }
 }

@@ -367,7 +367,7 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
         <button type="button" class="botao botao--ouro" id="btn-alternar-para-profunda" style="font-size:.86rem;padding:.55rem 1.1rem">
           ✦ Alternar para Análise Profunda e Questionário Robusto
         </button>
-        <a class="botao botao--vidro" href="https://loja.infinitepay.io/tryvtuath/kka1436-mapa-do-desbloqueio---analise-profunda" target="_blank" rel="noopener" style="font-size:.84rem;padding:.5rem 1rem">
+        <a class="botao botao--vidro" id="link-upsell-standard-topo" href="https://loja.infinitepay.io/tryvtuath/kka1436-mapa-do-desbloqueio---analise-profunda" target="_blank" rel="noopener" style="font-size:.84rem;padding:.5rem 1rem">
           ↗ Adquirir Análise Profunda na InfinitePay
         </a>
       </div>
@@ -380,18 +380,18 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
     </div>
   </section>
 
-  <!-- ==================== PORTAL DE LIBERAÇÃO E VALIDAÇÃO AUTOMATIZADA INFINITEPAY ==================== -->
+  <!-- ==================== PORTAL DE LIBERAÇÃO E VALIDAÇÃO AUTOMATIZADA (PT-BR: INFINITEPAY | EN: PAYPAL USD) ==================== -->
   <section id="sec-bloqueio-pagamento" class="wizard-card" style="max-width:680px;margin:0 auto 2.5rem;text-align:center">
     <span class="badge-plano" id="gate-selo" style="margin-bottom:.8rem;display:inline-flex">🔒 Acesso Protegido · Validação InfinitePay</span>
     <h2 style="font-family:var(--titulo);color:var(--ouro-claro);font-size:clamp(1.35rem,2.6vw,1.8rem);margin:0 0 .55rem" id="gate-titulo">
       Liberação da Anamnese & Registro Akáshico / Desbloqueio
     </h2>
-    <p style="color:var(--texto-2);font-size:.95rem;max-width:56ch;margin:0 auto 1.35rem;line-height:1.6">
+    <p id="gate-sub-descricao" style="color:var(--texto-2);font-size:.95rem;max-width:56ch;margin:0 auto 1.35rem;line-height:1.6">
       Para proteger a exclusividade do método, o formulário de anamnese e a geração do seu PDF são liberados <strong>automaticamente</strong> assim que o sistema confirma o seu pagamento via <strong>PIX ou Cartão na InfinitePay</strong>.
     </p>
 
-    <!-- PASSO 1: Informe seu e-mail e/ou Comprovante e abra o Checkout da InfinitePay -->
-    <div style="text-align:left;background:rgba(255,255,255,.04);border:1px solid rgba(242,193,78,.32);border-radius:16px;padding:1.25rem;margin-bottom:1.15rem">
+    <!-- BLOCO EXCLUSIVO PT-BR: Informe seu e-mail e/ou Comprovante e abra o Checkout da InfinitePay -->
+    <div id="gate-bloco-infinitepay" style="text-align:left;background:rgba(255,255,255,.04);border:1px solid rgba(242,193,78,.32);border-radius:16px;padding:1.25rem;margin-bottom:1.15rem">
       <label for="gate-email" style="display:block;font-size:.86rem;font-weight:700;color:var(--ouro-claro);margin-bottom:.35rem">
         1. Informe o mesmo E-mail utilizado no Checkout da InfinitePay *
       </label>
@@ -431,6 +431,40 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
           📋 Copiar Chave Pix
         </button>
       </div>
+    </div>
+
+    <!-- BLOCO EXCLUSIVO EN: Checkout Internacional PayPal em USD (Oculto em PT-BR) -->
+    <div id="gate-bloco-paypal" hidden translate="no" style="text-align:left;background:rgba(255,255,255,.04);border:1px solid rgba(242,193,78,.32);border-radius:16px;padding:1.25rem;margin-bottom:1.15rem">
+      <label for="gate-pp-email" style="display:block;font-size:.86rem;font-weight:700;color:var(--ouro-claro);margin-bottom:.35rem">
+        1. Your Email Address (to link your PayPal order &amp; dossier) *
+      </label>
+      <div style="display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:.85rem">
+        <input type="email" id="gate-pp-email" placeholder="youremail@example.com" autocomplete="email" style="flex:1;min-width:210px">
+      </div>
+
+      <label style="display:block;font-size:.86rem;font-weight:700;color:var(--ouro-claro);margin-bottom:.45rem">
+        2. Select Your Plan &amp; Pay Securely via PayPal (USD):
+      </label>
+      <div id="gate-pp-sdk-wrap" style="margin-bottom:.65rem"></div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:.75rem;margin-bottom:.95rem">
+        <button type="button" class="botao botao--ouro" id="btn-gate-pp-profunda" style="font-size:.9rem;padding:.85rem 1rem">
+          ✦ Pay Complete Deep Analysis (<span id="lbl-gate-pp-prof">$19.57 USD</span>)
+        </button>
+        <button type="button" class="botao botao--vidro" id="btn-gate-pp-standard" style="font-size:.88rem;padding:.85rem 1rem">
+          Pay Standard Analysis (<span id="lbl-gate-pp-std">$7.67 USD</span>)
+        </button>
+      </div>
+
+      <label for="gate-pp-order-id" style="display:block;font-size:.82rem;font-weight:600;color:var(--rosa-claro);margin-bottom:.35rem">
+        3. Already approved on PayPal? Confirm your PayPal Order ID on the server *
+      </label>
+      <div style="display:flex;gap:.6rem;flex-wrap:wrap">
+        <input type="text" id="gate-pp-order-id" placeholder="PayPal Order ID (filled automatically on approval)…" style="flex:1;min-width:210px">
+        <button type="button" class="botao botao--vidro" id="btn-gate-pp-capturar" style="padding:.65rem 1.1rem;font-size:.86rem;white-space:nowrap">
+          Verify &amp; Capture
+        </button>
+      </div>
+      <small id="gate-pp-parametros-info" style="display:block;margin-top:.65rem;color:var(--texto-2);font-size:.76rem;line-height:1.45;opacity:.9"></small>
     </div>
 
     <!-- Indicador de Polling Periódico -->
@@ -770,8 +804,8 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
 </main>
 
 <script src="motor-desbloqueio.js?v=3"></script>
-<script src="pagamento-guardiao.js?v=8"></script>
-<script src="i18n-desbloqueio.js?v=2"></script>
+<script src="pagamento-guardiao.js?v=9"></script>
+<script src="i18n-desbloqueio.js?v=3"></script>
 <script>
 (function() {
   "use strict";
@@ -790,16 +824,34 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
   if (planoAtivo !== "standard" && planoAtivo !== "profunda") planoAtivo = "profunda";
 
   let configSite = { whatsapp: "5516991420112" };
+
+  function isIdiomaIngles() {
+    return Boolean(window.TryvI18n && window.TryvI18n.getIdioma && window.TryvI18n.getIdioma() === "en");
+  }
+
   fetch("conteudo.json", { cache: "no-cache" })
     .then(r => r.ok ? r.json() : null)
     .then(C => {
       if (!C) return;
       if (C.contato && C.contato.whatsapp) configSite.whatsapp = String(C.contato.whatsapp).replace(/\D/g, "");
       if (C.desbloqueio && C.desbloqueio.apiPagamentosUrl) Guardiao.configurarApiBase(C.desbloqueio.apiPagamentosUrl);
+      if (C.desbloqueio && C.desbloqueio.paypal && Guardiao.configurarPayPal) {
+        Guardiao.configurarPayPal(C.desbloqueio.paypal);
+      }
+      atualizarUIPlano();
+      sincronizarGatePorIdioma();
     })
-    .catch(() => {});
+    .catch(() => {})
+    .finally(() => {
+      if (Guardiao && Guardiao.sincronizarCotacaoPayPal) {
+        Guardiao.sincronizarCotacaoPayPal().then(() => {
+          atualizarUIPlano();
+          sincronizarGatePorIdioma();
+        }).catch(() => {});
+      }
+    });
 
-  // 1.1. Controle de Bloqueio e Liberação Automatizada (InfinitePay Polling / Webhook / Redirect API / Modo Mestra)
+  // 1.1. Controle de Bloqueio e Liberação Automatizada (PT-BR: InfinitePay | EN: PayPal USD | Modo Mestra)
   const secBloqueio = $("#sec-bloqueio-pagamento");
   const secFormulario = $("#sec-formulario");
   const btnLiberarAnamnese = $("#btn-liberar-anamnese");
@@ -808,10 +860,68 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
   const gateStatusBox = $("#gate-status-box");
   const gateStatusMsg = $("#gate-status-msg");
   const gateSpinner = $("#gate-spinner");
+  const blocoGateInfPay = $("#gate-bloco-infinitepay");
+  const blocoGatePayPal = $("#gate-bloco-paypal");
+  const inpGatePpEmail = $("#gate-pp-email");
+  const inpGatePpOrderId = $("#gate-pp-order-id");
   let pollingGate = null;
+
+  function sincronizarGatePorIdioma() {
+    const emIngles = isIdiomaIngles();
+    const tabPP = Guardiao && Guardiao.obterTabelaPrecosPayPal ? Guardiao.obterTabelaPrecosPayPal() : null;
+
+    if (blocoGateInfPay) blocoGateInfPay.hidden = emIngles;
+    if (blocoGatePayPal) blocoGatePayPal.hidden = !emIngles;
+
+    const linkUpsellTopo = $("#link-upsell-standard-topo");
+    if (linkUpsellTopo) {
+      if (emIngles && tabPP) {
+        linkUpsellTopo.href = "#sec-bloqueio-pagamento";
+        linkUpsellTopo.removeAttribute("target");
+        linkUpsellTopo.textContent = `↗ Upgrade to Deep Analysis via PayPal ($${tabPP.planos.profunda.precoFinalUsdStr} USD)`;
+      } else {
+        linkUpsellTopo.href = "https://loja.infinitepay.io/tryvtuath/kka1436-mapa-do-desbloqueio---analise-profunda";
+        linkUpsellTopo.setAttribute("target", "_blank");
+        linkUpsellTopo.textContent = "↗ Adquirir Análise Profunda na InfinitePay";
+      }
+    }
+
+    if (emIngles && tabPP) {
+      const p = tabPP.parametrosFormacaoPreco;
+      const lblProf = $("#lbl-gate-pp-prof");
+      const lblStd = $("#lbl-gate-pp-std");
+      const infoParam = $("#gate-pp-parametros-info");
+      if (lblProf) lblProf.textContent = `$${tabPP.planos.profunda.precoFinalUsdStr} USD`;
+      if (lblStd) lblStd.textContent = `$${tabPP.planos.standard.precoFinalUsdStr} USD`;
+      if (infoParam) {
+        infoParam.innerHTML =
+          `<strong>Price Formation Parameters (USD):</strong> Target net BRL R$ ${tabPP.planos.standard.liquidoDesejadoBrl.toFixed(2)} (Standard → $${tabPP.planos.standard.precoFinalUsdStr} USD) / R$ ${tabPP.planos.profunda.liquidoDesejadoBrl.toFixed(2)} (Deep Analysis → $${tabPP.planos.profunda.precoFinalUsdStr} USD) · Exchange rate: 1 USD = R$ ${Number(p.cotacaoBrlUsd).toFixed(4)} (${p.fonteCotacao}) · PayPal fees: ${p.tarifaComercialPct}% + ${p.adicionalInternacionalPct}% + $${Number(p.tarifaFixaUsd).toFixed(2)} USD + ${p.spreadConversaoCambialPct}% FX spread + ${p.margemSegurancaPct}% margin. <em>Net BRL is an estimate and is not guaranteed if exchange rates or fees change.</em>`;
+      }
+
+      const tokenConf = Guardiao.lerTokenConfirmado();
+      if (!tokenConf || !tokenConf.pago) {
+        $("#gate-selo").textContent = "🔒 Protected Access · PayPal International Verification (USD)";
+        const subDesc = $("#gate-sub-descricao");
+        if (subDesc) {
+          subDesc.innerHTML = "To protect the exclusivity of the method, the intake questionnaire and your personalized PDF generation are unlocked <strong>automatically</strong> as soon as our server confirms and captures your <strong>PayPal payment in USD</strong>.";
+        }
+        gateStatusMsg.textContent = "Awaiting PayPal USD payment approval and server capture confirmation…";
+      }
+    } else {
+      const tokenConf = Guardiao.lerTokenConfirmado();
+      if (!tokenConf || !tokenConf.pago) {
+        $("#gate-selo").textContent = "🔒 Acesso Protegido · Validação InfinitePay";
+        const subDesc = $("#gate-sub-descricao");
+        if (subDesc) {
+          subDesc.innerHTML = "Para proteger a exclusividade do método, o formulário de anamnese e a geração do seu PDF são liberados <strong>automaticamente</strong> assim que o sistema confirma o seu pagamento via <strong>PIX ou Cartão na InfinitePay</strong>.";
+        }
+      }
+    }
+  }
 
   function destravarAnamneseNaTela(dadosConfirmados) {
     if (pollingGate) pollingGate.parar();
+    const emIngles = isIdiomaIngles();
     const isMestra = Boolean((dadosConfirmados && dadosConfirmados.modoMestra) || (Guardiao && Guardiao.isModoMestra && Guardiao.isModoMestra()));
     if (!isMestra && dadosConfirmados && (dadosConfirmados.plano === "standard" || dadosConfirmados.plano === "profunda")) {
       planoAtivo = dadosConfirmados.plano;
@@ -831,8 +941,8 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
     btnLiberarAnamnese.style.pointerEvents = "auto";
     btnLiberarAnamnese.style.filter = "none";
     btnLiberarAnamnese.textContent = isMestra
-      ? "✦ Modo Mestra Ativo! Preencher Anamnese / Gerar PDF →"
-      : "✦ Pagamento Confirmado! Preencher Anamnese / Gerar PDF →";
+      ? (emIngles ? "✦ Master Mode Active! Fill Intake / Generate PDF →" : "✦ Modo Mestra Ativo! Preencher Anamnese / Gerar PDF →")
+      : (emIngles ? "✦ Payment Confirmed! Fill Intake / Generate PDF →" : "✦ Pagamento Confirmado! Preencher Anamnese / Gerar PDF →");
 
     if (gateSpinner) gateSpinner.style.display = "none";
     if (gateStatusBox) {
@@ -842,12 +952,16 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
     }
     if (gateStatusMsg) {
       gateStatusMsg.innerHTML = isMestra
-        ? "✅ <strong>Modo Mestra reconhecido!</strong> Acesso administrativo ilimitado ao Standard e Completo."
-        : "✅ <strong>Pagamento confirmado pela InfinitePay!</strong> Clique no botão abaixo para iniciar sua Anamnese.";
+        ? (emIngles
+            ? "✅ <strong>Master Mode recognized!</strong> Unlimited administrative access to Standard and Complete."
+            : "✅ <strong>Modo Mestra reconhecido!</strong> Acesso administrativo ilimitado ao Standard e Completo.")
+        : (emIngles
+            ? "✅ <strong>Payment verified and captured on the server!</strong> Click the button below to begin your Intake."
+            : "✅ <strong>Pagamento confirmado pela InfinitePay!</strong> Clique no botão abaixo para iniciar sua Anamnese.");
     }
     $("#gate-selo").textContent = isMestra
-      ? "✅ Modo Mestra Ativo · Acesso Ilimitado"
-      : "✅ Pagamento Validado · Acesso Liberado";
+      ? (emIngles ? "✅ Master Mode Active · Unlimited Access" : "✅ Modo Mestra Ativo · Acesso Ilimitado")
+      : (emIngles ? "✅ Payment Verified · Access Unlocked" : "✅ Pagamento Validado · Acesso Liberado");
 
     btnLiberarAnamnese.onclick = () => {
       secBloqueio.hidden = true;
@@ -857,6 +971,8 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
   }
 
   async function inicializarVerificacaoPagamento() {
+    sincronizarGatePorIdioma();
+
     // a) Verifica imediatamente se o Modo Mestra está ativo ou se já existe token validado salvo
     if (Guardiao && Guardiao.isModoMestra && Guardiao.isModoMestra()) {
       const tokenMestra = Guardiao.lerTokenConfirmado();
@@ -871,6 +987,8 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
     const urlSlug = params.get("slug") || params.get("invoice_slug") || "";
     const urlOrderNsu = params.get("order_nsu") || "";
     const urlReceipt = params.get("receipt_url") || "";
+    const urlPayPalReturn = params.get("paypal_return") === "1";
+    const urlPayPalOrderId = params.get("paypal_order_id") || (urlPayPalReturn ? (params.get("token") || "") : "");
     const rascunhoAtual = (Guardiao && Guardiao.lerRascunhoQuestionario && Guardiao.lerRascunhoQuestionario()) || {};
     const urlEmail = Guardiao.normalizarEmail(params.get("email") || rascunhoAtual.email || "");
 
@@ -881,7 +999,27 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
       return;
     }
 
-    // b) Se retornou da InfinitePay com transaction_nsu + slug ou receipt_url na URL, valida na hora
+    // b1) Se retornou da aprovação do PayPal com token da ordem, captura e valida obrigatoriamente no servidor antes de liberar
+    if (urlPayPalOrderId && Guardiao.capturarOrdemPayPalNoServidor) {
+      secBloqueio.hidden = false;
+      secFormulario.hidden = true;
+      if (inpGatePpOrderId) inpGatePpOrderId.value = urlPayPalOrderId;
+      gateStatusMsg.textContent = "Verifying and capturing your PayPal order on the server…";
+      const resPP = await Guardiao.capturarOrdemPayPalNoServidor({
+        paypalOrderId: urlPayPalOrderId,
+        email: urlEmail,
+        plano: planoAtivo
+      });
+      if (resPP && resPP.pago && resPP.dados) {
+        destravarAnamneseNaTela(resPP.dados);
+        secBloqueio.hidden = true;
+        secFormulario.hidden = false;
+        return;
+      }
+      gateStatusMsg.textContent = "⚠ " + ((resPP && resPP.erro) || "PayPal capture could not be confirmed on the server yet.");
+    }
+
+    // b2) Se retornou da InfinitePay com transaction_nsu + slug ou receipt_url na URL, valida na hora
     if ((urlTxNsu && urlSlug) || urlReceipt) {
       gateStatusMsg.textContent = "Validando comprovante de retorno da InfinitePay…";
       const resUrl = await Guardiao.verificarStatusPagamento({
@@ -906,6 +1044,7 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
     const sessao = Guardiao.lerSessaoPedido();
     const emailInicial = urlEmail || "";
     if (emailInicial && inpGateEmail) inpGateEmail.value = emailInicial;
+    if (emailInicial && inpGatePpEmail) inpGatePpEmail.value = emailInicial;
 
     iniciarPollingGate(emailInicial, sessao ? sessao.orderId : urlOrderNsu);
   }
@@ -934,9 +1073,10 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
       email: emailLimpo,
       orderId,
       plano: planoAtivo,
-      getComprovanteInput: () => (inpGateComp ? inpGateComp.value.trim() : ""),
+      getComprovanteInput: () => (isIdiomaIngles() ? "" : (inpGateComp ? inpGateComp.value.trim() : "")),
       intervaloMs: 4000,
       aoVerificar(tentativa) {
+        if (isIdiomaIngles()) return;
         if (!Guardiao.validarFormatoEmail(inpGateEmail.value) && !(inpGateComp && inpGateComp.value.trim())) {
           gateStatusMsg.textContent = "Informe seu e-mail e o código/link do comprovante da InfinitePay acima para liberar o botão…";
         } else if (!(inpGateComp && inpGateComp.value.trim())) {
@@ -947,6 +1087,58 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
       },
       aoConfirmar(dadosConfirmados) {
         destravarAnamneseNaTela(dadosConfirmados);
+      }
+    });
+  }
+
+  // Eventos do Gate Internacional PayPal (EN)
+  async function acionarCriacaoOrdemPayPalGate(planoEscolhido) {
+    planoAtivo = planoEscolhido === "standard" ? "standard" : "profunda";
+    atualizarUIPlano();
+    salvarEstadoFormularioNaSessao();
+    gateStatusMsg.textContent = "Creating PayPal USD order on the server…";
+    const res = await Guardiao.criarOrdemPayPalNoServidor({
+      plano: planoAtivo,
+      email: inpGatePpEmail ? inpGatePpEmail.value : ""
+    });
+    if (!res.ok) {
+      gateStatusMsg.textContent = "⚠ " + (res.erro || "Could not create PayPal order on the server.");
+      return;
+    }
+    if (inpGatePpOrderId) inpGatePpOrderId.value = res.paypalOrderId;
+    gateStatusMsg.textContent = `PayPal Order ${res.paypalOrderId} ($${res.valorUsd} USD) created. Approve on PayPal and click "Verify & Capture".`;
+    if (res.approveUrl) {
+      window.open(res.approveUrl, "_blank", "noopener");
+    }
+  }
+
+  const btnGatePpProf = $("#btn-gate-pp-profunda");
+  if (btnGatePpProf) {
+    btnGatePpProf.addEventListener("click", () => acionarCriacaoOrdemPayPalGate("profunda"));
+  }
+  const btnGatePpStd = $("#btn-gate-pp-standard");
+  if (btnGatePpStd) {
+    btnGatePpStd.addEventListener("click", () => acionarCriacaoOrdemPayPalGate("standard"));
+  }
+  const btnGatePpCap = $("#btn-gate-pp-capturar");
+  if (btnGatePpCap) {
+    btnGatePpCap.addEventListener("click", async () => {
+      const ppId = inpGatePpOrderId ? inpGatePpOrderId.value.trim() : "";
+      if (!ppId) {
+        if (inpGatePpOrderId) inpGatePpOrderId.focus();
+        gateStatusMsg.textContent = "⚠ Please enter or create your PayPal Order ID first.";
+        return;
+      }
+      gateStatusMsg.textContent = "Verifying and capturing your PayPal order on the server…";
+      const cap = await Guardiao.capturarOrdemPayPalNoServidor({
+        paypalOrderId: ppId,
+        email: inpGatePpEmail ? inpGatePpEmail.value : "",
+        plano: planoAtivo
+      });
+      if (cap && cap.pago && cap.dados) {
+        destravarAnamneseNaTela(cap.dados);
+      } else {
+        gateStatusMsg.textContent = "⚠ " + ((cap && cap.erro) || "PayPal payment has not been captured on the server yet.");
       }
     });
   }
@@ -1011,19 +1203,48 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
   }
   window.addEventListener("tryv:mestra-ativada", () => inicializarVerificacaoPagamento());
   window.addEventListener("tryv:mestra-desativada", () => inicializarVerificacaoPagamento());
+  window.addEventListener("tryv:idioma-alterado", () => {
+    atualizarUIPlano();
+    sincronizarGatePorIdioma();
+  });
 
   function atualizarUIPlano() {
     const isProf = planoAtivo === "profunda";
-    $("#btn-modo-profunda").setAttribute("aria-pressed", String(isProf));
-    $("#btn-modo-standard").setAttribute("aria-pressed", String(!isProf));
-    $("#badge-plano-topo").textContent = isProf ? "✦ Análise Profunda Ativa (R$ 97)" : "✦ Análise Standard Ativa (R$ 37)";
+    const emIngles = isIdiomaIngles();
+    const tabPP = Guardiao && Guardiao.obterTabelaPrecosPayPal ? Guardiao.obterTabelaPrecosPayPal() : null;
+    const stdUsd = tabPP ? `$${tabPP.planos.standard.precoFinalUsdStr} USD` : "$7.67 USD";
+    const profUsd = tabPP ? `$${tabPP.planos.profunda.precoFinalUsdStr} USD` : "$19.57 USD";
+
+    const btnModoStd = $("#btn-modo-standard");
+    const btnModoProf = $("#btn-modo-profunda");
+    if (btnModoProf) {
+      btnModoProf.setAttribute("aria-pressed", String(isProf));
+      btnModoProf.textContent = emIngles
+        ? `✦ Complete Deep Analysis (${profUsd})`
+        : "✦ Análise Profunda Completa (R$ 97)";
+    }
+    if (btnModoStd) {
+      btnModoStd.setAttribute("aria-pressed", String(!isProf));
+      btnModoStd.textContent = emIngles
+        ? `Standard Analysis (${stdUsd})`
+        : "Análise Standard (R$ 37)";
+    }
+
+    $("#badge-plano-topo").textContent = emIngles
+      ? (isProf ? `✦ Deep Analysis Active (${profUsd})` : `✦ Standard Analysis Active (${stdUsd})`)
+      : (isProf ? "✦ Análise Profunda Ativa (R$ 97)" : "✦ Análise Standard Ativa (R$ 37)");
+
     const boxAvisoStd = $("#aviso-transicao-standard");
     if (boxAvisoStd) boxAvisoStd.hidden = isProf;
     const subRobusto = $("#sub-questionario-robusto");
     if (subRobusto) {
       subRobusto.innerHTML = isProf
-        ? "✦ <strong>Questionário Robusto Ativo (Análise Profunda):</strong> Suas respostas sobre raízes familiares e ansiedade serão integralmente cruzadas no dossiê."
-        : "💡 <strong>Nota:</strong> Na versão Standard estas perguntas calibram sua base emocional; por um pequeno acréscimo na <strong>Análise Profunda</strong>, você desbloqueia a leitura completa das dinâmicas familiares, Mapa Védico do momento atual e Dons Natos.";
+        ? (emIngles
+            ? "✦ <strong>Robust Questionnaire Active (Deep Analysis):</strong> Your answers on family roots and anxiety will be fully cross-referenced in the dossier."
+            : "✦ <strong>Questionário Robusto Ativo (Análise Profunda):</strong> Suas respostas sobre raízes familiares e ansiedade serão integralmente cruzadas no dossiê.")
+        : (emIngles
+            ? "💡 <strong>Note:</strong> In the Standard version these questions calibrate your emotional foundation; for a small additional investment in the <strong>Deep Analysis</strong>, you unlock the full reading of family dynamics, Current Vedic Moment, and Innate Gifts."
+            : "💡 <strong>Nota:</strong> Na versão Standard estas perguntas calibram sua base emocional; por um pequeno acréscimo na <strong>Análise Profunda</strong>, você desbloqueia a leitura completa das dinâmicas familiares, Mapa Védico do momento atual e Dons Natos.");
     }
     try {
       sessionStorage.setItem("tryv_plano_desbloqueio", planoAtivo);
@@ -1036,7 +1257,17 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
   if (btnAltProf) {
     btnAltProf.addEventListener("click", () => { planoAtivo = "profunda"; atualizarUIPlano(); salvarEstadoFormularioNaSessao(); });
   }
+  const linkUpsellTopoEl = $("#link-upsell-standard-topo");
+  if (linkUpsellTopoEl) {
+    linkUpsellTopoEl.addEventListener("click", (e) => {
+      if (isIdiomaIngles()) {
+        e.preventDefault();
+        acionarCriacaoOrdemPayPalGate("profunda");
+      }
+    });
+  }
   atualizarUIPlano();
+  sincronizarGatePorIdioma();
 
   // 2. Preencher Cidades no Select
   const selCidade = $("#f-cidade-select");

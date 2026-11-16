@@ -2522,6 +2522,26 @@
     return lerIdiomaPreferido();
   }
 
+  function aplicarPrecosUsdEmIngles(strEn) {
+    if (!strEn || typeof strEn !== "string") return strEn;
+    let stdUsd = "7.67";
+    let profUsd = "19.57";
+    try {
+      if (global.GuardiaoPagamentoInfinitePay && typeof global.GuardiaoPagamentoInfinitePay.obterTabelaPrecosPayPal === "function") {
+        const tab = global.GuardiaoPagamentoInfinitePay.obterTabelaPrecosPayPal();
+        if (tab && tab.planos) {
+          stdUsd = tab.planos.standard.precoFinalUsdStr;
+          profUsd = tab.planos.profunda.precoFinalUsdStr;
+        }
+      }
+    } catch {}
+    return strEn
+      .replace(/\(R\$\s*37(?:,00)?\)/g, `($${stdUsd} USD)`)
+      .replace(/\(R\$\s*97(?:,00)?\)/g, `($${profUsd} USD)`)
+      .replace(/\bR\$\s*37(?:,00)?\b/g, `$${stdUsd} USD`)
+      .replace(/\bR\$\s*97(?:,00)?\b/g, `$${profUsd} USD`);
+  }
+
   function traduzirParaIngles(str) {
     if (!str || typeof str !== "string") return str;
 
@@ -2533,11 +2553,11 @@
 
     // 1. Correspondência exata
     if (EXACT_MAP[norm]) {
-      return lead + EXACT_MAP[norm] + trail;
+      return aplicarPrecosUsdEmIngles(lead + EXACT_MAP[norm] + trail);
     }
     const isAllCaps = norm.length > 2 && norm === norm.toUpperCase() && norm !== norm.toLowerCase();
     if (isAllCaps && UPPER_EXACT_MAP[norm]) {
-      return lead + UPPER_EXACT_MAP[norm] + trail;
+      return aplicarPrecosUsdEmIngles(lead + UPPER_EXACT_MAP[norm] + trail);
     }
 
     // 2. Substituições por padrões e expressões regulares
@@ -2549,7 +2569,7 @@
     if (isAllCaps) {
       out = out.toUpperCase();
     }
-    return out;
+    return aplicarPrecosUsdEmIngles(out);
   }
 
   function traduzirTexto(str, idiomaForcado) {
@@ -2572,7 +2592,7 @@
     ) {
       return;
     }
-    if (parent.closest && parent.closest(".seletor-idioma-tryv")) return;
+    if (parent.closest && parent.closest("body [translate='no'], .seletor-idioma-tryv")) return;
 
     const idioma = idiomaForcado || idiomaAtual || getIdioma();
     const valAtual = node.nodeValue;
@@ -2588,6 +2608,9 @@
       // O JS da página atualizou dinamicamente o conteúdo do nó de texto
       reg.pt = valAtual;
       reg.en = traduzirParaIngles(valAtual);
+    } else if (idioma === "en") {
+      // Recalcula reg.en a partir de reg.pt caso a cotação USD tenha atualizado
+      reg.en = traduzirParaIngles(reg.pt);
     }
 
     const novoValor = idioma === "en" ? reg.en : reg.pt;
