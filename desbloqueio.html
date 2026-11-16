@@ -870,8 +870,8 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
 </div>
 
 <script src="motor-desbloqueio.js?v=3"></script>
-<script src="pagamento-guardiao.js?v=9"></script>
-<script src="i18n-desbloqueio.js?v=3"></script>
+<script src="pagamento-guardiao.js?v=10"></script>
+<script src="i18n-desbloqueio.js?v=4"></script>
 <script>
 (function() {
   "use strict";
@@ -927,6 +927,7 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
     btnIrDiagnostico.onclick = () => {
       const qs = new URLSearchParams({
         plano: dadosConfirmados.plano || planoSelecionadoModal,
+        lang: "pt-BR",
         token: dadosConfirmados.tokenAcesso || "",
         email: dadosConfirmados.email || ""
       });
@@ -1223,6 +1224,7 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
     btnPpIrDiag.onclick = () => {
       const qs = new URLSearchParams({
         plano: dadosConfirmados.plano || planoPayPalAtual,
+        lang: "en",
         token: dadosConfirmados.tokenAcesso || ""
       });
       window.location.href = `diagnostico.html?${qs.toString()}`;

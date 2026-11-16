@@ -804,8 +804,8 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
 </main>
 
 <script src="motor-desbloqueio.js?v=3"></script>
-<script src="pagamento-guardiao.js?v=9"></script>
-<script src="i18n-desbloqueio.js?v=3"></script>
+<script src="pagamento-guardiao.js?v=10"></script>
+<script src="i18n-desbloqueio.js?v=4"></script>
 <script>
 (function() {
   "use strict";
@@ -921,8 +921,14 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
 
   function destravarAnamneseNaTela(dadosConfirmados) {
     if (pollingGate) pollingGate.parar();
-    const emIngles = isIdiomaIngles();
     const isMestra = Boolean((dadosConfirmados && dadosConfirmados.modoMestra) || (Guardiao && Guardiao.isModoMestra && Guardiao.isModoMestra()));
+    // Preserva obrigatoriamente o idioma da sessão de compra após o pagamento
+    if (!isMestra && dadosConfirmados && (dadosConfirmados.idioma === "en" || dadosConfirmados.idioma === "pt-BR")) {
+      if (window.TryvI18n && window.TryvI18n.getIdioma && window.TryvI18n.getIdioma() !== dadosConfirmados.idioma) {
+        window.TryvI18n.setIdioma(dadosConfirmados.idioma);
+      }
+    }
+    const emIngles = isIdiomaIngles();
     if (!isMestra && dadosConfirmados && (dadosConfirmados.plano === "standard" || dadosConfirmados.plano === "profunda")) {
       planoAtivo = dadosConfirmados.plano;
     } else if (isMestra && (planoUrl === "standard" || planoUrl === "profunda")) {
@@ -1499,6 +1505,17 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
 
   // 4. Submissão, Processamento Oracular e Renderização do Dossiê + PDF (100% local no navegador, sem envio externo)
   let ultimoResultado = null;
+  let ultimoDadosCliente = null;
+
+  window.addEventListener("tryv:idioma-alterado", () => {
+    if (ultimoDadosCliente && $("#sec-resultado") && !$("#sec-resultado").hidden) {
+      ultimoResultado = window.MotorDesbloqueio.processarAnaliseCompleta({
+        ...ultimoDadosCliente,
+        idioma: isIdiomaIngles() ? "en" : "pt-BR"
+      });
+      renderizarDossieNaTela(ultimoResultado);
+    }
+  });
 
   $("#form-diagnostico").addEventListener("submit", async e => {
     e.preventDefault();
@@ -1517,6 +1534,7 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
 
     const dadosCliente = {
       plano: planoAtivo,
+      idioma: isIdiomaIngles() ? "en" : "pt-BR",
       nomeBatismo: $("#f-nome").value.trim(),
       email: $("#f-email").value.trim(),
       whatsapp: $("#f-whats").value.trim(),
@@ -1573,6 +1591,7 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
       await new Promise(r => setTimeout(r, 420));
     }
 
+    ultimoDadosCliente = dadosCliente;
     ultimoResultado = window.MotorDesbloqueio.processarAnaliseCompleta(dadosCliente);
 
     secLoad.hidden = true;
@@ -1580,9 +1599,9 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
     $("#sec-resultado").hidden = false;
     window.scrollTo({ top: 0, behavior: "smooth" });
 
-    // Dispara automaticamente o download do PDF após 600ms
+    // Dispara automaticamente o download do PDF após 600ms utilizando o idioma da sessão
     setTimeout(() => {
-      window.MotorDesbloqueio.gerarPDFPersonalizado(ultimoResultado).catch(() => {});
+      window.MotorDesbloqueio.gerarPDFPersonalizado(ultimoResultado, { idioma: dadosCliente.idioma }).catch(() => {});
     }, 600);
   });
 
@@ -1608,9 +1627,11 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
     if (!ultimoResultado) return;
     const btn = $("#btn-baixar-pdf");
     const txtOrig = btn.textContent;
-    btn.textContent = "⏳ Gerando PDF…";
+    btn.textContent = isIdiomaIngles() ? "⏳ Generating PDF…" : "⏳ Gerando PDF…";
     try {
-      await window.MotorDesbloqueio.gerarPDFPersonalizado(ultimoResultado);
+      await window.MotorDesbloqueio.gerarPDFPersonalizado(ultimoResultado, {
+        idioma: isIdiomaIngles() ? "en" : "pt-BR"
+      });
     } finally {
       btn.textContent = txtOrig;
     }

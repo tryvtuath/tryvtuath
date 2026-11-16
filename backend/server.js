@@ -396,8 +396,9 @@ function normalizarEmail(email) {
   return String(email || "").trim().toLowerCase();
 }
 
-function gerarTokenAcessoAssinado(email, orderId, plano) {
-  const payload = `${normalizarEmail(email)}|${orderId || "INFPAY"}|${plano || "profunda"}`;
+function gerarTokenAcessoAssinado(email, orderId, plano, idioma = "pt-BR") {
+  const langNorm = idioma === "en" ? "en" : "pt-BR";
+  const payload = `${normalizarEmail(email)}|${orderId || "INFPAY"}|${plano || "profunda"}|${langNorm}`;
   const assinatura = crypto
     .createHmac("sha256", WEBHOOK_SECRET)
     .update(payload)
@@ -418,8 +419,8 @@ function verificarTokenAcessoAssinado(token) {
       .digest("hex")
       .slice(0, 32);
     if (assinaturaRecebida !== assinaturaEsperada) return null;
-    const [email, orderId, plano] = payload.split("|");
-    return { valido: true, email, orderId, plano };
+    const [email, orderId, plano, idioma] = payload.split("|");
+    return { valido: true, email, orderId, plano, idioma: idioma === "en" ? "en" : "pt-BR" };
   } catch {
     return null;
   }
@@ -808,7 +809,7 @@ const server = http.createServer(async (req, res) => {
       if (cred.simuladorSandbox) {
         // Modo de simulação Sandbox local controlado para testes automatizados ponta a ponta
         paypalOrderId = `SANDBOX-PP-${Date.now()}-${Math.random().toString(36).slice(2, 7).toUpperCase()}`;
-        approveUrl = `${SITE_PUBLIC_URL}/diagnostico.html?plano=${plano}&paypal_return=1&token=${encodeURIComponent(paypalOrderId)}`;
+        approveUrl = `${SITE_PUBLIC_URL}/diagnostico.html?plano=${plano}&lang=en&paypal_return=1&token=${encodeURIComponent(paypalOrderId)}`;
       } else {
         const authInfo = await obterAccessTokenPayPal();
         if (!authInfo || !authInfo.token) {
@@ -819,8 +820,8 @@ const server = http.createServer(async (req, res) => {
           });
         }
 
-        const returnUrl = String(body.returnUrl || `${SITE_PUBLIC_URL}/diagnostico.html?plano=${plano}&paypal_return=1`);
-        const cancelUrl = String(body.cancelUrl || `${SITE_PUBLIC_URL}/desbloqueio.html?paypal_cancel=1#planos`);
+        const returnUrl = String(body.returnUrl || `${SITE_PUBLIC_URL}/diagnostico.html?plano=${plano}&lang=en&paypal_return=1`);
+        const cancelUrl = String(body.cancelUrl || `${SITE_PUBLIC_URL}/desbloqueio.html?lang=en&paypal_cancel=1#planos`);
 
         const orderPayload = JSON.stringify({
           intent: "CAPTURE",
@@ -1046,7 +1047,7 @@ const server = http.createServer(async (req, res) => {
 
       const orderIdFinal = (pedidoExistente && pedidoExistente.orderId) || customIdRetornado || orderIdReq || `PP-${paypalOrderId}`;
       const emailFinal = emailReq || emailPayerPayPal || (pedidoExistente && pedidoExistente.email) || "paypal@tryvtuath";
-      const tokenAcesso = gerarTokenAcessoAssinado(emailFinal, orderIdFinal, planoConfirmado);
+      const tokenAcesso = gerarTokenAcessoAssinado(emailFinal, orderIdFinal, planoConfirmado, "en");
 
       const registroConfirmado = {
         ...(pedidoExistente || {}),
@@ -1055,6 +1056,7 @@ const server = http.createServer(async (req, res) => {
         paypalCaptureId: captureId,
         email: emailFinal,
         plano: planoConfirmado,
+        idioma: "en",
         moeda: "USD",
         valorUsd: valorCapturadoNum,
         valorUsdStr: valorCapturadoNum.toFixed(2),
@@ -1082,6 +1084,7 @@ const server = http.createServer(async (req, res) => {
         paypalOrderId,
         captureId,
         plano: planoConfirmado,
+        idioma: "en",
         email: emailFinal,
         moeda: "USD",
         valorUsd: valorCapturadoNum.toFixed(2),

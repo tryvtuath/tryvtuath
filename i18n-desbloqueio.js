@@ -2116,54 +2116,10 @@
     [/Sujeito à análise prévia e disponibilidade de agenda da Tryv Tuath®\./g, "Subject to prior review and schedule availability of Tryv Tuath®."],
     [/Sujeito à análise prévia de perfil e disponibilidade de agenda da Tryv Tuath®\./g, "Subject to prior profile review and schedule availability of Tryv Tuath®."],
 
-    // Signos, Planetas, Elementos e Arcanos
-    [/\bÁries\b/g, "Aries"],
-    [/\bTouro\b/g, "Taurus"],
-    [/\bGêmeos\b/g, "Gemini"],
-    [/\bCâncer\b/g, "Cancer"],
-    [/\bLeão\b/g, "Leo"],
-    [/\bVirgem\b/g, "Virgo"],
-    [/\bEscorpião\b/g, "Scorpio"],
-    [/\bSagitário\b/g, "Sagittarius"],
-    [/\bCapricórnio\b/g, "Capricorn"],
-    [/\bAquário\b/g, "Aquarius"],
-    [/\bPeixes\b/g, "Pisces"],
-    [/\bMercúrio\b/g, "Mercury"],
-    [/\bVênus\b/g, "Venus"],
-    [/\bMarte\b/g, "Mars"],
-    [/\bJúpiter\b/g, "Jupiter"],
-    [/\bSaturno\b/g, "Saturn"],
-    [/\bUrano\b/g, "Uranus"],
-    [/\bNetuno\b/g, "Neptune"],
-    [/\bPlutão\b/g, "Pluto"],
-    [/\bQuíron\b/g, "Chiron"],
-    [/\bNodo Norte\b/g, "North Node"],
-    [/\bNodo Sul\b/g, "South Node"],
-    [/\bO Mago\b/g, "The Magician"],
-    [/\bA Sacerdotisa\b/g, "The High Priestess"],
-    [/\bA Imperatriz\b/g, "The Empress"],
-    [/\bO Imperador\b/g, "The Emperor"],
-    [/\bO Hierofante\b/g, "The Hierophant"],
-    [/\bOs Enamorados\b/g, "The Lovers"],
-    [/\bO Carro\b/g, "The Chariot"],
-    [/\bA Justiça\b/g, "Justice"],
-    [/\bO Eremita\b/g, "The Hermit"],
-    [/\bA Roda da Fortuna\b/g, "Wheel of Fortune"],
-    [/\bA Força\b/g, "Strength"],
-    [/\bO Enforcado\b/g, "The Hanged Man"],
-    [/\bA Morte\b/g, "Death"],
-    [/\bA Temperança\b/g, "Temperance"],
-    [/\bO Diabo\b/g, "The Devil"],
-    [/\bA Torre\b/g, "The Tower"],
-    [/\bA Estrela\b/g, "The Star"],
-    [/\bA Lua\b/g, "The Moon"],
-    [/\bO Sol\b/g, "The Sun"],
-    [/\bO Julgamento\b/g, "Judgement"],
-    [/\bO Mundo\b/g, "The World"],
-    [/\bO Louco\b/g, "The Fool"],
-
     // PDF e Textos Internos do Motor
     [/TRYV TUATH® · DOSSIÊ ORACULAR & PSICANALÍTICO DO DESBLOQUEIO INVISÍVEL/g, "TRYV TUATH® · ORACULAR & PSYCHOANALYTIC INVISIBLE UNLOCKING DOSSIER"],
+    [/ANÁLISE PROFUNDA COMPLETA \(6 SABERES \+ PROTOCOLO 21 DIAS\)/g, "COMPLETE DEEP ANALYSIS (6 WISDOMS + 21-DAY PROTOCOL)"],
+    [/ANÁLISE STANDARD \(DIAGNÓSTICO ESSENCIAL & AFETOS\)/g, "STANDARD ANALYSIS (ESSENTIAL DIAGNOSIS & AFFECTIONS)"],
     [/ANÁLISE PROFUNDA COMPLETA/g, "COMPLETE DEEP ANALYSIS"],
     [/ANÁLISE STANDARD/g, "STANDARD ANALYSIS"],
     [/tryvtuath\.com\.br · Você é o oráculo · Não substitui acompanhamento clínico individual/g, "tryvtuath.com.br · You are the oracle · Does not replace 1-on-1 clinical accompaniment"],
@@ -2174,8 +2130,6 @@
     [/Diagnóstico Essencial: Raiz do Bloqueio, Relações\/Afetos, Arquétipos & Soluções Práticas/g, "Essential Diagnosis: Root of the Block, Relationships/Affections, Archetypes & Practical Solutions"],
     [/MAPA CONSAGRADO EXCLUSIVAMENTE PARA:/g, "CHART CONSECRATED EXCLUSIVELY FOR:"],
     [/Hora não informada \(Mapa Solar 12:00\)/g, "Birth time not provided (12:00 Solar Chart)"],
-    [/ANÁLISE PROFUNDA COMPLETA \(6 SABERES \+ PROTOCOLO 21 DIAS\)/g, "COMPLETE DEEP ANALYSIS (6 WISDOMS + 21-DAY PROTOCOL)"],
-    [/ANÁLISE STANDARD \(DIAGNÓSTICO ESSENCIAL & AFETOS\)/g, "STANDARD ANALYSIS (ESSENTIAL DIAGNOSIS & AFFECTIONS)"],
     [/SOL TROPICAL/g, "TROPICAL SUN"],
     [/LUA & EMOÇÕES/g, "MOON & EMOTIONS"],
     [/ASCENDENTE/g, "ASCENDANT"],
@@ -2259,8 +2213,13 @@
     [/Veja o que fecha e o que abre seu fluxo financeiro:/g, "See what closes and what opens your financial flow:"],
     [/Na Numerologia, seu \*\*Número de Expressão é/g, "In Numerology, your **Expression Number is"],
     [/e seu \*\*Destino é/g, "and your **Destiny is"],
-    [/enquanto você atravessa em/g, "while you cross in"],
-    [/o Ano Pessoal/g, "Personal Year"],
+    [/enquanto você atravessa em (\d{4}) o Ano Pessoal (\d+)/gi, "while you cross in $1 Personal Year $2"],
+    [/No Ano Pessoal (\d+) \(([^)]+)\), sua energia rende o triplo quando você honra seu dom de /g, "In Personal Year $1 ($2), your energy yields threefold when you honor your gift of "],
+    [/\bo Ano Pessoal/g, "Personal Year"],
+    [/e a \*\*Lua em /g, "and the **Moon in "],
+    [/e a Lua em /g, "and the Moon in "],
+    [/Nakshatra Védica/g, "Vedic Nakshatra"],
+    [/Por um pequeno acréscimo de investimento, você pode ter acesso imediato à Análise Profunda Completa e a um questionário diagnóstico muito mais robusto para compreender melhor a si mesma, mapear suas heranças inconscientes e destravar seus caminhos de melhoria\./g, "For a small additional investment, you can gain immediate access to the Complete Deep Analysis and a much more robust diagnostic questionnaire to better understand yourself, map your unconscious legacies, and unlock your paths of improvement."],
     [/Seu nome de batismo possui todas as 9 vibrações numéricas presentes, o que significa que você já tem todas as ferramentas internas — faltava apenas alinhar a rota!/g, "Your birth name contains all 9 numerical vibrations, meaning you already hold every internal tool — you only needed to align your route!"],
     [/Para romper seu teto financeiro nos próximos 90 dias \(rumo à sua meta:/g, "To break through your financial ceiling over the next 90 days (toward your goal:"],
     [/ative o/g, "activate"],
@@ -2277,23 +2236,64 @@
     [/Nascida no dia (\d+) \(Vibração (\d+) — ([^)]+)\), você trouxe de berço a faculdade natural de /g, "Born on day $1 (Vibration $2 — $3), you brought from birth the natural faculty of "],
     [/Sua Expressão (\d+) \(([^)]+)\) somada à maior concentração de letras na vibração (\d+) \(([^)]+)\) revela que seu talento inato opera sem esforço quando você atua com autonomia criativa, leitura intuitiva de pessoas e direção estratégica\./g, "Your Expression $1 ($2) combined with the highest letter concentration in vibration $3 ($4) reveals that your innate talent operates effortlessly when you act with creative autonomy, intuitive reading of people, and strategic direction."],
     [/Para transitar pela vida por um caminho mais suave e próspero, pare de tentar vencer pelo desgaste bruto \(forçando métodos rígidos que contrariam sua Alma (\d+)\)\. Seu fluxo de menor resistência acontece quando você usa o seu Dom do Dia (\d+) \(([^)]+)\) aliado à Maturidade (\d+) \(([^)]+)\): posicione-se onde sua sensibilidade, voz e visão única sejam o centro do seu valor, permitindo que os resultados venham por magnetismo e alinhamento, e não por exaustão\./g, "To move through life along a gentler and more prosperous path, stop trying to win through sheer exhaustion (forcing rigid methods that contradict your Soul $1). Your path of least resistance happens when you use your Birth Day Gift $2 ($3) allied with Maturity $4 ($5): position yourself where your sensitivity, voice, and unique vision are the center of your value, allowing results to come through magnetism and alignment rather than burnout."],
-    [/Além disso, sua Nakshatra natal \(([^,]+), regida por ([^)]+)\) lembra que o seu caminho mais suave exige honrar seu símbolo sagrado \(([^)]+)\) e evitar o desgaste de lutar contra sua natureza intuitiva\./g, "Furthermore, your natal Nakshatra ($1, ruled by $2) reminds you that your gentlest path requires honoring your sacred symbol ($3) and avoiding the strain of fighting your intuitive nature."],
-    [/\(sob a frequência de ([^)]+) cruzada à sua raiz em ([^)]+)\)/g, "(under the frequency of $1 cross-referenced with your root in $2)"],
+    [/Além disso, sua Nakshatra natal \(([^,]+), regida por (.+?)\) lembra que o seu caminho mais suave exige honrar seu símbolo sagrado \((.+?)\) e evitar o desgaste de lutar contra sua natureza intuitiva\./g, "Furthermore, your natal Nakshatra ($1, ruled by $2) reminds you that your gentlest path requires honoring your sacred symbol ($3) and avoiding the strain of fighting your intuitive nature."],
+    [/\(sob a frequência de (.+?) cruzada à sua raiz em ([^)]+)\)/g, "(under the frequency of $1 cross-referenced with your root in $2)"],
     [/Sempre que o gatilho de /g, "Whenever the trigger of "],
     [/ surgir, reconheça que é a memória de /g, " arises, recognize that it is the memory of "],
     [/ e a paixão do /g, " and the passion of "],
     [/ tentando te proteger\. Em vez de reagir com /g, " trying to protect you. Instead of reacting with "],
     [/, pratique a pausa consciente de 90 segundos e aplique o caminho de integração: /g, ", practice a conscious 90-second pause and apply the integration path: "],
     [/Para encerrar o ciclo de /g, "To end the cycle of "],
-    [/, alinhe sua /g, ", align your "],
-    [/ ao /g, " with "],
+    [/, alinhe sua (.+?) ao /g, ", align your $1 with "],
     [/: estabeleça limites claros logo no início das interações, pare de justificar ausências alheias e permita ser cuidada sem precisar comprar amor através de excesso de prestatividade\./g, ": establish clear boundaries right at the start of interactions, stop justifying others' absences, and allow yourself to be cared for without needing to buy love through over-giving."],
     [/No Ano Pessoal (\d+) \(([^)]+)\), sua energia rende o triplo quando você honra seu dom de /g, "In Personal Year $1 ($2), your energy yields threefold when you honor your gift of "],
     [/\. Concentre 80% da sua rotina na sua zona de genialidade natural \(Destino (\d+)\) e corte tarefas onde você age apenas por culpa\./g, ". Focus 80% of your routine in your zone of natural genius (Destiny $1) and cut tasks where you act solely out of guilt."],
     [/“Eu, ([^,]+), libero com amor toda lealdade invisível à dor e ao limite\. Eu assumo a luz do meu ([^,]+), honro minha sensibilidade e abro meus caminhos para o amor recíproco e a abundância soberana\. Assim é\.”/g, "“I, $1, lovingly release all invisible loyalty to pain and limitation. I claim the light of my $2, honor my sensitivity, and open my paths to reciprocal love and sovereign abundance. So it is.”"],
-    [/Realizar o ([^e]+) e escrever em uma folha tudo o que você vem carregando por culpa ou medo \(([^)]+)\)\. Queime a folha com segurança na chama de uma vela branca, declarando encerrado o ciclo de repetição\./g, "Perform the $1 and write on a sheet of paper everything you have been carrying out of guilt or fear ($2). Safely burn the paper in the flame of a white candle, declaring the cycle of repetition closed."],
+    [/Realizar o (.+?) e escrever em uma folha tudo o que você vem carregando por culpa ou medo \((.+?)\)\. Queime a folha com segurança na chama de uma vela branca, declarando encerrado o ciclo de repetição\./g, "Perform the $1 and write on a sheet of paper everything you have been carrying out of guilt or fear ($2). Safely burn the paper in the flame of a white candle, declaring the cycle of repetition closed."],
     [/Praticar o limite sagrado da sua ([^:]+): durante 7 dias, não tome a frente para 'salvar' ou resolver problemas emocionais de adultos ao seu redor\. Recupere sua energia magnética e repita seu Mantra ao acordar\./g, "Practice the sacred boundary of your $1: for 7 days, do not step in to 'save' or solve the emotional problems of adults around you. Reclaim your magnetic energy and repeat your Decree upon waking."],
-    [/Executar 1 movimento concreto alinhado ao seu Arcano do Dinheiro \(([^)]+)\) e ao seu ([^e]+) em direção à sua meta de 90 dias \(([^)]+)\)\./g, "Execute 1 concrete step aligned with your Money Arcanum ($1) and your $2 toward your 90-day goal ($3)."],
+    [/Executar 1 movimento concreto alinhado ao seu Arcano do Dinheiro \((.+?)\) e ao seu (.+?) em direção à sua meta de 90 dias \((.+?)\)\./g, "Execute 1 concrete step aligned with your Money Arcanum ($1) and your $2 toward your 90-day goal ($3)."],
+    [/Tríade Cármica (\d+-\d+-\d+)/g, "Karmic Triad $1"],
+    [/Em existências passadas, sua alma viveu intensos aprendizados ligados aos arquétipos de (.+?) e ([^,]+), deixando uma memória inconsciente de /g, "In past lives, your soul experienced intense lessons linked to the archetypes of $1 and $2, leaving an unconscious memory of "],
+    [/Em existências passadas, sua alma viveu intensos aprendizados ligados aos arquétipos de (.+?) e ([^,]+), deixando uma memória celular que hoje pede equilíbrio através de /g, "In past lives, your soul experienced intense lessons linked to the archetypes of $1 and $2, leaving a cellular memory that today calls for balance through "],
+    [/Nesta vida, sempre que você entra em estresse emocional ou financeiro, tende a ativar a defesa de ([^:]+): /g, "In this life, whenever you enter emotional or financial stress, you tend to activate the defense of $1: "],
+    [/Sua libertação cármica acontece quando você eleva a tríade (\d+-\d+-\d+) para a luz: /g, "Your karmic liberation happens when you elevate triad $1 into the light: "],
+    [/Você possui (?:a Lição Cármica|as Lições Cármicas) \*\*([^*]+)\*\* ausentes nas letras do seu nome de batismo, o que exige atenção consciente a: /g, "You have Karmic Lesson(s) **$1** missing from the letters of your birth name, requiring conscious attention to: "],
+    [/Você possui (?:a Lição Cármica|as Lições Cármicas) ([0-9, ]+) ausentes nas letras do seu nome de batismo, o que exige atenção consciente a: /g, "You have Karmic Lesson(s) $1 missing from the letters of your birth name, requiring conscious attention to: "],
+    [/A sabedoria ancestral do (.+?) combina /g, "The ancestral wisdom of the $1 combines "],
+    [/\(Atenção sob desequilíbrio: /g, "(Watch under imbalance: "],
+    [/No Horóscopo Oriental, sua força vital é a de \*\*([^*]+)\*\* \(([^)]+)\)\. Isso confere a você um dom natural de \*([^*]+)\* potencializado pelo elemento ([^*]+)\(\*([^*]+)\*\)\. Seu ponto de atenção ocorre sob estresse: /g, "In the Eastern Horoscope, your vital force is **$1** ($2). This grants you a natural gift of *$3* enhanced by the element $4(*$5*). Your point of attention under stress is: "],
+    [/Ciclo Solar-Lunar de (\d+)/g, "Solar-Lunar Cycle of $1"],
+    [/foco em /g, "focus on "],
+    [/Em (\d{4}), você vive a vibração do Ano Pessoal (\d+) \(([^)]+)\): /g, "In $1, you live the vibration of Personal Year $2 ($3): "],
+    [/Enquanto você atravessa em (\d{4}) o Ano Pessoal (\d+)/gi, "While you cross in $1 Personal Year $2"],
+    [/Sua (\*\*)?(?:Vênus|Venus) em /g, "Your $1Venus in "],
+    [/Seu (\*\*)?(?:Saturno|Saturn) em /g, "Your $1Saturn in "],
+    [/Seu (\*\*)?(?:Nodo Norte|North Node) em /g, "Your $1North Node in "],
+    [/um desgaste interno silencioso/g, "a silent internal drain"],
+    [/autodefesa emocional/g, "emotional self-defense"],
+    [/cobrança interna/g, "internal self-criticism"],
+    [/lealdade invisível e sobrecarga precoce/g, "invisible loyalty and early overload"],
+    [/tensão constante e hipervigilância/g, "constant tension and hypervigilance"],
+    [/atrair dinâmicas desgastantes/g, "attracting draining dynamics"],
+    [/desequilíbrio afetivo/g, "romantic imbalance"],
+    [/ansiedade ou exaustão/g, "anxiety or exhaustion"],
+    [/hipercontrole/g, "hyper-control"],
+    [/a sensação de um teto invisível/g, "the feeling of an invisible ceiling"],
+    [/precisar se esforçar demais/g, "having to work twice as hard"],
+    [/prosperidade e autonomia/g, "prosperity and autonomy"],
+    [/expansão profissional e financeira/g, "professional and financial expansion"],
+    [/Sobrecarga emocional e repetição de ciclos internos/g, "Emotional overload and repetition of internal cycles"],
+    [/Oscilação entre hipercontrole e exaustão/g, "Oscillation between hyper-control and exhaustion"],
+    [/Ferida de validação e pertencimento/g, "Validation and belonging wound"],
+    [/Desequilíbrio entre entrega e reciprocidade/g, "Imbalance between giving and reciprocity"],
+    [/Busca por conexão autêntica/g, "Search for authentic connection"],
+    [/Teto invisível de crescimento e reconhecimento/g, "Invisible ceiling of growth and recognition"],
+    [/Sobrecarga e dificuldade de escalar ganhos/g, "Overload and difficulty scaling earnings"],
+    [/Suas trilhas principais \(Alma, Expressão, Destino e Dia Natal\) não carregam as travas clássicas 13, 14, 16 ou 19\. Seus bloqueios atuais não vêm de dívidas numéricas antigas, mas de condicionamentos emocionais e escolhas desta existência\./g, "Your main pathways (Soul, Expression, Destiny, and Birth Day) do not carry the classic 13, 14, 16, or 19 debts. Your current blocks do not stem from ancient numerical debts, but from emotional conditioning and choices in this lifetime."],
+    [/Origem: /g, "Origin: "],
+    [/Impacto atual: /g, "Current impact: "],
+    [/Chave de cura: /g, "Healing key: "],
+    [/Raiz Inconsciente: /g, "Unconscious Root: "],
 
     // Fundamentos Místicos e Convites Terapias (parágrafos dinâmicos)
     [/Uma das dúvidas mais fascinantes de quem acessa este dossiê é perceber que a posição dos astros na[\s\S]*?sob a mansão estelar \(\*\*Nakshatra\*\*\) \*\*([^*]+)\*\*\./g,
@@ -2439,7 +2439,53 @@
     [/Agende com a Tryv sua Análise Completa e Aprofundada/g, "Schedule Your Complete In-Depth Analysis with Tryv"],
     [/Psicanálise Clínica & Mentoria Especializada \(Pacotes Trimestrais e Semestrais\)/g, "Clinical Psychoanalysis & Specialized Mentoring (Quarterly & Semi-Annual Packages)"],
     [/Tryv Tuath® — Psicanalista Formada em Traumas Familiares, Ansiedade e Depressão/g, "Tryv Tuath® — Psychoanalyst Trained in Family Trauma, Anxiety & Depression"],
-    [/CHAMADA PARA AÇÃO:/g, "CALL TO ACTION:"]
+    [/CHAMADA PARA AÇÃO:/g, "CALL TO ACTION:"],
+
+    // Signos, Planetas, Elementos e Arcanos (executados após os blocos de frase para não fragmentar padrões)
+    [/\bÁries\b/g, "Aries"],
+    [/\bTouro\b/g, "Taurus"],
+    [/\bGêmeos\b/g, "Gemini"],
+    [/\bCâncer\b/g, "Cancer"],
+    [/\bLeão\b/g, "Leo"],
+    [/\bVirgem\b/g, "Virgo"],
+    [/\bEscorpião\b/g, "Scorpio"],
+    [/\bSagitário\b/g, "Sagittarius"],
+    [/\bCapricórnio\b/g, "Capricorn"],
+    [/\bAquário\b/g, "Aquarius"],
+    [/\bPeixes\b/g, "Pisces"],
+    [/\bMercúrio\b/g, "Mercury"],
+    [/\bVênus\b/g, "Venus"],
+    [/\bMarte\b/g, "Mars"],
+    [/\bJúpiter\b/g, "Jupiter"],
+    [/\bSaturno\b/g, "Saturn"],
+    [/\bUrano\b/g, "Uranus"],
+    [/\bNetuno\b/g, "Neptune"],
+    [/\bPlutão\b/g, "Pluto"],
+    [/\bQuíron\b/g, "Chiron"],
+    [/\bNodo Norte\b/g, "North Node"],
+    [/\bNodo Sul\b/g, "South Node"],
+    [/\bO Mago\b/g, "The Magician"],
+    [/\bA Sacerdotisa\b/g, "The High Priestess"],
+    [/\bA Imperatriz\b/g, "The Empress"],
+    [/\bO Imperador\b/g, "The Emperor"],
+    [/\bO Hierofante\b/g, "The Hierophant"],
+    [/\bOs Enamorados\b/g, "The Lovers"],
+    [/\bO Carro\b/g, "The Chariot"],
+    [/\bA Justiça\b/g, "Justice"],
+    [/\bO Eremita\b/g, "The Hermit"],
+    [/\bA Roda da Fortuna\b/g, "Wheel of Fortune"],
+    [/\bA Força\b/g, "Strength"],
+    [/\bO Enforcado\b/g, "The Hanged Man"],
+    [/\bA Morte\b/g, "Death"],
+    [/\bA Temperança\b/g, "Temperance"],
+    [/\bO Diabo\b/g, "The Devil"],
+    [/\bA Torre\b/g, "The Tower"],
+    [/\bA Estrela\b/g, "The Star"],
+    [/\bA Lua\b/g, "The Moon"],
+    [/\bO Sol\b/g, "The Sun"],
+    [/\bO Julgamento\b/g, "Judgement"],
+    [/\bO Mundo\b/g, "The World"],
+    [/\bO Louco\b/g, "The Fool"]
   ];
 
   // Mapa rápido em maiúsculas para cabeçalhos do PDF que chamam .toUpperCase() antes de doc.splitTextToSize
@@ -2447,6 +2493,29 @@
   for (const [k, v] of Object.entries(EXACT_MAP)) {
     UPPER_EXACT_MAP[k.toUpperCase()] = v.toUpperCase();
   }
+
+  // Lista ordenada de frases de tabelas do motor (SIGNOS, ARCANOS, NUMEROLOGIA, ENEAGRAMA, CHINES, DASHA)
+  // executada APÓS os padrões estruturais de parágrafo para não fragmentar sentenças compostas
+  const SUBSTRING_PHRASES = [];
+  for (const [k, v] of Object.entries(EXACT_MAP)) {
+    if (k.length >= 24) {
+      SUBSTRING_PHRASES.push([k, v]);
+      const kLower = k.toLowerCase();
+      if (kLower !== k) {
+        const vLower = v.charAt(0).toLowerCase() + v.slice(1);
+        SUBSTRING_PHRASES.push([kLower, vLower]);
+      }
+      if (/^Dom natural de /i.test(k)) {
+        const kSemDom = k.replace(/^Dom natural de /i, "");
+        const vSemDom = v.replace(/^Natural gift of /i, "");
+        if (kSemDom.length >= 20) {
+          SUBSTRING_PHRASES.push([kSemDom, vSemDom]);
+        }
+      }
+    }
+  }
+  SUBSTRING_PHRASES.sort((a, b) => b[0].length - a[0].length);
+
   const PATTERN_REPLACEMENTS_CI = PATTERN_REPLACEMENTS.map(([rx, repl]) => [
     new RegExp(rx.source, rx.flags.includes("i") ? rx.flags : rx.flags + "i"),
     repl
@@ -2560,11 +2629,24 @@
       return aplicarPrecosUsdEmIngles(lead + UPPER_EXACT_MAP[norm] + trail);
     }
 
-    // 2. Substituições por padrões e expressões regulares
+    // 2. Substituições por padrões estruturais de parágrafos primeiro
     let out = str;
     const listaPadroes = isAllCaps ? PATTERN_REPLACEMENTS_CI : PATTERN_REPLACEMENTS;
     for (const [regex, repl] of listaPadroes) {
       out = out.replace(regex, repl);
+    }
+
+    // 3. Substituições de frases de tabelas do motor interpoladas dentro de parágrafos compostos
+    if (!isAllCaps) {
+      for (const [ptSub, enSub] of SUBSTRING_PHRASES) {
+        if (out.includes(ptSub)) {
+          out = out.split(ptSub).join(enSub);
+        }
+      }
+      // Segunda passagem dos padrões para traduzir nomes de signos/arcanos que estavam dentro das frases interpoladas
+      for (const [regex, repl] of listaPadroes) {
+        out = out.replace(regex, repl);
+      }
     }
     if (isAllCaps) {
       out = out.toUpperCase();
@@ -2827,41 +2909,76 @@
     "rom", "glifo", "codigo", "codigoCupom", "urlUpgrade", "ideograma", "nomeChines"
   ]);
 
-  function traduzirObjetoProfundo(val, chaveAtual = "") {
-    if (getIdioma() !== "en") return val;
+  function traduzirObjetoProfundo(val, chaveAtual = "", idiomaForcado = "") {
+    const lang = idiomaForcado || getIdioma();
+    if (lang !== "en") return val;
     if (val == null) return val;
     if (typeof val === "string") {
       if (CHAVES_NAO_TRADUZIR.has(chaveAtual)) return val;
-      return traduzirTexto(val);
+      return traduzirTexto(val, "en");
     }
     if (Array.isArray(val)) {
-      return val.map((item) => traduzirObjetoProfundo(item, chaveAtual));
+      return val.map((item) => traduzirObjetoProfundo(item, chaveAtual, "en"));
     }
     if (typeof val === "object") {
       const copia = {};
       for (const [k, v] of Object.entries(val)) {
-        copia[k] = traduzirObjetoProfundo(v, k);
+        if (k === "__dadosOriginais" || k === "__resultadoOriginalPt") {
+          copia[k] = v;
+        } else {
+          copia[k] = traduzirObjetoProfundo(v, k, "en");
+        }
       }
       return copia;
     }
     return val;
   }
 
-  // Integra com MotorDesbloqueio.gerarPDFPersonalizado sem alterar o fluxo em português
+  // Integra com MotorDesbloqueio.processarAnaliseCompleta e gerarPDFPersonalizado
+  // para que o próprio motor de interpretação e geração do relatório respeite o idioma selecionado na sessão
   function integrarGeradorPDF() {
-    if (!global.MotorDesbloqueio || global.MotorDesbloqueio.__i18nPdfWrapped) return;
+    if (!global.MotorDesbloqueio) return;
+
+    if (!global.MotorDesbloqueio.__i18nProcessarWrapped && typeof global.MotorDesbloqueio.processarAnaliseCompleta === "function") {
+      const processarOriginal = global.MotorDesbloqueio.processarAnaliseCompleta;
+      global.MotorDesbloqueio.__i18nProcessarWrapped = true;
+      global.MotorDesbloqueio.processarAnaliseCompleta = function (dadosCliente) {
+        const idiomaSessao =
+          (dadosCliente && (dadosCliente.idioma === "en" || dadosCliente.idioma === "pt-BR") ? dadosCliente.idioma : null) ||
+          getIdioma();
+        const resPt = processarOriginal.call(this, dadosCliente);
+        resPt.idioma = idiomaSessao;
+        if (idiomaSessao !== "en") {
+          return resPt;
+        }
+        const resEn = traduzirObjetoProfundo(resPt, "", "en");
+        resEn.idioma = "en";
+        resEn.__resultadoOriginalPt = resPt;
+        return resEn;
+      };
+    }
+
+    if (global.MotorDesbloqueio.__i18nPdfWrapped) return;
     const gerarOriginal = global.MotorDesbloqueio.gerarPDFPersonalizado;
     if (typeof gerarOriginal !== "function") return;
 
     global.MotorDesbloqueio.__i18nPdfWrapped = true;
     global.MotorDesbloqueio.gerarPDFPersonalizado = async function (resultado, opcoes = {}) {
-      // Em PT-BR, executa o gerador original sem qualquer modificação
-      if (getIdioma() !== "en") {
-        return gerarOriginal.call(this, resultado, opcoes);
+      // Determina o idioma explícito da sessão de compra / análise (nunca infere pelo idioma do navegador nem pelo texto livre)
+      const idiomaPdf =
+        (opcoes && (opcoes.idioma === "en" || opcoes.idioma === "pt-BR") ? opcoes.idioma : null) ||
+        (resultado && (resultado.idioma === "en" || resultado.idioma === "pt-BR") ? resultado.idioma : null) ||
+        getIdioma();
+
+      // Em PT-BR, executa o gerador original com o resultado em português sem qualquer modificação
+      if (idiomaPdf !== "en") {
+        const fontePt = (resultado && resultado.__resultadoOriginalPt) || resultado;
+        return gerarOriginal.call(this, fontePt, opcoes);
       }
 
-      // Em EN, traduz o objeto de resultado e intercepta métodos de texto/salvamento do jsPDF
-      const resTraduzido = traduzirObjetoProfundo(resultado);
+      // Em EN, garante que o objeto de resultado esteja integralmente traduzido e intercepta métodos do jsPDF
+      const fonteBase = (resultado && resultado.__resultadoOriginalPt) || resultado;
+      const resTraduzido = traduzirObjetoProfundo(fonteBase, "", "en");
 
       // Garante que jsPDF esteja carregado antes de envolver seus métodos de protótipo temporariamente
       if (!(global.jspdf && global.jspdf.jsPDF)) {

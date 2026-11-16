@@ -345,6 +345,19 @@
    * Compras interrompidas (ETAPA 3): preserva apenas dados mínimos não sensíveis
    * (orderId, plano, status e expiraEm) com expiração definida.
    */
+  function obterIdiomaAtivoSessao() {
+    try {
+      if (global.TryvI18n && typeof global.TryvI18n.getIdioma === "function") {
+        return global.TryvI18n.getIdioma() === "en" ? "en" : "pt-BR";
+      }
+      if (typeof localStorage !== "undefined") {
+        const salvo = lerStorageSeguro(localStorage, "tryv_idioma") || lerStorageSeguro(localStorage, "bemdito-idioma");
+        if (salvo === "en") return "en";
+      }
+    } catch {}
+    return "pt-BR";
+  }
+
   function lerSessaoPedido(agoraMs = Date.now()) {
     try {
       const raw =
@@ -361,6 +374,7 @@
       return {
         orderId: obj.orderId || "",
         plano: obj.plano === "standard" ? "standard" : "profunda",
+        idioma: obj.idioma === "en" ? "en" : "pt-BR",
         status: obj.status || "PENDING",
         atualizadoEm: obj.atualizadoEm || "",
         expiraEm: obj.expiraEm || (agoraMs + TTL_PEDIDO_INTERROMPIDO_MS)
@@ -376,11 +390,15 @@
       const planoNormalizado = (dados && dados.plano === "standard")
         ? "standard"
         : ((dados && dados.plano === "profunda") ? "profunda" : (atual.plano || "profunda"));
+      const idiomaNormalizado = (dados && (dados.idioma === "en" || dados.idioma === "pt-BR"))
+        ? dados.idioma
+        : (atual.idioma || obterIdiomaAtivoSessao());
       const prazo = Number(ttlMs) > 0 ? Number(ttlMs) : TTL_PEDIDO_INTERROMPIDO_MS;
       // Armazena estritamente os metadados mínimos do pedido (sem nome, whatsapp ou respostas)
       const minimo = {
         orderId: (dados && dados.orderId) || atual.orderId || gerarOrderId("cli", planoNormalizado),
         plano: planoNormalizado,
+        idioma: idiomaNormalizado,
         status: (dados && dados.status) || atual.status || "PENDING",
         atualizadoEm: new Date(agoraMs).toISOString(),
         expiraEm: agoraMs + prazo
@@ -402,6 +420,7 @@
         modoMestra: true,
         orderId: "MESTRA-TRYV-LIVRE",
         plano: planoSalvo,
+        idioma: obterIdiomaAtivoSessao(),
         status: "PAID",
         tokenAcesso: "MESTRA_TRYV_ILIMITADO",
         metodo: "Modo Mestra Tryv"
@@ -429,10 +448,14 @@
     try {
       const prazo = Number(ttlMs) > 0 ? Number(ttlMs) : TTL_TOKEN_PAGAMENTO_MS;
       const planoConfirmado = dadosConfirmacao.plano === "standard" ? "standard" : "profunda";
+      const idiomaConfirmado = (dadosConfirmacao && (dadosConfirmacao.idioma === "en" || dadosConfirmacao.idioma === "pt-BR"))
+        ? dadosConfirmacao.idioma
+        : obterIdiomaAtivoSessao();
       const payload = {
         pago: true,
         orderId: dadosConfirmacao.orderId || "",
         plano: planoConfirmado,
+        idioma: idiomaConfirmado,
         status: "PAID",
         tokenAcesso: dadosConfirmacao.tokenAcesso,
         transactionNsu: dadosConfirmacao.transactionNsu || "",
@@ -449,10 +472,15 @@
       if (typeof localStorage !== "undefined") {
         gravarStorageSeguro(localStorage, STORAGE_KEYS.TOKEN_VALIDADO, serializado);
         gravarStorageSeguro(localStorage, "tryv_plano_desbloqueio", planoConfirmado);
+        // Preserva obrigatoriamente o idioma da sessão de compra após o pagamento
+        gravarStorageSeguro(localStorage, "tryv_idioma", idiomaConfirmado);
+        gravarStorageSeguro(localStorage, "bemdito-idioma", idiomaConfirmado === "en" ? "en" : "pt");
+        gravarStorageSeguro(localStorage, "tryv_idioma_sync_bemdito", idiomaConfirmado === "en" ? "en" : "pt");
       }
       salvarSessaoPedido({
         orderId: payload.orderId,
         plano: planoConfirmado,
+        idioma: idiomaConfirmado,
         status: "PAID"
       }, prazo, agoraMs);
       if (canalEntreAbas) {
@@ -1328,6 +1356,7 @@
     const sessao = salvarSessaoPedido({
       orderId: gerarOrderId(emailLimpo || "pp", planoNorm),
       plano: planoNorm,
+      idioma: "en",
       status: "PENDING"
     });
     if (emailLimpo) {
@@ -1340,10 +1369,11 @@
         headers: { "Content-Type": "application/json", "Accept": "application/json" },
         body: JSON.stringify({
           plano: planoNorm,
+          idioma: "en",
           email: emailLimpo,
           orderId: sessao.orderId,
-          returnUrl: returnUrl || (typeof location !== "undefined" ? `${location.origin}${obterPrefixoRaiz() ? "/" : "/"}diagnostico.html?plano=${planoNorm}&paypal_return=1` : undefined),
-          cancelUrl: cancelUrl || (typeof location !== "undefined" ? `${location.origin}${obterPrefixoRaiz() ? "/" : "/"}desbloqueio.html?paypal_cancel=1#planos` : undefined)
+          returnUrl: returnUrl || (typeof location !== "undefined" ? `${location.origin}${obterPrefixoRaiz() ? "/" : "/"}diagnostico.html?plano=${planoNorm}&lang=en&paypal_return=1` : undefined),
+          cancelUrl: cancelUrl || (typeof location !== "undefined" ? `${location.origin}${obterPrefixoRaiz() ? "/" : "/"}desbloqueio.html?lang=en&paypal_cancel=1#planos` : undefined)
         })
       });
 
@@ -1354,6 +1384,7 @@
           salvarSessaoPedido({
             orderId: json.orderId || sessao.orderId,
             plano: planoNorm,
+            idioma: "en",
             status: "PENDING"
           });
           return {
@@ -1363,6 +1394,7 @@
             approveUrl: json.approveUrl || "",
             valorUsd: json.valorUsd,
             moeda: "USD",
+            idioma: "en",
             plano: planoNorm
           };
         }
@@ -1399,7 +1431,8 @@
           paypalOrderId: ppId,
           orderId: orderId || "",
           email: normalizarEmail(email),
-          plano: plano === "standard" ? "standard" : "profunda"
+          plano: plano === "standard" ? "standard" : "profunda",
+          idioma: "en"
         })
       });
 
@@ -1410,6 +1443,7 @@
           const confirmado = salvarTokenConfirmado({
             orderId: data.orderId || ppId,
             plano: data.plano || plano || "profunda",
+            idioma: "en",
             tokenAcesso: data.tokenAcesso,
             transactionNsu: data.captureId || data.paypalOrderId || ppId,
             metodo: data.metodo || "PayPal International (USD)",
