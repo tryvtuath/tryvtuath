@@ -5771,5 +5771,122 @@ function ligarIdioma(C) {
   ligar(await r.json());
 })();
 </script>
+
+<!-- Pop-up de Convite ao Desbloqueio Energético / Invisível -->
+<style>
+  .popup-desbloqueio {
+    position: fixed; inset: 0; z-index: 9990;
+    background: rgba(8, 5, 22, 0.82); backdrop-filter: blur(10px);
+    display: grid; place-items: center; padding: 1.2rem;
+    opacity: 0; pointer-events: none; transition: opacity .35s ease;
+  }
+  .popup-desbloqueio.aberto { opacity: 1; pointer-events: auto; }
+  .popup-desbloqueio__card {
+    position: relative; width: 100%; max-width: 490px;
+    background: linear-gradient(170deg, rgba(38, 24, 86, .97) 0%, rgba(16, 11, 42, .99) 100%);
+    border: 1.5px solid rgba(242, 193, 78, .65);
+    border-radius: 24px; padding: 2rem 1.75rem 1.7rem;
+    box-shadow: 0 26px 70px rgba(0, 0, 0, .85);
+    text-align: center; color: #f6f0ff;
+    transform: translateY(14px) scale(.98); transition: transform .35s ease;
+  }
+  .popup-desbloqueio.aberto .popup-desbloqueio__card { transform: translateY(0) scale(1); }
+  .popup-desbloqueio__fechar {
+    position: absolute; top: .85rem; right: .9rem;
+    width: 34px; height: 34px; border-radius: 50%; border: 0;
+    background: rgba(255, 255, 255, .08); color: #e4dbf9;
+    font-size: 1rem; cursor: pointer; display: grid; place-items: center;
+  }
+  .popup-desbloqueio__fechar:hover { background: rgba(255, 255, 255, .18); color: #fff; }
+  .popup-desbloqueio__selo {
+    display: inline-block; padding: .28rem .85rem; border-radius: 999px;
+    background: rgba(242, 193, 78, .14); border: 1px solid rgba(242, 193, 78, .45);
+    color: #ffe6a3; font-size: .74rem; font-weight: 700; letter-spacing: .12em;
+    text-transform: uppercase; margin-bottom: .8rem;
+  }
+  .popup-desbloqueio__titulo {
+    font-family: var(--titulo, 'Cinzel', serif);
+    font-size: clamp(1.28rem, 3vw, 1.58rem); line-height: 1.28;
+    color: #fff3cc; margin: 0 0 .75rem;
+  }
+  .popup-desbloqueio__texto {
+    font-size: .95rem; line-height: 1.62; color: #dcd4f2; margin: 0 0 1.25rem;
+  }
+  .popup-desbloqueio__lista {
+    text-align: left; list-style: none; padding: .85rem 1rem; margin: 0 0 1.35rem;
+    border-radius: 14px; background: rgba(255, 255, 255, .04);
+    border: 1px solid rgba(242, 193, 78, .22);
+    display: grid; gap: .45rem; font-size: .88rem; color: #efe9ff;
+  }
+  .popup-desbloqueio__cta {
+    display: inline-flex; align-items: center; justify-content: center; width: 100%;
+    padding: .95rem 1.3rem; border-radius: 999px; text-decoration: none;
+    background: linear-gradient(180deg, #fff6d2 0%, #f6cd62 45%, #d39a2c 100%);
+    color: #1b0f02; font-weight: 700; font-size: .98rem;
+    box-shadow: 0 10px 26px rgba(242, 193, 78, .35);
+  }
+  .popup-desbloqueio__depois {
+    margin-top: .75rem; background: transparent; border: 0;
+    color: #bfb5de; font-size: .83rem; text-decoration: underline; cursor: pointer;
+  }
+</style>
+<div id="popup-desbloqueio-convite" class="popup-desbloqueio" hidden translate="no" role="dialog" aria-modal="true" aria-labelledby="popup-desb-titulo">
+  <div class="popup-desbloqueio__card">
+    <button type="button" class="popup-desbloqueio__fechar" id="popup-desb-x" aria-label="Fechar">✕</button>
+    <span class="popup-desbloqueio__selo" id="popup-desb-selo">✦ Convite Tryv Tuath®</span>
+    <h2 class="popup-desbloqueio__titulo" id="popup-desb-titulo">Você não quer conhecer mais sobre você?</h2>
+    <p class="popup-desbloqueio__texto" id="popup-desb-texto">
+      Venha fazer o <strong>Desbloqueio Energético &amp; Invisível</strong> para compreender os padrões ocultos que se repetem na sua vida emocional, nos relacionamentos e na prosperidade.
+    </p>
+    <ul class="popup-desbloqueio__lista" id="popup-desb-lista">
+      <li>✦ Descubra sua raiz emocional, Cauda Cármica e Dons Natos</li>
+      <li>✦ Cruzamento de Astrologia, Mapa Védico, Numerologia e Matriz do Destino</li>
+      <li>✦ Receba seu Dossiê Completo personalizado em PDF na hora</li>
+    </ul>
+    <a class="popup-desbloqueio__cta" id="popup-desb-cta" href="desbloqueio.html">✦ Quero Conhecer o Desbloqueio</a>
+    <button type="button" class="popup-desbloqueio__depois" id="popup-desb-depois">Agora não, continuar no site</button>
+  </div>
+</div>
+<script>
+(function() {
+  const modal = document.getElementById("popup-desbloqueio-convite");
+  if (!modal) return;
+  const CHAVE = "tryv_popup_desbloqueio_visto";
+  try { if (sessionStorage.getItem(CHAVE) === "1") return; } catch {}
+
+  function aplicarIdiomaPopup() {
+    let isEn = false;
+    try { isEn = localStorage.getItem("bemdito-idioma") === "en" || localStorage.getItem("tryv_idioma") === "en"; } catch {}
+    if (!isEn) return;
+    document.getElementById("popup-desb-selo").textContent = "✦ Tryv Tuath® Invitation";
+    document.getElementById("popup-desb-titulo").textContent = "Would you like to discover more about yourself?";
+    document.getElementById("popup-desb-texto").innerHTML = "Come explore <strong>The Invisible Energetic Unlocking</strong> to understand the hidden patterns repeating in your emotions, relationships, and prosperity.";
+    document.getElementById("popup-desb-lista").innerHTML = "<li>✦ Uncover your emotional root, Karmic Tail, and Innate Gifts</li><li>✦ Astrology, Vedic Chart, Numerology &amp; Destiny Matrix combined</li><li>✦ Receive your personalized PDF Dossier immediately</li>";
+    document.getElementById("popup-desb-cta").textContent = "✦ Discover The Invisible Unlocking";
+    document.getElementById("popup-desb-depois").textContent = "Not now, continue browsing";
+  }
+
+  function fechar() {
+    modal.classList.remove("aberto");
+    setTimeout(() => { modal.hidden = true; }, 320);
+    try { sessionStorage.setItem(CHAVE, "1"); } catch {}
+  }
+
+  document.getElementById("popup-desb-x").addEventListener("click", fechar);
+  document.getElementById("popup-desb-depois").addEventListener("click", fechar);
+  document.getElementById("popup-desb-cta").addEventListener("click", () => {
+    try { sessionStorage.setItem(CHAVE, "1"); } catch {}
+  });
+  modal.addEventListener("click", (e) => { if (e.target === modal) fechar(); });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !modal.hidden) fechar(); });
+
+  setTimeout(() => {
+    if (location.hash && location.hash !== "#inicio") return;
+    aplicarIdiomaPopup();
+    modal.hidden = false;
+    requestAnimationFrame(() => modal.classList.add("aberto"));
+  }, 2400);
+})();
+</script>
 </body>
 </html>
