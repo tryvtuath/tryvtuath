@@ -793,7 +793,7 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
   </section>
 </main>
 
-<script src="motor-desbloqueio.js?v=3"></script>
+<script src="motor-desbloqueio.js?v=4"></script>
 <script src="pagamento-guardiao.js?v=13"></script>
 <script src="i18n-desbloqueio.js?v=6"></script>
 <script>
@@ -1705,9 +1705,14 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
     $("#sec-resultado").hidden = false;
     window.scrollTo({ top: 0, behavior: "smooth" });
 
-    // Dispara automaticamente o download do PDF após 600ms utilizando o idioma da sessão
-    setTimeout(() => {
-      window.MotorDesbloqueio.gerarPDFPersonalizado(ultimoResultado, { idioma: dadosCliente.idioma }).catch(() => {});
+    // Dispara automaticamente o download do PDF (já com o desenho da Matriz do Destino) e, em seguida, abre a impressão da tela
+    setTimeout(async () => {
+      try {
+        await window.MotorDesbloqueio.gerarPDFPersonalizado(ultimoResultado, { idioma: dadosCliente.idioma });
+      } catch {}
+      setTimeout(() => {
+        try { window.print(); } catch {}
+      }, 900);
     }, 600);
   });
 

@@ -1837,6 +1837,108 @@
       y += altTotal + 3;
     }
 
+    function desenharMatrizDestinoPDF(matrizObj) {
+      if (!matrizObj || !matrizObj.nodos) return;
+      const n = matrizObj.nodos;
+      const tamBox = 94; // 94mm x 94mm diagram box
+      garantirEspaco(tamBox + 14);
+
+      const boxX = M + (LARG - tamBox) / 2;
+      const boxY = y;
+      const escala = tamBox / 420;
+      const px = (vx) => boxX + vx * escala;
+      const py = (vy) => boxY + vy * escala;
+      const pr = (vr) => vr * escala;
+
+      // Fundo noturno elegante para destacar o Octagrama da Matriz do Destino
+      doc.setFillColor(18, 14, 46);
+      doc.setDrawColor(242, 193, 78);
+      doc.setLineWidth(0.45);
+      doc.roundedRect(boxX, boxY, tamBox, tamBox, 3, 3, "FD");
+
+      // Círculos externos do Octagrama
+      doc.setDrawColor(242, 193, 78);
+      doc.setLineWidth(0.35);
+      doc.circle(px(210), py(210), pr(192), "S");
+      doc.setDrawColor(160, 140, 210);
+      doc.setLineWidth(0.2);
+      doc.circle(px(210), py(210), pr(158), "S");
+
+      // Quadrado Ancestral (Reto)
+      doc.setDrawColor(185, 163, 255);
+      doc.setLineWidth(0.3);
+      doc.rect(px(97), py(97), pr(226), pr(226), "S");
+
+      // Quadrado Pessoal (Losango)
+      doc.setDrawColor(242, 193, 78);
+      doc.setLineWidth(0.4);
+      doc.line(px(210), py(50), px(370), py(210));
+      doc.line(px(370), py(210), px(210), py(370));
+      doc.line(px(210), py(370), px(50), py(210));
+      doc.line(px(50), py(210), px(210), py(50));
+
+      // Eixos Centrais e Diagonais
+      doc.setDrawColor(200, 165, 90);
+      doc.setLineWidth(0.22);
+      doc.line(px(50), py(210), px(370), py(210));
+      doc.line(px(210), py(50), px(210), py(370));
+      doc.setDrawColor(145, 130, 195);
+      doc.setLineWidth(0.18);
+      doc.line(px(97), py(97), px(323), py(323));
+      doc.line(px(323), py(97), px(97), py(323));
+
+      // Linha do Amor e Linha do Dinheiro
+      doc.setDrawColor(255, 140, 192);
+      doc.setLineWidth(0.35);
+      doc.line(px(210), py(305), px(305), py(210));
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(5.5);
+      doc.setTextColor(255, 140, 192);
+      doc.text("AMOR", px(272), py(274), { align: "center" });
+      doc.setTextColor(255, 230, 163);
+      doc.text("DINHEIRO", px(300), py(184), { align: "center" });
+
+      const nodoPDF = (vx, vy, vr, val, corFundo, corTexto, rotulo = "") => {
+        const cx = px(vx), cy = py(vy), rr = pr(vr);
+        doc.setFillColor(...corFundo);
+        doc.setDrawColor(242, 193, 78);
+        doc.setLineWidth(0.35);
+        doc.circle(cx, cy, rr, "FD");
+        doc.setFont("times", "bold");
+        doc.setFontSize(Math.max(5.5, vr * 0.42));
+        doc.setTextColor(...corTexto);
+        doc.text(String(val), cx, cy + 1.1, { align: "center" });
+        if (rotulo) {
+          doc.setFont("helvetica", "bold");
+          doc.setFontSize(5.0);
+          doc.setTextColor(255, 230, 163);
+          doc.text(rotulo, cx, cy + rr + 2.7, { align: "center" });
+        }
+      };
+
+      // Pontas Ancestrais
+      nodoPDF(97, 97, 15, n.F, [27, 21, 70], [201, 191, 230], "Pai-Esp");
+      nodoPDF(323, 97, 15, n.G, [27, 21, 70], [201, 191, 230], "Mãe-Esp");
+      nodoPDF(323, 323, 15, n.H, [27, 21, 70], [201, 191, 230], "Pai-Mat");
+      nodoPDF(97, 323, 15, n.I, [27, 21, 70], [201, 191, 230], "Mãe-Mat");
+
+      // Cauda Cármica e Canais Internos
+      nodoPDF(210, 290, 13, n.K1, [59, 23, 69], [255, 140, 192]);
+      nodoPDF(210, 328, 12, n.K2, [59, 23, 69], [255, 140, 192]);
+      nodoPDF(295, 210, 13, n.C1, [43, 35, 18], [255, 230, 163]);
+      nodoPDF(255, 255, 13, n.AmorCentro, [74, 21, 59], [255, 140, 192]);
+      nodoPDF(332, 210, 12, n.DinheiroProfissao, [43, 35, 18], [255, 230, 163]);
+
+      // 4 Pontas Principais + Centro
+      nodoPDF(50, 210, 21, n.A, [43, 26, 94], [255, 246, 210], "Retrato");
+      nodoPDF(210, 50, 21, n.B, [43, 26, 94], [255, 246, 210], "Espírito");
+      nodoPDF(370, 210, 21, n.C, [43, 26, 94], [255, 246, 210], "Matéria");
+      nodoPDF(210, 370, 21, n.D, [74, 21, 59], [255, 140, 192], "Carma");
+      nodoPDF(210, 210, 27, n.E, [242, 193, 78], [18, 14, 46], "CENTRO");
+
+      y = boxY + tamBox + 4;
+    }
+
     // ==================== PÁGINA 1: CAPA DE LUXO NOITE ENCANTADA ====================
     desenharMolduraPagina(true);
 
@@ -2099,6 +2201,7 @@
     caixaDestaque("Chave de Desbloqueio Emocional", "Como virar a chave interna", diag.emocional.chaveDesbloqueio);
 
     tituloSecao("Parte V · Matriz do Destino (22 Arcanos)", `Centro ${matriz.arcanos.centro.rom} (${matriz.arcanos.centro.nome}) & Cauda Cármica ${matriz.caudaCarmica.codigo}`);
+    desenharMatrizDestinoPDF(matriz);
     diag.fundamentosMisticos.matrizDoDestino.paragrafos.forEach(p => paragrafo(p));
     caixaDestaque(
       `Arcano Regente Central (${matriz.arcanos.centro.rom}) & Retrato (${matriz.arcanos.retrato.rom})`,
