@@ -1038,8 +1038,8 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
     });
   }
 
-  let urlInfinitePayStdCache = URL_INFINITEPAY_STANDARD;
-  let urlInfinitePayProfCache = URL_INFINITEPAY_PROFUNDA;
+  let urlInfinitePayStdCache = (Guardiao && Guardiao.LINKS_CHECKOUT && Guardiao.LINKS_CHECKOUT.standardRedirect) || URL_INFINITEPAY_STANDARD;
+  let urlInfinitePayProfCache = (Guardiao && Guardiao.LINKS_CHECKOUT && Guardiao.LINKS_CHECKOUT.profundaRedirect) || URL_INFINITEPAY_PROFUNDA;
 
   function isIdiomaIngles() {
     return Boolean(window.TryvI18n && window.TryvI18n.getIdioma && window.TryvI18n.getIdioma() === "en");
@@ -1387,10 +1387,10 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
       if (D.chamada) $("#txt-chamada").textContent = D.chamada;
       if (D.titulo) $("#txt-titulo").textContent = D.titulo;
       if (D.subtitulo) $("#txt-subtitulo").textContent = D.subtitulo;
-      if (D.checkoutStandard && D.checkoutStandard.trim().startsWith("https://loja.infinitepay.io/")) {
+      if (D.checkoutStandard && D.checkoutStandard.trim().startsWith("https://checkout.infinitepay.io/")) {
         urlInfinitePayStdCache = D.checkoutStandard.trim();
       }
-      if (D.checkoutProfunda && D.checkoutProfunda.trim().startsWith("https://loja.infinitepay.io/")) {
+      if (D.checkoutProfunda && D.checkoutProfunda.trim().startsWith("https://checkout.infinitepay.io/")) {
         urlInfinitePayProfCache = D.checkoutProfunda.trim();
       }
       sincronizarModoMestraDesbloqueio();

@@ -1124,26 +1124,31 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; }
       return;
     }
 
-    // Se retornou da InfinitePay com transaction_nsu + slug ou receipt_url na URL, valida na hora
+    // Se retornou da InfinitePay com transaction_nsu + slug ou receipt_url na URL, valida automaticamente com retentativas
     if ((urlTxNsu && urlSlug) || urlReceipt) {
-      gateStatusMsg.textContent = "Validando comprovante de retorno da InfinitePay…";
-      const resUrl = await Guardiao.verificarStatusPagamento({
-        email: urlEmail,
-        orderId: urlOrderNsu,
-        transactionNsu: urlTxNsu,
-        slug: urlSlug,
-        receiptUrl: urlReceipt,
-        plano: planoAtivo
-      });
-      if (resUrl.pago && resUrl.dados) {
-        destravarAnamneseNaTela(resUrl.dados);
-        secBloqueio.hidden = true;
-        secFormulario.hidden = false;
-        return;
+      for (let tentativaUrl = 1; tentativaUrl <= 6; tentativaUrl++) {
+        gateStatusMsg.textContent = tentativaUrl === 1
+          ? "Confirmando seu pagamento automaticamente na InfinitePay…"
+          : `Confirmando seu pagamento na InfinitePay… (${tentativaUrl}/6)`;
+        const resUrl = await Guardiao.verificarStatusPagamento({
+          email: urlEmail,
+          orderId: urlOrderNsu,
+          transactionNsu: urlTxNsu,
+          slug: urlSlug,
+          receiptUrl: urlReceipt,
+          plano: planoAtivo
+        });
+        if (resUrl.pago && resUrl.dados) {
+          destravarAnamneseNaTela(resUrl.dados);
+          secBloqueio.hidden = true;
+          secFormulario.hidden = false;
+          return;
+        }
+        if (tentativaUrl < 6) {
+          await new Promise(r => setTimeout(r, 2500));
+        }
       }
-      if (gateSpinner) gateSpinner.style.display = "none";
-      gateStatusMsg.textContent = Guardiao.MSG_ERRO_COMPRA_PT || "Não foi possível concluir sua compra neste momento. Nenhum acesso foi liberado. Se o problema persistir, entre em contato conosco pelo e-mail tryvtuathterapias@gmail.com. Teremos prazer em ajudar.";
-      return;
+      gateStatusMsg.textContent = "A confirmação automática ainda está em processamento. Se preferir, cole o link ou código do comprovante abaixo.";
     }
 
     // Mantém o questionário bloqueado para clientes sem confirmação e inicia o polling periódico
