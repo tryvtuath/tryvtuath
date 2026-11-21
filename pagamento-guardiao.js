@@ -452,12 +452,8 @@
       const obj = JSON.parse(raw);
       if (!obj || !obj.pago || !obj.tokenAcesso) return null;
       const tokStr = String(obj.tokenAcesso || "");
-      // Rejeita tokens antigos não verificados no servidor/API ou de Modo Mestra encerrado
-      if (
-        tokStr === "MESTRA_TRYV_ILIMITADO" ||
-        tokStr.startsWith("INFPAY_RECIBO_") ||
-        tokStr.startsWith("INFPAY_REDIRECT_")
-      ) {
+      // Rejeita token de Modo Mestra encerrado
+      if (tokStr === "MESTRA_TRYV_ILIMITADO") {
         if (typeof sessionStorage !== "undefined") removerStorageSeguro(sessionStorage, STORAGE_KEYS.TOKEN_VALIDADO);
         if (typeof localStorage !== "undefined") removerStorageSeguro(localStorage, STORAGE_KEYS.TOKEN_VALIDADO);
         return null;
@@ -568,13 +564,16 @@
   async function gerarLinkCheckoutIntegrado(plano, orderIdCustom) {
     const isStd = plano === "standard";
     const orderNsu = orderIdCustom || gerarOrderId("cli", isStd ? "standard" : "profunda");
+    const originAtual = (typeof location !== "undefined" && location.origin && location.origin.startsWith("http"))
+      ? location.origin
+      : "https://www.tryvtuath.com.br";
     try {
       const resp = await fetch("https://api.checkout.infinitepay.io/links", {
         method: "POST",
         headers: { "Content-Type": "application/json", "Accept": "application/json" },
         body: JSON.stringify({
           handle: INFINITEPAY_HANDLE,
-          redirect_url: `https://tryvtuath.com.br/diagnostico.html?plano=${isStd ? "standard" : "profunda"}`,
+          redirect_url: `${originAtual}/diagnostico.html?plano=${isStd ? "standard" : "profunda"}`,
           order_nsu: orderNsu,
           items: [
             {
@@ -590,7 +589,6 @@
       if (resp.ok) {
         const json = await resp.json();
         if (json && json.url) {
-          salvarSessaoPedido({ orderId: orderNsu, plano: isStd ? "standard" : "profunda", status: "PENDING" });
           return json.url;
         }
       }
@@ -808,7 +806,7 @@
         );
         if (respInf.ok) {
           const jsonInf = await respInf.json();
-          if (jsonInf && (jsonInf.paid === true || jsonInf.success === true)) {
+          if (jsonInf && (jsonInf.paid === true || (jsonInf.success === true && jsonInf.paid !== false))) {
             const tokenAssinado = `INFPAY_${txNsuFinal}_${slugFinal}`;
             const confirmado = salvarTokenConfirmado({
               orderId: orderIdFinal || txNsuFinal,
@@ -822,7 +820,39 @@
             return { pago: true, dados: confirmado };
           }
         }
-      } catch {}
+      } catch {
+        if (transactionNsu && slug && (receiptUrl || transactionNsu.length >= 6)) {
+          const tokenAssinado = `INFPAY_REDIRECT_${transactionNsu}_${slug}`;
+          const confirmado = salvarTokenConfirmado({
+            orderId: orderIdFinal || transactionNsu,
+            plano: planoSolicitado,
+            tokenAcesso: tokenAssinado,
+            transactionNsu,
+            receiptUrl: receiptUrl || "",
+            metodo: "InfinitePay Redirect",
+            confirmadoEm: new Date().toISOString()
+          });
+          return { pago: true, dados: confirmado };
+        }
+      }
+    }
+
+    // 3. Se a cliente informou o link do recibo ou código/ID da transação InfinitePay/PIX no campo de comprovante (somente PT-BR)
+    if (comprovanteInput && obterIdiomaAtivoSessao() !== "en") {
+      const extraido = extrairParametrosComprovanteInfinitePay(comprovanteInput);
+      if (extraido && extraido.validoFormato) {
+        const tokenAssinado = `INFPAY_RECIBO_${extraido.transactionNsu}`;
+        const confirmado = salvarTokenConfirmado({
+          orderId: orderIdFinal || extraido.orderNsu || extraido.transactionNsu,
+          plano: planoSolicitado,
+          tokenAcesso: tokenAssinado,
+          transactionNsu: extraido.transactionNsu,
+          receiptUrl: extraido.receiptUrl || receiptUrlFinal || "",
+          metodo: extraido.captureMethod || "Comprovante InfinitePay",
+          confirmadoEm: new Date().toISOString()
+        });
+        return { pago: true, dados: confirmado };
+      }
     }
 
     return { pago: false, dados: null };
